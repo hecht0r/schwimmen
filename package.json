@@ -1,7 +1,12 @@
 {
-  "name": "socket-chat-example",
+  "name": "gaigel",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "gaigel-beta",
+  "main": "app.js",
+  "scripts": {
+    "test": "gaigel187",
+    "start": "node app.js"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
