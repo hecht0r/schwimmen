@@ -23,7 +23,7 @@ module.exports.listen = function(app) {
 		});	
 
 		socket.on('disconnect', function () {
-			connsole.log(socket.username + ' disconnected');
+			console.log(socket.username + ' disconnected');
 		});
 	});
 	return io;
