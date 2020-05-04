@@ -118,7 +118,7 @@ socket.on('melded', function(data) {
 	suit.setAttribute('src','/images/' + data + '.png');
 	myMeldings.appendChild(suit);
 })
-//test
+
 socket.on('invalidCard', function() {
 	actionCanBeSent = true;
 	addActions();
