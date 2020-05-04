@@ -39,7 +39,7 @@ function addActions() {
 		btn.innerHTML = actions[i].title;
 		btn.className = 'actionbutton';
 		btn.addEventListener('click', function () {
-			validateAction(actions[i].action);
+			validateAction(actions[i].action); 
 		});
 		myActions.appendChild(btn);
 	}
