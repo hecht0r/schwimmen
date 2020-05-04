@@ -22,7 +22,8 @@ module.exports.listen = function(app) {
 			validateAction(socket, data);
 		});	
 
-		socket.on('disconnect', function () {
+		socket.on('disconnect', function (socket) {
+			players.splice(players.indexOf(findPlayerById(socket.id)),1);
 			console.log(socket.username + ' disconnected');
 		});
 	});
