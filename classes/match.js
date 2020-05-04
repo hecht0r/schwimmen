@@ -6,7 +6,7 @@ class Match{
 		this.games = [];	
 	}
 	
-	start() {
+	startGame() {
 		let g = new game(players);
 		this.games.push(g);
 		g.start();	

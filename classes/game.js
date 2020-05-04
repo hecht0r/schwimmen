@@ -5,7 +5,6 @@ class Game{
     constructor(players) {
 		this.players = players;
 		this.rounds = [];
-		this.maxrounds = (48 - this.players.length * 5) / this.players.length;
     }
     
 	start() {
@@ -24,17 +23,8 @@ class Game{
 		this.rounds.push(r);
 		r.start();		
 		
-		/*
-		for (let i = 0; i < this.maxrounds; i++) {
-			if (i===0) {
-				this.rounds.push( new round.FirstRound(players, this.trumpcard));
-			}else{
-				this.rounds.push( new round.Round(players));
-			}
-			
-			this.rounds[0].startRound();
-		}
-		
+
+	/*		
 		for (let i = 0; i<5; i++) {
 			this.rounds.push( new round.LastRound(players));
 			for (let i = 0; i < this.players.length; i++) {

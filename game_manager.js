@@ -50,7 +50,7 @@ function setUsername(socket, username) {
 	if (players.length == 3){
 		setTimeout(function() {
 			m = new match(players);
-			m.start();
+			m.startGame();
 		}, 1000);
 	}	 
 	//}
@@ -184,7 +184,11 @@ function melding(socket, card) {
 
 function endGame() {
 	console.log('Ende');
+	setTimeout(function() {
+		m.startGame();
+	}, 3000);
 }
+
 function getTrumpcard(socket, card) {
 	let g = m.getCurrentGame();
 	let player = findPlayerById(socket.id);

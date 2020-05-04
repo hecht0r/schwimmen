@@ -54,8 +54,12 @@ socket.on('userSet', function(data) {
 });
 
 socket.on('new Game', function(data) {
+	let trumpcard = document.getElementById("trumpcard");
+	trumpcard.innerHTML = '';
 	let myMeldings = document.getElementById("myMeldings");
 	myMeldings.innerHTML = '';
+	let myScore = document.getElementById("myScore");
+	myScore.innerHTML = '';
 });
 
 socket.on('updateTrumpcard', function(data) {
