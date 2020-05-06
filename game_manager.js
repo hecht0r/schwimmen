@@ -77,18 +77,20 @@ function setUsername(socket, username) {
 	//if(players.indexOf(username) > -1) {
 	//   socket.emit('userExists', data + ' username is taken! Try some other username.');
 	//}else {
-	socket.username = username;
-	players.push(new player(socket));
-	console.log(`Anzahl Spieler: ${players.length}`)
-	socket.emit('userSet', {username: username});
-
-	if (players.length == players_max){
-		setTimeout(function() {
-			m = new match(players);
-			m.startGame();
-		}, 3000);
-	}	 
-	//}
+	if (players.length < players_max){
+		socket.username = username;
+		players.push(new player(socket));
+		console.log(`Anzahl Spieler: ${players.length}`)
+		socket.emit('userSet', {username: username});
+		socket.broadcast.emit('userJoined', {username: username, count: players.length});
+	
+		if (players.length == players_max){
+			setTimeout(function() {
+				m = new match(players);
+				m.startGame();
+			}, 3000);
+		}
+	}
 }
 
 // actions

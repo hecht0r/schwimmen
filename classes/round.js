@@ -105,6 +105,7 @@ class FirstRound extends Round {
 			winner.wonCards.push(this.cardsPlayed[i].card);	
 		}
 
+		
 		setTimeout(function() {
 			// draw Card, first winner
 			winner.hand.push(m.getCurrentGame().deck.drawCard());	
@@ -119,8 +120,7 @@ class FirstRound extends Round {
 			// start new round		
 			let r = new RegularRound(winner);
 			m.getCurrentGame().rounds.push(r);
-	
-			io.sockets.emit('newRound',winner.playerName);
+			io.sockets.emit('newRound',winner.playerName);	
 			r.start();		
 		}, 3000);
 	}
@@ -188,7 +188,6 @@ class RegularRound extends Round {
 				}
 			
 				// start new round		
-				io.sockets.emit('newRound',winner.playerName);
 				let r;
 				if (m.getCurrentGame().deck.cards.length > 0){
 					r = new RegularRound(winner);
@@ -197,7 +196,7 @@ class RegularRound extends Round {
 					io.sockets.emit('lastRounds', m.getCurrentGame().trumpcard.suit);
 				}
 				m.getCurrentGame().rounds.push(r);
-			
+				io.sockets.emit('newRound',winner.playerName);
 				r.start();		
 			}, 3000);
 		}	
@@ -268,8 +267,7 @@ class LastRound extends Round {
 				setTimeout(function() {
 					// start new round		
 					let r = new LastRound(winner);
-					m.getCurrentGame().rounds.push(r);
-					
+					m.getCurrentGame().rounds.push(r);					
 					io.sockets.emit('newRound',winner.playerName);
 					r.start();		
 				}, 3000);

@@ -84,6 +84,10 @@ socket.on('userSet', function(data) {
 	username = data.username;
 });
 
+socket.on('userJoined', function(data) {
+	writeLog("gameLog", data.username + ' betritt das Spiel. ' + data.count + ' Spieler verbunden.' );
+});
+
 socket.on('newGame', function(data) {
 	clear("playedCards");
 	clear("trumpcard");
