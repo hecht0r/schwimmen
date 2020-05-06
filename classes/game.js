@@ -5,33 +5,26 @@ class Game{
     constructor(players) {
 		this.players = players;
 		this.rounds = [];
+		this.winner;
     }
     
-	start() {
-		io.sockets.emit('newGame');
+	start(starter) {
+		io.sockets.emit('newGame',starter.playerName);
+		this.starter = starter;
 		this.deck = new deck();
 		this.deck.createDeck();
 		this.deck.shuffleDeck();
 		this.trumpcard = this.deck.cards.slice(-1)[0];
+				
 		for (let i = 0; i < this.players.length; i++) {
+			this.players[i].init();
 			this.players[i].hand = this.deck.cards.splice(0,5);
 			this.players[i].socket.emit('updateHand', this.players[i].hand);
-			this.players[i].socket.emit('updateTrumpcard', this.trumpcard);
+			this.players[i].socket.emit('updateTrumpcard', {trumpcard: this.trumpcard});
  		}
-		//let r = new round.FirstRound(players, this.players[Math.floor(Math.random() * this.players.length)]);
-		let r = new round.Round(players, this.players[Math.floor(Math.random() * this.players.length)]);
+		let r = new round.FirstRound(this.starter);
 		this.rounds.push(r);
 		r.start();		
-		
-
-	/*		
-		for (let i = 0; i<5; i++) {
-			this.rounds.push( new round.LastRound(players));
-			for (let i = 0; i < this.players.length; i++) {
-				this.players[i].playerCards.splice(0,1);
-			}	
-		}
-		*/
 	}
 	
 	getCurrentRound() {

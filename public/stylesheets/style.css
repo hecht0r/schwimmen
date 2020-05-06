@@ -1,15 +1,33 @@
+html *{
+	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
 .playercard {
-	margin: 0px 3px;
+	margin: 0 0,9%;
+	border:2px solid transparent;
+	border-radius: 7%;
+	/* width: 18%; 
+	height: auto;  */
 }
 
 .actionbutton {
 	margin: 2em;
 }
 
+.board {
+	background-image: url("/images/background.png");
+	background-position: center;
+	border-radius: 10%;
+	position: fixed;
+	top: 5%;
+	left: 20%;
+	width: 60%;
+	height: 90%;
+}
+
 .myScore {
 	position: fixed;
 	top: 1%;
-	left: 98%;
+	left: 95%;
 	font-size: 30px;
 }
 
@@ -20,7 +38,6 @@
 	transform: translate(-50%, -50%);
 	width: 135px;
 	height: 230px;
-	border: 1px solid black;
 }
 
 .playedCards {
@@ -28,19 +45,19 @@
 	top: 20%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 430px;
-	height: 230px;
-	border: 1px solid black;
+	width: 700px;
+	height: 250px; 
 }
 
 .myCards {
 	position: fixed;
 	top: 80%;
 	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 685px;
-	height: 230px;
-	border: 1px solid black;
+	transform: translate(-50%, -50%); 
+	/* width: 40%;
+	height: 10%; */
+	width: 700px;
+	height: 230px;   
 }
 
 .myMeldings {
@@ -52,13 +69,35 @@
 	height: 30px;
 }
 
-
 .myActions {
 	position: fixed;
-	top: 95%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 685px;
-	height: 40px;
+	top: 93%;
+	left: 25%;
+	width: 25%;
+	height: 5%;
 }
 
+.errorLog {
+	position: fixed;
+	top: 96%;
+	left: 55%;
+	width: 25%;
+	height: 5%;
+	color: red;
+}
+
+.gameLog {
+	position: fixed;
+	top: 5%;
+	left: 1%;
+	width: 15%;
+	height: 80%;
+}
+
+.matchLog {
+	position: fixed;
+	top: 5%;
+	left: 82%;
+	width: 15%;
+	height: 80%;
+}

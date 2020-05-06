@@ -1,100 +1,287 @@
+const helper = require('./../helpers.js');
+
 class Round {
-	constructor(players, starter) {
-		this.players = players;
+	constructor(starter) {
 		this.starter = starter;
 		this.cardsPlayed = [];  
 	}	
-	/*
-	checkActionThreeSeven(cards){
-		if (cards.filter(card => ["7"].indexOf(card.rank) != -1	).length > 2){
-				return true;
-		}	
-		return false;
-	}
-	
-	checkActionHigher(cards, trumpcard){
-		cards = cards.filter(card => card.suit !== trumpcard.suit);
-		cards = cards.filter(card => card.rank !== 'ass');
-		if (cards.length > 0) {
-			return true;
+
+	endGame(winner){
+		m.getCurrentGame().winner = winner;
+		winner.wins += 1;
+		let s = m.getCurrentGame().starter; 
+		console.log(`${winner.playerName} gewinnt!`);
+		io.sockets.emit('gameOver', winner.playerName);
+		
+		let scoreBoard =[];
+		for (let i = 0; i < players.length; i++) {
+			scoreBoard.push({player: players[i].playerName, score: players[i].wins});
 		}
-		return false;
+		io.sockets.emit('updateScoreboard',scoreBoard);
+		
+		setTimeout(function() {
+			m.startGame(helper.getNextPlayer(s));
+		}, 7000);
 	}
 
-	checkActionSecondAce(cards, trumpcard){
-		let aces = ["ea","sa","ha","ba"].filter(ace => ace.substr(0,1) !== trumpcard.suit.substr(0,1));
-		for (let i = 0; i < aces.length; i++) {
-			if (cards.filter(card => [aces[i]].indexOf(card.id) != -1 ).length == 1){
-				return true;
-				break;
-			}
-		}
-		return false;
-	}	
+	replayGame(){
+		io.sockets.emit('restart');
+		m.getCurrentGame().starter.socket.emit('restartGame');
+		setTimeout(function() {
+			m.startGame(m.getCurrentGame().starter);
+		}, 5000);
+	}
 
-	checkMelding(cards){
-		if (((cards.filter(card => ["ek"].indexOf(card.id) != -1 ).length > 0) && (cards.filter(card => ["eo"].indexOf(card.id) != -1 ).length > 0)) ||
-			((cards.filter(card => ["sk"].indexOf(card.id) != -1 ).length > 0) && (cards.filter(card => ["so"].indexOf(card.id) != -1 ).length > 0)) ||
-			((cards.filter(card => ["hk"].indexOf(card.id) != -1 ).length > 0) && (cards.filter(card => ["ho"].indexOf(card.id) != -1 ).length > 0)) ||
-			((cards.filter(card => ["bk"].indexOf(card.id) != -1 ).length > 0) && (cards.filter(card => ["bo"].indexOf(card.id) != -1 ).length > 0))){
-			return true;
-		};	
-		return false;
-	}	
-	*/
+	getCardsValue(cards){
+		let total = 0
+		for (let i = 0; i < cards.length; i++) {
+			total += cards[i].card.value;
+		}
+		return total;
+	}
 }
 
 class FirstRound extends Round {
 	
-	constructor(players, starter) {
-		super(players, starter);
+	constructor(starter) {
+		super(starter);
+		this.action;
 	}	
-
-	setActions() {
-		let actions = [];	
-		
-//		if (this.checkActionHigher(this.startPlayer.playerCards,this.trumpcard)){
-			actions.push('higher');
-//		}
-//		if (this.checkActionThreeSeven(this.startPlayer.playerCards)){
-			actions.push('forfeit');	
-//		}
-//		if (this.checkActionSecondAce(this.startPlayer.playerCards,this.trumpcard)){
-			actions.push('secondAce');	
-//		}
-  		return actions;
-	}
-
-		
+	
 	start() {
-		this.starter.socket.emit('start_game', this.setActions());
-		this.starter.socket.broadcast.emit('bc_start_game', this.starter.playerName);
+		this.starter.socket.emit('startGame');
 	}	
 
+	end(){
+		// first show all cards
+		let cards = [];
+		for (let i = 0; i < this.cardsPlayed.length; i++){
+			cards.push({player: this.cardsPlayed[i].player.playerName, 
+						card:  this.cardsPlayed[i].card});
+		}
+		io.sockets.emit('showCards', cards);
+		
+		let cardsFiltered;
+		let winner;
+		switch(this.action){
+			case "higher":
+				// remove all cards other playedSuit
+				cardsFiltered = this.cardsPlayed.filter(c => (c.card.suit == this.cardsPlayed[0].card.suit));
+
+				// remove all duplicates
+				cardsFiltered = cardsFiltered.reduce((arr, item) => {
+					let exists = !!arr.find(c => c.card.id === item.card.id);
+					if(!exists){
+						arr.push(item);
+					}
+					return arr;
+				}, []);
+				
+				// highest value wins	
+				let c = [];
+				for (let i = 0; i < cardsFiltered.length; i++){
+					c.push({player: cardsFiltered[i].player, value: cardsFiltered[i].card.value});
+				}
+				c.sort(function(a, b){return b.value-a.value});
+				winner = c[0].player;
+				break;
+			case "secondAce":
+				// check if someone played the same card as first player
+				cardsFiltered = this.cardsPlayed.slice(1).filter(c => ( c.card.id == this.cardsPlayed[0].card.id));
+				if(cardsFiltered.length > 0){
+					winner = cardsFiltered[0].player;
+				}else{
+					winner = this.cardsPlayed[0].player;
+				}
+				
+				break;
+		}
+		let total = super.getCardsValue(this.cardsPlayed);
+		console.log(winner.playerName + ' gets ' + total + ' points!');
+		winner.score += total;
+		winner.socket.emit('updateScore', winner.score);
+
+		for (let i = 0; i < this.cardsPlayed.length; i++) {
+			winner.wonCards.push(this.cardsPlayed[i].card);	
+		}
+
+		setTimeout(function() {
+			// draw Card, first winner
+			winner.hand.push(m.getCurrentGame().deck.drawCard());	
+			winner.socket.emit('updateHand', winner.hand);	
+			// now everybody else in correct order
+			let player = helper.getNextPlayer(winner);
+			for (let i = 1; i < players.length; i++) {
+				player.hand.push(m.getCurrentGame().deck.drawCard());	
+				player.socket.emit('updateHand', player.hand);	
+				player = helper.getNextPlayer(player);
+			}	
+			// start new round		
+			let r = new RegularRound(winner);
+			m.getCurrentGame().rounds.push(r);
+	
+			io.sockets.emit('newRound',winner.playerName);
+			r.start();		
+		}, 3000);
+	}
 }	
 
 
 class RegularRound extends Round {
-	constructor(players, starter) {
-		super(players, starter);
+	constructor(starter) {
+		super(starter);
 	}	
 	
 	start() {
 		this.starter.socket.emit('yourTurn');
-		//this.starter.socket.broadcast.emit('bc_start_game', this.starter.playerName);		
 	}	
+
+	end(){
+		// remove all cards other than trump or playedSuit
+		let cardsFiltered = this.cardsPlayed.filter(c => ( c.card.suit == this.cardsPlayed[0].card.suit || 
+														   c.card.suit == m.getCurrentGame().trumpcard.suit ));
+
+		// remove all duplicates
+		cardsFiltered = cardsFiltered.reduce((arr, item) => {
+			let exists = !!arr.find(c => c.card.id === item.card.id);
+			if(!exists){
+				arr.push(item);
+			}
+			return arr;
+		}, []);
+				
+		// trump value is higher
+		let c = [];
+		for (let i = 0; i < cardsFiltered.length; i++) {
+			let value = cardsFiltered[i].card.value;
+			if (cardsFiltered[i].card.suit == m.getCurrentGame().trumpcard.suit) {
+				value = value + 12;
+			};
+			c.push({player: cardsFiltered[i].player, value: value});
+		}	
+		
+		// highest value wins	
+		c.sort(function(a, b){return b.value-a.value});
+		let winner = c[0].player;
+		let total = super.getCardsValue(this.cardsPlayed);
+		console.log(winner.playerName + ' gets ' + total + ' points!');
+		winner.score += total;
+		winner.socket.emit('updateScore', winner.score);
+		
+		for (let i = 0; i < this.cardsPlayed.length; i++) {
+			winner.wonCards.push(this.cardsPlayed[i].card);	
+		}
+		
+		if (winner.score >= score_to_win) {
+			super.endGame(winner);
+		}else{
+			setTimeout(function() {
+				// draw Card, first winner
+				winner.hand.push(m.getCurrentGame().deck.drawCard());	
+				winner.socket.emit('updateHand', winner.hand);	
+				// now everybody else in correct order
+				let player = helper.getNextPlayer(winner);
+				for (let i = 1; i < players.length; i++) {
+					player.hand.push(m.getCurrentGame().deck.drawCard());	
+					player.socket.emit('updateHand', player.hand);	
+					player = helper.getNextPlayer(player);
+				}
+			
+				// start new round		
+				io.sockets.emit('newRound',winner.playerName);
+				let r;
+				if (m.getCurrentGame().deck.cards.length > 0){
+					r = new RegularRound(winner);
+				}else{
+					r = new LastRound(winner);
+					io.sockets.emit('lastRounds', m.getCurrentGame().trumpcard.suit);
+				}
+				m.getCurrentGame().rounds.push(r);
+			
+				r.start();		
+			}, 3000);
+		}	
+
+		console.log('Standings');
+		for (let i = 0; i < players.length; i++) {
+			console.log(players[i].playerName + ': ' + players[i].score);  
+		}
+	}
 }	
 
 
 class LastRound extends Round {
-	constructor(players, starter) {
-		super(players, starter);
+	constructor(starter) {
+		super(starter);
 		
 	}	
 	
 	start() {
-		
+		this.starter.socket.emit('yourTurnLast');
 	}	
+	
+	end(){
+		// remove all cards other than trump or playedSuit
+		let cardsFiltered = this.cardsPlayed.filter(c => ( c.card.suit == this.cardsPlayed[0].card.suit || 
+													       c.card.suit == m.getCurrentGame().trumpcard.suit ));
+	
+		// remove all duplicates
+		cardsFiltered = cardsFiltered.reduce((arr, item) => {
+			let exists = !!arr.find(c => c.card.id === item.card.id);
+			if(!exists){
+				arr.push(item);
+			}
+			return arr;
+		}, []);
+
+		// trump value is higher 
+		let c = [];
+		for (let i = 0; i < cardsFiltered.length; i++) {
+			let value = cardsFiltered[i].card.value;
+			if (cardsFiltered[i].card.suit == m.getCurrentGame().trumpcard.suit) {
+				value = value + 12; // 12 because trump7 beats non-trump ace
+			};
+			c.push({player: cardsFiltered[i].player, value: value});
+		}	
+		
+		// highest value wins	
+		c.sort(function(a, b){return b.value-a.value});
+		let winner = c[0].player;
+		let total = super.getCardsValue(this.cardsPlayed);
+		console.log(winner.playerName + ' gets ' + total + ' points!');
+		winner.score += total;
+		winner.socket.emit('updateScore', winner.score);
+		
+		for (let i = 0; i < this.cardsPlayed.length; i++) {
+			winner.wonCards.push(this.cardsPlayed[i].card);	
+		}
+
+		if (winner.score >= score_to_win) {
+			super.endGame(winner);
+		}else{
+			if(winner.hand.length == 0){
+				// no more cards, player with most points wins
+				let players = m.getCurrentGame().players;
+				players.sort((a, b) => (a.score < b.score) ? 1 : -1)
+				super.endGame(players[0]);
+			}else{
+				setTimeout(function() {
+					// start new round		
+					let r = new LastRound(winner);
+					m.getCurrentGame().rounds.push(r);
+					
+					io.sockets.emit('newRound',winner.playerName);
+					r.start();		
+				}, 3000);
+			}
+		}	
+		
+		console.log('Standings');
+		for (let i = 0; i < players.length; i++) {
+			console.log(players[i].playerName + ': ' + players[i].score);  
+		}		
+
+	}		
 }
 
 module.exports = { Round: RegularRound, FirstRound: FirstRound, LastRound: LastRound };

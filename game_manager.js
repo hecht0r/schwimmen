@@ -1,20 +1,25 @@
 const socketio = require("socket.io");
 const player = require('./classes/player.js');
 const match = require('./classes/match.js');
-const deck = require('./classes/deck.js');
 const round = require('./classes/round.js');
+const deck = require('./classes/deck.js');
+const c = require('./classes/card.js');
+const helper = require('./helpers.js');
+const players_max = 4;
 
-var m;
+global.score_to_win = 101;
+global.m;
 players = [];
-var	d = new deck();
+let	d = new deck();
 d.createDeck();
+
 
 module.exports.listen = function(app) {
 	io = socketio.listen(app);
 	io.on('connection', function(socket) {
 
 		socket.on('setUsername', function(data) {
-			console.log(data + ' connected');
+			console.log(`${data} connected`);
 			setUsername(socket, data);
 		});
 		
@@ -22,192 +27,19 @@ module.exports.listen = function(app) {
 			validateAction(socket, data);
 		});	
 
-		socket.on('disconnect', function (socket) {
-			players.splice(players.indexOf(findPlayerById(socket.id)),1);
-			console.log(socket.username + ' disconnected');
+		socket.on('disconnect', function () {
+			// if our player was part of the game, we kick him from players
+			if (players.indexOf(helper.findPlayerById(socket.id)) > -1 ){
+				players.splice(players.indexOf(helper.findPlayerById(socket.id)),1);
+				console.log(`Anzahl Spieler: ${players.length}`)
+				console.log(`${socket.username} disconnected`);
+			}
 		});
 	});
 	return io;
-};
-
-function findPlayerById(socketId) {
-	for (let i = 0; i < players.length; i++) {
-		if (players[i].socket.id === socketId) {
-			return players[i];
-		}
-	}
-	return false;
 }
 
-function setUsername(socket, username) {
-	//if(users.indexOf(data) > -1) {
-	//   socket.emit('userExists', data + ' username is taken! Try some other username.');
-	//}else {
-	socket.username = username;
-	players.push(new player(socket));
-	socket.emit('userSet', {username: username});
-
-	if (players.length == 3){
-		setTimeout(function() {
-			m = new match(players);
-			m.startGame();
-		}, 1000);
-	}	 
-	//}
-}
-
-function getNextPlayer(player) {
-	let index = players.indexOf(player);
-	if (index == players.length-1){
-		index = -1;
-	}
-	return players[index + 1];
-};
-    
-function endRound(cards) {
-	// get total value of current round
-	let total = 0
-	for (let i = 0; i < cards.length; i++) {
-		total += cards[i].card.value;
-	}
-
-	// remove all non trump and non playedSuit cards
-	let playedSuit = cards[0].card.suit;
-	let cardsFiltered = cards.filter(c => ( c.card.suit == playedSuit || c.card.suit == m.getCurrentGame().trumpcard.suit ));
-
-	// remove all duplicates
-	cardsFiltered = cardsFiltered.reduce((arr, item) => {
-		let exists = !!arr.find(c => c.card.id === item.card.id);
-		if(!exists){
-			arr.push(item);
-		}
-		return arr;
-	}, []);
-	
-	
-	// trump value is higher
-	let c = [];
-	for (let i = 0; i < cardsFiltered.length; i++) {
-		let value = cardsFiltered[i].card.value;
-		if (cardsFiltered[i].card.suit == m.getCurrentGame().trumpcard.suit) {
-			value = value + 12;
-		};
-		c.push({player: cardsFiltered[i].player, value: value});
-	}	
-	
-	// highest value wins	
-	c.sort(function(a, b){return b.value-a.value});
-	let winner = c[0].player;
-	console.log(winner.playerName + ' gets ' + total + ' points!');
-	winner.score += total;
-	winner.socket.emit('updateScore', winner.score);
-	
-	for (let i = 0; i < cards.length; i++) {
-		winner.wonCards.push(cards[i].card);	
-	}
-	
-	if (winner.score > 100) {
-		endGame();
-	}else{
-		setTimeout(function() {
-			// start new round		
-			let r = new round.Round(players, winner);
-			m.getCurrentGame().rounds.push(r);
-			
-			// draw Card, first winner
-			console.log(m.getCurrentGame().deck.cards.slice(0,3));
-			console.log(m.getCurrentGame().deck.cards.length);
-			winner.hand.push(m.getCurrentGame().deck.drawCard());	
-			winner.socket.emit('updateHand', winner.hand);	
-			// now everybody else
-			let player = getNextPlayer(winner);
-			for (let i = 1; i < players.length; i++) {
-				console.log(player.playerName);
-				player.hand.push(m.getCurrentGame().deck.drawCard());	
-				player.socket.emit('updateHand', player.hand);	
-				player = getNextPlayer(player);
-			}	
-				
-			io.sockets.emit('newRound');
-			r.start();		
-		}, 3000);
-		
-	}	
-	console.log('Standings');
-	for (let i = 0; i < players.length; i++) {
-		console.log(players[i].playerName + ': ' + players[i].score);  
-	}
-};
-
-
-function playCard(socket, card) {
-	let r = m.getCurrentGame().getCurrentRound();
-	let player = findPlayerById(socket.id);
-	r.cardsPlayed.push({player: player, card: card});
-	socket.emit('cardPlayed', {player: socket.username, card: card});
-	socket.emit('updateHand', removeCardFromHand(player.hand, card));	
-	socket.broadcast.emit('cardPlayed', {player: socket.username, card: card});
-	
-	if (r.cardsPlayed.length == r.players.length) {
-		endRound(r.cardsPlayed);	
-	}else{
-		getNextPlayer(player).socket.emit('yourTurn');
-	}
-}	
-
-function melding(socket, card) {
-	let g = m.getCurrentGame();
-	let player = findPlayerById(socket.id);
-	if ((player.hand.findIndex(card => card.id === card.suit + 'k')) &&
-	    (player.hand.findIndex(card => card.id === card.suit + 'o')) &&
-	    (player.meldedSuits.indexOf(card.suit) == -1) && (player.wonCards.length > 0)){
-
-		let bonus;
-		if (card.suit == g.trumpcard.suit) {
-			bonus = 40;
-		}else{
-			bonus = 20;
-		}
-		player.score += bonus;
-		player.meldedSuits.push(card.suit);
-		console.log(player.playerName + ' melds ' + bonus);
-		if (player.score > 100) {
-			endGame();
-		}
-		socket.emit('updateScore', player.score);
-		socket.emit('melded', card.suit);		
-		socket.emit('yourTurn');		
-	}else{
-		socket.emit('invalidCard');
-	};	
-}
-
-function endGame() {
-	console.log('Ende');
-	setTimeout(function() {
-		m.startGame();
-	}, 3000);
-}
-
-function getTrumpcard(socket, card) {
-	let g = m.getCurrentGame();
-	let player = findPlayerById(socket.id);
-	
-	// check if 7 trump was chosen and player already has won cards 
-	if ((card.suit == g.trumpcard.suit) && (card.value == 0) && 
-		(g.trumpcard.value > 0) 		&& (player.wonCards.length > 0)){
-		
-		player.hand.push(g.trumpcard);
-		removeCardFromHand(player.hand, card);
-		g.trumpcard = card;
-		socket.emit('updateHand', player.hand);	
-		socket.emit('yourTurn');		
-		io.sockets.emit('updateTrump', g.trumpcard);
-	}else{
-		socket.emit('invalidCard');
-	}
-}	
-	
+  
 function removeCardFromHand	(cards, card) {
 	// find given card and remove it from given cards
 	cards.splice(cards.findIndex(c => c.id == card.id), 1 );
@@ -216,7 +48,6 @@ function removeCardFromHand	(cards, card) {
 
 function validateAction(socket, data) {
 	let playedCard = d.getCardById(data.card);
-	let g = m.getCurrentGame();
 	switch (data.action) {
 		case "playCard":
 			playCard(socket, playedCard);
@@ -228,22 +59,171 @@ function validateAction(socket, data) {
 			getTrumpcard(socket, playedCard);
 			break;
 		case "forfeit":
+			forfeit(socket);
 			break;
 		case "higher":
-			if ((playedCard.suit == g.trumpcard.suit) ||
-			    (playedCard.rank == "ass")) {
-				socket.emit('invalidCard');
-			}else{
-				playCard(socket, playedCard);
-			}
+			higher(socket, playedCard, data.action);
 			break;
 		case "secondAce":
-			if ((playedCard.suit == g.trumpcard.suit) ||
-				(playedCard.rank !== "ass")) {
-				socket.emit('invalidCard');
-			}else{
-				playCard(socket, playedCard);
-			}
+			secondAce(socket, playedCard, data.action);
+			break;
+		case "playCardLast":
+			playCardLast(socket, playedCard);
 			break;
 	}
+}
+
+function setUsername(socket, username) {
+	//if(players.indexOf(username) > -1) {
+	//   socket.emit('userExists', data + ' username is taken! Try some other username.');
+	//}else {
+	socket.username = username;
+	players.push(new player(socket));
+	console.log(`Anzahl Spieler: ${players.length}`)
+	socket.emit('userSet', {username: username});
+
+	if (players.length == players_max){
+		setTimeout(function() {
+			m = new match(players);
+			m.startGame();
+		}, 3000);
+	}	 
+	//}
+}
+
+// actions
+function playCard(socket, card) {
+	// append card to round.playedCards and give info to all players clients
+	// also update hand without playedCard
+	let g = m.getCurrentGame();
+	let r = g.getCurrentRound();
+	let player = helper.findPlayerById(socket.id);
+	r.cardsPlayed.push({player: player, card: card});
+	
+	// dont show card in first round to others
+	if (g.rounds.length > 1){
+		io.sockets.emit('cardPlayed', {player: socket.username, card: card});
+	}else{
+		io.sockets.emit('cardPlayed', {player: socket.username});
+	};	
+	
+	socket.emit('updateHand', removeCardFromHand(player.hand, card));	
+	
+	// if everybody has played a card, we end this round
+	// if not, tell next players client to play a card
+	if (r.cardsPlayed.length == m.players.length) {
+		r.end();
+	}else{
+		if (r instanceof round.LastRound){
+			helper.getNextPlayer(player).socket.emit('yourTurnLast')
+		}else{
+			helper.getNextPlayer(player).socket.emit('yourTurn');
+		}
+	};
 }	
+
+function melding(socket, card) {
+	let g = m.getCurrentGame();
+	let player = helper.findPlayerById(socket.id);
+	
+	// possible if player helds both koenig and ober of the chosen suit
+	// and he has not yet melded this suit and he has already won a round
+	if (player.hand.filter(x => x.id === new c(card.suit, 'Koenig', 4).id).length > 0	&&
+		player.hand.filter(x => x.id === new c(card.suit, 'Ober', 3).id).length	> 0		&&
+		player.meldedSuits.indexOf(card.suit) == -1 &&  player.wonCards.length > 0 ) {
+	
+		let bonus;
+		if (card.suit == g.trumpcard.suit) {
+			bonus = 40;
+		}else{
+			bonus = 20;
+		}
+		player.score += bonus;
+		player.meldedSuits.push(card.suit);
+		console.log(`${player.playerName} melds ${bonus}`);
+		if (player.score >= score_to_win) { 
+			endGame(player);
+		}
+		socket.emit('updateScore', player.score);
+		io.sockets.emit('melded', {player: socket.username, suit: card.suit});
+		socket.emit('yourTurn');		
+	}else{
+		if(g.getCurrentRound() instanceof round.LastRound){
+			socket.emit('invalidEnd');
+		}else{
+			socket.emit('invalidAction');
+		}
+	};	
+}
+
+function getTrumpcard(socket, card) {
+	let g = m.getCurrentGame();
+	let player = helper.findPlayerById(socket.id);
+	
+	// check if 7 trump was chosen and player already has won cards 
+	if ((card.suit == g.trumpcard.suit) && (card.value == 0) && 
+		(g.trumpcard.value > 0) 		&& (player.wonCards.length > 0)){
+		
+		// we change trumpcard and playedCard and inform all clients about the new trumpcard
+		player.hand.push(g.trumpcard);
+		removeCardFromHand(player.hand, card);
+		g.trumpcard = card;
+		g.deck.cards.splice(-1,1);
+		g.deck.cards.push(card);
+		socket.emit('updateHand', player.hand);	
+		socket.emit('yourTurn');		
+		io.sockets.emit('updateTrumpcard', {player: socket.username, trumpcard: g.trumpcard});
+	}else{
+		socket.emit('invalidAction');
+	}
+}	
+
+function forfeit(socket) {
+	let player = helper.findPlayerById(socket.id);
+
+	// if a player Starts with three sevens, he can give back his hand 
+	// the game will be restarted
+	if (player.hand.filter(card => [0].indexOf(card.value) != -1).length > 2){
+		let r = m.getCurrentGame().getCurrentRound();
+		r.replayGame();
+	}else{
+		socket.emit('invalidStart');
+	}
+}	
+
+function higher(socket, card, action){
+	let g = m.getCurrentGame();
+	// no trump & no aces 
+	if (card.suit == g.trumpcard.suit || card.rank == "Ass") {
+		socket.emit('invalidStart');
+	}else{
+		g.getCurrentRound().action = action;
+		socket.broadcast.emit('firstRoundAction', 'Höher sticht')
+		playCard(socket, card);
+	}
+}
+
+function secondAce(socket, card, action){
+	let g = m.getCurrentGame();
+	// no trump, only aces but not if the player has it twice on his hand
+	if (card.suit == g.trumpcard.suit || card.rank !== "Ass" ||
+		helper.findPlayerById(socket.id).hand.filter(c => [card.id].indexOf(c.id) != -1).length > 1) {
+		socket.emit('invalidStart');
+	}else{
+		g.getCurrentRound().action = action;
+		socket.broadcast.emit('firstRoundAction', 'Zweites Ass')
+		playCard(socket, card);
+	}
+}
+
+function playCardLast(socket, card){
+	let g = m.getCurrentGame();
+	let r = g.getCurrentRound();
+
+	if (r.cardsPlayed.length > 0 && r.cardsPlayed[0].card.suit !== card.suit &&
+		helper.findPlayerById(socket.id).hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(card.suit) != -1).length > 0) {
+		socket.emit('invalidEnd');
+	}else{
+		playCard(socket, card);
+	}
+}

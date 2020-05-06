@@ -6,8 +6,8 @@ class Deck {
 	}
 
 	createDeck() {
-		let suits = ['eichel', 'schippen', 'bollen', 'herz'];
-		let ranks = ['ass', 'zehn', 'koenig', 'ober', 'unter', 'sieben'];
+		let suits = ['Eichel', 'Schippen', 'Bollen', 'Herz'];
+		let ranks = ['Ass', 'Zehn', 'Koenig', 'Ober', 'Unter', 'Sieben'];
 		let values = [11, 10, 4, 3, 2, 0];
 		for (let i = 0; i < suits.length; i++) {
 			for (let j = 0; j < ranks.length; j++) {

@@ -8,13 +8,19 @@
 		<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/main.js"></script>
-		<input id = "name" type = "text" name = "name" value = "" placeholder = "Enter your name!">
-		<button type = "button" name = "button" onclick = "setUsername()">Login</button>
+		<div id="login">
+			<input id = "name" type = "text" name = "name" value = "" placeholder = "Enter your name!">
+			<button type = "button" name = "button" onclick = "setUsername()">Login</button>
+		</div>			
+		<div id="board" class="board"></div>
 		<div id="trumpcard" class="trumpcard"></div>
-		<div id="myScore" class="myScore">0</div>
+		<div id="myScore" class="myScore"></div>
 		<div id="playedCards" class="playedCards"></div>
 		<div id="myCards" class="myCards"></div>
 		<div id="myMeldings" class="myMeldings"></div>
 		<div id="myActions" class="myActions"></div>
+		<div id="matchLog" class="matchLog"></div>
+		<div id="gameLog" class="gameLog"></div>
+		<div id="errorLog" class="errorLog"></div>
 	</body>
 </html>

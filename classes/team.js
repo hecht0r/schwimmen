@@ -1,4 +1,4 @@
-class Player {
+class Team {
     constructor() {
         this.players = [];
 		this.points = 0;
@@ -7,4 +7,4 @@ class Player {
     }
 }
 
-module.exports = Player;
+module.exports = Team;
