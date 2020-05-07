@@ -4,7 +4,6 @@
   "description": "gaigel-beta",
   "main": "app.js",
   "scripts": {
-    "test": "gaigel187",
     "start": "node app.js"
   },
   "dependencies": {

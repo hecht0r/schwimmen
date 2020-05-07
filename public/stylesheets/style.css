@@ -1,7 +1,9 @@
 html *{
 	font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
-.playercard {
+
+/* images */
+img.card {
 	margin: 0 0,9%;
 	border:2px solid transparent;
 	border-radius: 7%;
@@ -9,11 +11,23 @@ html *{
 	height: auto;  */
 }
 
-.actionbutton {
-	margin: 2em;
+img.talon {
+	margin: 0 0,9%;
+	border:2px solid transparent;
+	border-radius: 7%;
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 
-.board {
+.actionbutton {
+	margin: 2em 1em;
+}
+
+/* divs */
+div.board {
 	background-image: url("/images/background.png");
 	background-position: center;
 	border-radius: 10%;
@@ -24,14 +38,23 @@ html *{
 	height: 90%;
 }
 
-.myScore {
+div.myScore {
 	position: fixed;
 	top: 1%;
 	left: 95%;
 	font-size: 30px;
 }
 
-.trumpcard {
+div.talon{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -75%);
+	width: 135px;
+	height: 230px;
+}
+
+div.trumpcard {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -40,7 +63,7 @@ html *{
 	height: 230px;
 }
 
-.playedCards {
+div.playedCards {
 	position: fixed;
 	top: 20%;
 	left: 50%;
@@ -49,7 +72,7 @@ html *{
 	height: 250px; 
 }
 
-.myCards {
+div.myCards {
 	position: fixed;
 	top: 80%;
 	left: 50%;
@@ -60,7 +83,7 @@ html *{
 	height: 230px;   
 }
 
-.myMeldings {
+div.myMeldings {
 	position: fixed;
 	top: 65%;
 	left: 35%;
@@ -69,24 +92,24 @@ html *{
 	height: 30px;
 }
 
-.myActions {
+div.myActions {
 	position: fixed;
 	top: 93%;
 	left: 25%;
-	width: 25%;
+	width: 20%;
 	height: 5%;
 }
 
-.errorLog {
+div.errorLog {
 	position: fixed;
 	top: 96%;
-	left: 55%;
-	width: 25%;
+	left: 50%;
+	width: 40%;
 	height: 5%;
 	color: red;
 }
 
-.gameLog {
+div.gameLog {
 	position: fixed;
 	top: 5%;
 	left: 1%;
@@ -94,7 +117,7 @@ html *{
 	height: 80%;
 }
 
-.matchLog {
+div.matchLog {
 	position: fixed;
 	top: 5%;
 	left: 82%;

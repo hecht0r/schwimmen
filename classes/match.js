@@ -6,17 +6,18 @@ module.exports = class Match{
 		this.games = [];	
 
 		let scoreBoard =[];
-		for (let i = 0; i < players.length; i++) {
-			scoreBoard.push({player: players[i].playerName, score: players[i].wins});
+		for (let i = 0; i < this.players.length; i++) {
+			players[i].wins = 0;
+			scoreBoard.push({player: this.players[i].socket.username, score: this.players[i].wins});
 		}
 		io.sockets.emit('updateScoreboard',scoreBoard);
 
 	}
 	
-	startGame() {
-		let g = new game(players);
+	startGame(starter) {
+		let g = new game();
 		this.games.push(g);
-		g.start(this.players[Math.floor(Math.random() * this.players.length)]);	
+		g.start(starter);	
 	}
 	
 	getCurrentGame() {

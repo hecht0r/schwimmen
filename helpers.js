@@ -12,5 +12,5 @@ module.exports.getNextPlayer = function(player) {
 	if (index == m.players.length-1){
 		index = -1;
     }
-    return m.players[index + 1];
+	return m.players[index + 1];
 }

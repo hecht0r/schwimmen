@@ -5,7 +5,7 @@ const round = require('./classes/round.js');
 const deck = require('./classes/deck.js');
 const c = require('./classes/card.js');
 const helper = require('./helpers.js');
-const players_max = 4;
+const players_max = 2;
 
 global.score_to_win = 101;
 global.m;
@@ -33,6 +33,7 @@ module.exports.listen = function(app) {
 				players.splice(players.indexOf(helper.findPlayerById(socket.id)),1);
 				console.log(`Anzahl Spieler: ${players.length}`)
 				console.log(`${socket.username} disconnected`);
+				m = null;
 			}
 		});
 	});
@@ -87,7 +88,8 @@ function setUsername(socket, username) {
 		if (players.length == players_max){
 			setTimeout(function() {
 				m = new match(players);
-				m.startGame();
+				m.startGame(players[Math.floor(Math.random() * players.length)]);
+			
 			}, 3000);
 		}
 	}
@@ -142,18 +144,20 @@ function melding(socket, card) {
 		}
 		player.score += bonus;
 		player.meldedSuits.push(card.suit);
-		console.log(`${player.playerName} melds ${bonus}`);
-		if (player.score >= score_to_win) { 
-			endGame(player);
-		}
+		console.log(`${player.socket.username} melds ${bonus}`);
 		socket.emit('updateScore', player.score);
 		io.sockets.emit('melded', {player: socket.username, suit: card.suit});
 		socket.emit('yourTurn');		
+
+		if (player.score >= score_to_win) { 
+			g.getCurrentRound().endGame(player);
+		}
+
 	}else{
 		if(g.getCurrentRound() instanceof round.LastRound){
-			socket.emit('invalidEnd');
+			socket.emit('invalidEnd','Melden nicht möglich');
 		}else{
-			socket.emit('invalidAction');
+			socket.emit('invalidAction','Melden nicht möglich');
 		}
 	};	
 }
@@ -176,7 +180,7 @@ function getTrumpcard(socket, card) {
 		socket.emit('yourTurn');		
 		io.sockets.emit('updateTrumpcard', {player: socket.username, trumpcard: g.trumpcard});
 	}else{
-		socket.emit('invalidAction');
+		socket.emit('invalidAction','Trumpfkarte holen nicht möglich.');
 	}
 }	
 
@@ -189,7 +193,7 @@ function forfeit(socket) {
 		let r = m.getCurrentGame().getCurrentRound();
 		r.replayGame();
 	}else{
-		socket.emit('invalidStart');
+		socket.emit('invalidStart', 'Dafür musst Du drei 7er haben.');
 	}
 }	
 
@@ -197,7 +201,7 @@ function higher(socket, card, action){
 	let g = m.getCurrentGame();
 	// no trump & no aces 
 	if (card.suit == g.trumpcard.suit || card.rank == "Ass") {
-		socket.emit('invalidStart');
+		socket.emit('invalidStart', 'Trumpf oder Ass darf nicht gespielt werden.');
 	}else{
 		g.getCurrentRound().action = action;
 		socket.broadcast.emit('firstRoundAction', 'Höher sticht')
@@ -210,7 +214,7 @@ function secondAce(socket, card, action){
 	// no trump, only aces but not if the player has it twice on his hand
 	if (card.suit == g.trumpcard.suit || card.rank !== "Ass" ||
 		helper.findPlayerById(socket.id).hand.filter(c => [card.id].indexOf(c.id) != -1).length > 1) {
-		socket.emit('invalidStart');
+		socket.emit('invalidStart', 'Es dürfen nur Asse gepielt werden. Trumpf oder doppelte Asse dürfen nicht gespielt werden.');
 	}else{
 		g.getCurrentRound().action = action;
 		socket.broadcast.emit('firstRoundAction', 'Zweites Ass')
@@ -224,7 +228,7 @@ function playCardLast(socket, card){
 
 	if (r.cardsPlayed.length > 0 && r.cardsPlayed[0].card.suit !== card.suit &&
 		helper.findPlayerById(socket.id).hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(card.suit) != -1).length > 0) {
-		socket.emit('invalidEnd');
+		socket.emit('invalidEnd','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
 	}else{
 		playCard(socket, card);
 	}

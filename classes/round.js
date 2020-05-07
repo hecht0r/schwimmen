@@ -10,12 +10,12 @@ class Round {
 		m.getCurrentGame().winner = winner;
 		winner.wins += 1;
 		let s = m.getCurrentGame().starter; 
-		console.log(`${winner.playerName} gewinnt!`);
-		io.sockets.emit('gameOver', winner.playerName);
+		console.log(`${winner.socket.username} gewinnt!`);
+		io.sockets.emit('gameOver', winner.socket.username);
 		
 		let scoreBoard =[];
-		for (let i = 0; i < players.length; i++) {
-			scoreBoard.push({player: players[i].playerName, score: players[i].wins});
+		for (let i = 0; i < m.players.length; i++) {
+			scoreBoard.push({player: m.players[i].socket.username, score: m.players[i].wins});
 		}
 		io.sockets.emit('updateScoreboard',scoreBoard);
 		
@@ -56,7 +56,7 @@ class FirstRound extends Round {
 		// first show all cards
 		let cards = [];
 		for (let i = 0; i < this.cardsPlayed.length; i++){
-			cards.push({player: this.cardsPlayed[i].player.playerName, 
+			cards.push({player: this.cardsPlayed[i].player.socket.username,
 						card:  this.cardsPlayed[i].card});
 		}
 		io.sockets.emit('showCards', cards);
@@ -97,7 +97,7 @@ class FirstRound extends Round {
 				break;
 		}
 		let total = super.getCardsValue(this.cardsPlayed);
-		console.log(winner.playerName + ' gets ' + total + ' points!');
+		console.log(winner.socket.username + ' gets ' + total + ' points!');
 		winner.score += total;
 		winner.socket.emit('updateScore', winner.score);
 
@@ -112,7 +112,7 @@ class FirstRound extends Round {
 			winner.socket.emit('updateHand', winner.hand);	
 			// now everybody else in correct order
 			let player = helper.getNextPlayer(winner);
-			for (let i = 1; i < players.length; i++) {
+			for (let i = 1; i < m.players.length; i++) {
 				player.hand.push(m.getCurrentGame().deck.drawCard());	
 				player.socket.emit('updateHand', player.hand);	
 				player = helper.getNextPlayer(player);
@@ -120,7 +120,7 @@ class FirstRound extends Round {
 			// start new round		
 			let r = new RegularRound(winner);
 			m.getCurrentGame().rounds.push(r);
-			io.sockets.emit('newRound',winner.playerName);	
+			io.sockets.emit('newRound',winner.socket.username);	
 			r.start();		
 		}, 3000);
 	}
@@ -164,7 +164,7 @@ class RegularRound extends Round {
 		c.sort(function(a, b){return b.value-a.value});
 		let winner = c[0].player;
 		let total = super.getCardsValue(this.cardsPlayed);
-		console.log(winner.playerName + ' gets ' + total + ' points!');
+		console.log(winner.socket.username + ' gets ' + total + ' points!');
 		winner.score += total;
 		winner.socket.emit('updateScore', winner.score);
 		
@@ -181,13 +181,14 @@ class RegularRound extends Round {
 				winner.socket.emit('updateHand', winner.hand);	
 				// now everybody else in correct order
 				let player = helper.getNextPlayer(winner);
-				for (let i = 1; i < players.length; i++) {
+				for (let i = 1; i < m.players.length; i++) {
 					player.hand.push(m.getCurrentGame().deck.drawCard());	
 					player.socket.emit('updateHand', player.hand);	
 					player = helper.getNextPlayer(player);
 				}
 			
 				// start new round		
+				io.sockets.emit('newRound',winner.socket.username);
 				let r;
 				if (m.getCurrentGame().deck.cards.length > 0){
 					r = new RegularRound(winner);
@@ -196,14 +197,13 @@ class RegularRound extends Round {
 					io.sockets.emit('lastRounds', m.getCurrentGame().trumpcard.suit);
 				}
 				m.getCurrentGame().rounds.push(r);
-				io.sockets.emit('newRound',winner.playerName);
 				r.start();		
 			}, 3000);
 		}	
 
 		console.log('Standings');
-		for (let i = 0; i < players.length; i++) {
-			console.log(players[i].playerName + ': ' + players[i].score);  
+		for (let i = 0; i < m.players.length; i++) {
+			console.log(m.players[i].socket.username + ': ' + m.players[i].score);  
 		}
 	}
 }	
@@ -247,7 +247,7 @@ class LastRound extends Round {
 		c.sort(function(a, b){return b.value-a.value});
 		let winner = c[0].player;
 		let total = super.getCardsValue(this.cardsPlayed);
-		console.log(winner.playerName + ' gets ' + total + ' points!');
+		console.log(winner.socket.username + ' gets ' + total + ' points!');
 		winner.score += total;
 		winner.socket.emit('updateScore', winner.score);
 		
@@ -260,7 +260,7 @@ class LastRound extends Round {
 		}else{
 			if(winner.hand.length == 0){
 				// no more cards, player with most points wins
-				let players = m.getCurrentGame().players;
+				let players = m.players;
 				players.sort((a, b) => (a.score < b.score) ? 1 : -1)
 				super.endGame(players[0]);
 			}else{
@@ -268,15 +268,15 @@ class LastRound extends Round {
 					// start new round		
 					let r = new LastRound(winner);
 					m.getCurrentGame().rounds.push(r);					
-					io.sockets.emit('newRound',winner.playerName);
+					io.sockets.emit('newRound',winner.socket.username);
 					r.start();		
 				}, 3000);
 			}
 		}	
 		
 		console.log('Standings');
-		for (let i = 0; i < players.length; i++) {
-			console.log(players[i].playerName + ': ' + players[i].score);  
+		for (let i = 0; i < m.players.length; i++) {
+			console.log(m.players[i].socket.username + ': ' + m.players[i].score);  
 		}		
 
 	}		

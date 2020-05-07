@@ -48,7 +48,7 @@ function addActions(type) {
 	let actions = [];
 	switch(type){
 		case "start":
-			actions = [ /* { action: "forfeit", title: "Drei 7er" }, */ 
+			actions = [/*{ action: "forfeit", title: "Karten zurückgeben" },  */
          		       { action: "higher", title: "Höher" }, 
                		   { action: "secondAce", title: "Zweites Ass" }]; 
 			break;
@@ -70,6 +70,7 @@ function addActions(type) {
 		btn.addEventListener('click', function () {
 			validateAction(actions[i].action); 
 		});
+		let myActions = document.getElementById("myActions");
 		myActions.appendChild(btn);
 	}
 }	
@@ -91,6 +92,7 @@ socket.on('userJoined', function(data) {
 socket.on('newGame', function(data) {
 	clear("playedCards");
 	clear("trumpcard");
+	clear("talon");
 	clear("myMeldings");
 	clear("myScore");
 	writeLog("myScore", '0');
@@ -99,8 +101,12 @@ socket.on('newGame', function(data) {
 });
 
 socket.on('gameOver', function(data) {
-	writeLog("gameLog", data + ' gewinnt das Spiel');
-});
+	let text = document.createElement("b");
+	text.innerHTML = data + ' gewinnt das Spiel';
+	let gameLog = document.getElementById("gameLog");
+	gameLog.appendChild(text);
+	gameLog.appendChild(document.createElement("br"));
+	});
 
 socket.on('restart', function() {
 	writeLog("gameLog", 'Spiel wird neu gestartet');
@@ -122,9 +128,10 @@ socket.on('updateHand', function(data) {
 	clear("myCards");
 	for (let i = 0; i < data.length; i++) {
 		let card = document.createElement('img');
-		card.setAttribute('class','playercard');
+		card.setAttribute('class','card');
 		card.setAttribute('src',`/images/${data[i].id}.png`);
 		card.setAttribute('onclick','selectCard(this,"' + data[i].id + '")');
+		let myCards = document.getElementById("myCards");
 		myCards.appendChild(card);
 	};
 });
@@ -146,6 +153,7 @@ socket.on('restartGame', function(data) {
 
 socket.on('lastRounds', function(data) {
 	clear("trumpcard");
+	clear("talon");
 	writeLog("gameLog", 'Farbe bedienen! Trumpf: ' + data);
 })
 
@@ -161,9 +169,9 @@ socket.on('yourTurnLast', function(data) {
 
 socket.on('melded', function(data) {
 	if(data.player == username){
-		let myMeldings = document.getElementById("myMeldings");
 		let suit = document.createElement('img');
 		suit.setAttribute('src',`/images/${data.suit}.png`);
+		let myMeldings = document.getElementById("myMeldings");
 		myMeldings.appendChild(suit);
 	}else{
 		writeLog("gameLog", data.player + ' meldet ' + data.suit);
@@ -171,20 +179,20 @@ socket.on('melded', function(data) {
 	
 })
 
-socket.on('invalidAction', function() {
-	writeLog("errorLog", 'nope');
+socket.on('invalidAction', function(data) {
+	writeLog("errorLog", data);
 	actionCanBeSent = true;
 	addActions('regular');
 });
 
-socket.on('invalidStart', function() {
-	writeLog("errorLog", 'nope');
+socket.on('invalidStart', function(data) {
+	writeLog("errorLog", data);
 	actionCanBeSent = true;
 	addActions('start');
 });
 
-socket.on('invalidEnd', function() {
-	writeLog("errorLog", 'nope');
+socket.on('invalidEnd', function(data) {
+	writeLog("errorLog", data);
 	actionCanBeSent = true;
 	addActions('last');
 });
@@ -195,15 +203,22 @@ socket.on('updateTrumpcard', function(data) {
 	}
 	clear("trumpcard");
 	let card = document.createElement('img');
-	card.setAttribute('class','playercard');
+	card.setAttribute('class','card');
 	card.setAttribute('src',`/images/${data.trumpcard.id}.png`);
+	let trumpcard = document.getElementById("trumpcard");
 	trumpcard.appendChild(card);
+	
+	clear("talon");
+	card = document.createElement('img');
+	card.setAttribute('class','talon');
+	card.setAttribute('src','/images/back.png');
+	let talon = document.getElementById("talon");
+	talon.appendChild(card);
 });
 
 socket.on('cardPlayed', function(data) {
-	let playedCards = document.getElementById("playedCards");
 	let card = document.createElement('img');
-	card.setAttribute('class','playercard');
+	card.setAttribute('class','card');
 
 	let id;
 	if (data.card){
@@ -213,6 +228,7 @@ socket.on('cardPlayed', function(data) {
 	}
 	card.setAttribute('src',`/images/${id}.png`);
 	card.setAttribute('title',data.player);
+	let playedCards = document.getElementById("playedCards");
 	playedCards.appendChild(card);
 });
 
@@ -220,9 +236,10 @@ socket.on('showCards', function(data) {
 	clear("playedCards");
 	for (let i = 0; i < data.length; i++){
 		let card = document.createElement('img');
-		card.setAttribute('class','playercard');
+		card.setAttribute('class','card');
 		card.setAttribute('src',`/images/${data[i].card.id}.png`);
 		card.setAttribute('title',data[i].player);
+		let playedCards = document.getElementById("playedCards");
 		playedCards.appendChild(card);
 	}
 });
