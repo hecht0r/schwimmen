@@ -1,4 +1,4 @@
-class Card {
+module.exports = class  Card {
     constructor(suit, rank, value) {
         this.id = suit.substr(0,1) + rank.substr(0,1);
 		this.suit = suit;
@@ -6,7 +6,3 @@ class Card {
 		this.value = value;
     }
 }
-
-
-
-module.exports = Card;

@@ -1,6 +1,6 @@
 const card = require('./card.js');
 
-class Deck {
+module.exports = class Deck {
 	constructor() {
 		this.cards = [];   
 	}
@@ -36,5 +36,3 @@ class Deck {
 		return this.cards.filter(card => card.id === id)[0];
 	}	
 }
-
-module.exports = Deck;

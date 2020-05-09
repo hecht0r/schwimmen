@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Gaigel 0.1beta</title>
+		<title>Gaigel 0.2beta</title>
 		<link rel="stylesheet" href="stylesheets/style.css">
 	</head>
 	<body>
@@ -9,19 +9,21 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/main.js"></script>
 		<div id="login">
-			<input id = "name" type = "text" name = "name" value = "" placeholder = "Enter your name!">
+			<input id = "name" type = "text" placeholder = "Enter your name!">
 			<button type = "button" name = "button" onclick = "setUsername()">Login</button>
 		</div>			
+		<div id="settings" class="settings"></div>
 		<div id="board" class="board"></div>
 		<div id="trumpcard" class="trumpcard"></div>
 		<div id="talon" class="talon"></div>
 		<div id="myScore" class="myScore"></div>
 		<div id="playedCards" class="playedCards"></div>
 		<div id="myCards" class="myCards"></div>
-		<div id="myMeldings" class="myMeldings"></div>
+		<!-- <div id="myMeldings" class="myMeldings"></div> -->
 		<div id="myActions" class="myActions"></div>
-		<div id="matchLog" class="matchLog"></div>
-		<div id="gameLog" class="gameLog"></div>
+		<div id="matchLog" class="matchLog"><div class="logHeader">Spielstand</div></div>
+		<div id="gameLog" class="gameLog"><div class="logHeader">Aktuelles Spiel</div></div>
+		<div id="roundLog" class="roundLog"><div class="logHeader">Aktuelle Runde</div></div>
 		<div id="errorLog" class="errorLog"></div>
 	</body>
 </html>

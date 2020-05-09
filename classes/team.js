@@ -1,4 +1,4 @@
-class Team {
+module.exports = class Team {
     constructor() {
         this.players = [];
 		this.points = 0;
@@ -6,5 +6,3 @@ class Team {
 		this.meldedSuits = [];
     }
 }
-
-module.exports = Team;

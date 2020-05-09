@@ -2,7 +2,8 @@ let socket = io();
 var selectedCard;
 var actionCanBeSent = true;
 var username;
-			   
+var matchId;
+
 function setUsername() {
 	socket.emit('setUsername', $('#name').val());
 };
@@ -13,16 +14,29 @@ function writeLog(logID, data){
 	log.appendChild(document.createElement("br"));
 }
 
+function writeHeader(logID, data){
+	let log = document.getElementById(logID);
+	let header = document.createElement("div");
+	header.setAttribute('class','logHeader');
+	header.innerHTML = data;
+	log.appendChild(header);
+}
+
 function clear(divID){
 	let div = document.getElementById(divID);
 	div.innerHTML = '';
 }
 
-function validateAction(action) {
+function setSettings(){
+	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById("maxPlayers").valueAsNumber});
+	clear("settings");
+}
+
+function action(action) {
 	if((actionCanBeSent) && (selectedCard)) {
 		actionCanBeSent = false;
 		removeActions();
-		socket.emit('validateAction', { action: action, card: selectedCard });
+		socket.emit('action', { matchId: matchId, action: action, card: selectedCard });
 		selectedCard = false;
 		for (let i = 0; i < document.images.length; i++){
 			document.images[i].style.border = "2px solid transparent";
@@ -68,41 +82,70 @@ function addActions(type) {
 		btn.innerHTML = actions[i].title;
 		btn.className = 'actionbutton';
 		btn.addEventListener('click', function () {
-			validateAction(actions[i].action); 
+			action(actions[i].action); 
 		});
 		let myActions = document.getElementById("myActions");
 		myActions.appendChild(btn);
 	}
 }	
 
-socket.on('userExists', function(data) {
-	document.getElementById('error-container').innerHTML = data;
-});
-
 socket.on('userSet', function(data) {
 	clear("login");
 	document.body.innerHTML	+= 'Hello ' + data.username + '</br>';
 	username = data.username;
+	matchId = data.matchId;
+});
+
+socket.on('setSettings', function(data) {
+	clear("settings");
+	let input = document.createElement('input');
+	input.setAttribute('type', 'number');
+	input.setAttribute('id', 'maxPlayers');
+	input.setAttribute('min', 2);
+	input.setAttribute('max', 4);
+
+	let label = document.createElement("Label");
+    label.setAttribute("for",input);
+    label.innerHTML = 'Anzahl Spieler';
+		
+	let btn = document.createElement('button');
+	btn.innerHTML = 'Speichern';
+	btn.addEventListener('click', function () {
+		setSettings(); 
+	});
+
+	let settings = document.getElementById("settings");
+	settings.appendChild(label);
+	settings.appendChild(input);
+	settings.appendChild(btn);
 });
 
 socket.on('userJoined', function(data) {
-	writeLog("gameLog", data.username + ' betritt das Spiel. ' + data.count + ' Spieler verbunden.' );
+	writeLog("gameLog", data.username + ' betritt das Spiel. ' + data.count );
 });
 
 socket.on('newGame', function(data) {
 	clear("playedCards");
 	clear("trumpcard");
 	clear("talon");
-	clear("myMeldings");
+	// clear("myMeldings");
 	clear("myScore");
 	writeLog("myScore", '0');
 	clear("gameLog");
-	writeLog("gameLog", data + ' beginnt das Spiel');
+	writeHeader("gameLog","Aktuelles Spiel")
+	clear("roundLog");
+	writeHeader("roundLog","Aktuelle Runde");
+	writeLog("roundLog", data + ' beginnt das Spiel');
 });
 
 socket.on('gameOver', function(data) {
 	let text = document.createElement("b");
-	text.innerHTML = data + ' gewinnt das Spiel';
+	if (data.gigackel){
+		text.innerHTML = data.winner + ' gewinnt das Spiel mit Gigackel';
+	}else{
+		text.innerHTML = data.winner + ' gewinnt das Spiel';
+	}
+	
 	let gameLog = document.getElementById("gameLog");
 	gameLog.appendChild(text);
 	gameLog.appendChild(document.createElement("br"));
@@ -119,6 +162,7 @@ socket.on('updateScore', function(data) {
 
 socket.on('updateScoreboard', function(data) {
 	clear("matchLog");
+	writeHeader("matchLog","Spielstand")
 	for(let i = 0; i < data.length; i++){
 		writeLog("matchLog", data[i].player + ': ' + data[i].score);
 	} 
@@ -136,9 +180,15 @@ socket.on('updateHand', function(data) {
 	};
 });
 
-socket.on('newRound', function(data) {
+socket.on('roundOver', function(data) {
+	writeLog("roundLog", data + ' holt den Stich');
 	writeLog("gameLog", data + ' holt den Stich');
+});		
+
+socket.on('newRound', function(data) {
 	clear("playedCards");
+	clear("roundLog");
+	writeHeader("roundLog","Aktuelle Runde");
 });	
 
 socket.on('startGame', function(data) {
@@ -154,6 +204,7 @@ socket.on('restartGame', function(data) {
 socket.on('lastRounds', function(data) {
 	clear("trumpcard");
 	clear("talon");
+	writeLog("roundLog", 'Farbe bedienen! Trumpf: ' + data);
 	writeLog("gameLog", 'Farbe bedienen! Trumpf: ' + data);
 })
 
@@ -167,16 +218,19 @@ socket.on('yourTurnLast', function(data) {
 	addActions('last');
 })
 
+socket.on('nextPlayer', function(data) {
+	writeLog("roundLog", data + ' ist dran');
+});
+
 socket.on('melded', function(data) {
-	if(data.player == username){
-		let suit = document.createElement('img');
-		suit.setAttribute('src',`/images/${data.suit}.png`);
-		let myMeldings = document.getElementById("myMeldings");
-		myMeldings.appendChild(suit);
-	}else{
-		writeLog("gameLog", data.player + ' meldet ' + data.suit);
-	}
-	
+	// if(data.player == username){
+	// 	let suit = document.createElement('img');
+	// 	suit.setAttribute('src',`/images/${data.suit}.png`);
+	// 	let myMeldings = document.getElementById("myMeldings");
+	// 	myMeldings.appendChild(suit);
+	// }
+	writeLog("roundLog", data.player + ' meldet ' + data.suit);
+	writeLog("gameLog", data.player + ' meldet ' + data.suit);
 })
 
 socket.on('invalidAction', function(data) {
@@ -199,6 +253,7 @@ socket.on('invalidEnd', function(data) {
 
 socket.on('updateTrumpcard', function(data) {
 	if(data.player){
+		writeLog("roundLog", data.player + ' holt den Trumpf');
 		writeLog("gameLog", data.player + ' holt den Trumpf');
 	}
 	clear("trumpcard");
@@ -223,6 +278,7 @@ socket.on('cardPlayed', function(data) {
 	let id;
 	if (data.card){
 		id = data.card.id;
+		writeLog("roundLog", data.player + ' spielt ' + data.card.suit + ' ' + data.card.rank);
 	}else{
 		id = 'back';
 	}
@@ -230,6 +286,7 @@ socket.on('cardPlayed', function(data) {
 	card.setAttribute('title',data.player);
 	let playedCards = document.getElementById("playedCards");
 	playedCards.appendChild(card);
+
 });
 
 socket.on('showCards', function(data) {
@@ -239,13 +296,27 @@ socket.on('showCards', function(data) {
 		card.setAttribute('class','card');
 		card.setAttribute('src',`/images/${data[i].card.id}.png`);
 		card.setAttribute('title',data[i].player);
-		let playedCards = document.getElementById("playedCards");
+		let playedCards = document.getElementById("playedCards");s
 		playedCards.appendChild(card);
 	}
 });
 
 socket.on('firstRoundAction', function(data) {
-	writeLog("gameLog", data);
+	writeLog("roundLog", data);
+});
+
+socket.on('playerDisconnected', function(data) {
+	removeActions();
+	clear("playedCards");
+	clear("trumpcard");
+	clear("talon");
+	// clear("myMeldings");
+	clear("myScore");
+	writeLog("myScore", '0');
+	clear("myCards");
+	clear("roundLog");
+	writeHeader("roundLog","Aktuelle Runde");
+	writeLog("gameLog", data + ' hat das Spiel verlassen');
 });
 
 	window.onbeforeunload = function() {
