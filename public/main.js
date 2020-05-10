@@ -41,6 +41,9 @@ function action(action) {
 		for (let i = 0; i < document.images.length; i++){
 			document.images[i].style.border = "2px solid transparent";
 		}
+	}else{
+		clear("errorLog");
+		writeLog("errorLog", "Bitte Karte auswählen");
 	}	
 };
  
@@ -48,7 +51,7 @@ function selectCard(img,card) {
 	for (let i = 0; i < document.images.length; i++){
 		document.images[i].style.border = "2px solid transparent";
 	}
-	img.style.border = "2px solid red";
+	img.style.border = "2px solid green";
 	selectedCard = card;
  };     
 
@@ -258,7 +261,7 @@ socket.on('updateTrumpcard', function(data) {
 	}
 	clear("trumpcard");
 	let card = document.createElement('img');
-	card.setAttribute('class','card');
+	card.setAttribute('class','trumpcard');
 	card.setAttribute('src',`/images/${data.trumpcard.id}.png`);
 	let trumpcard = document.getElementById("trumpcard");
 	trumpcard.appendChild(card);

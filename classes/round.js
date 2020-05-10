@@ -104,8 +104,7 @@ class FirstRound extends Round {
 				player = m.getNextPlayer(player);
 			}	
 			// start new round		
-			// let r = new RegularRound(winner);
-			let r = new FinalRound(winner);
+			let r = new RegularRound(winner);
 			m.getCurrentGame().rounds.push(r);
 			r.start();	
 		}, 5000);

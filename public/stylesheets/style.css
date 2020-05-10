@@ -7,14 +7,16 @@ img.card {
 	margin: 0 0,9%;
 	border:2px solid transparent;
 	border-radius: 7%;
-	/* width: 18%; 
-	height: auto;  */
+	max-height: 90%;  
+	max-width: 18%;  
 }
 
-img.talon {
+img.trumpcard{
 	margin: 0 0,9%;
 	border:2px solid transparent;
 	border-radius: 7%;
+	max-height: 90%;  
+	max-width: 18%;   
 	-webkit-transform: rotate(90deg);
 	-moz-transform: rotate(90deg);
 	-o-transform: rotate(90deg);
@@ -22,11 +24,21 @@ img.talon {
 	transform: rotate(90deg);
 }
 
+img.talon {
+	border-radius: 7%;
+	border:2px solid transparent;
+	max-height: 90%;  
+	max-width: 18%;
+}
+
 .actionbutton {
-	width: 7em;
-	height: 3em;
-	margin: 2em 1em;
+	width: 10em;
+	height: 4em;
+	margin: 1em;
 	border-radius: 5%;
+	color: white; 
+	text-align: center; 
+	background: green;
 }
 
 /* divs */
@@ -52,18 +64,18 @@ div.talon{
 	position: fixed;
 	top: 45%;
 	left: 49%;
-	transform: translate(-50%, -75%);
-	width: 135px;
-	height: 230px;
+	transform: translate(-50%, -50%);
+	width: 37%;
+	height: 25%; 
 }
 
 div.trumpcard {
 	position: fixed;
 	top: 45%;
 	left: 49%;
-	transform: translate(-50%, -50%);
-	width: 135px;
-	height: 230px;
+	transform: translate(-40%, -50%);
+	width: 37%;
+	height: 25%; 
 }
 
 div.playedCards {
@@ -71,19 +83,17 @@ div.playedCards {
 	top: 20%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 700px;
-	height: 250px; 
+	width: 37%;
+	height: 25%; 
 }
 
 div.myCards {
 	position: fixed;
 	top: 70%;
 	left: 50%;
-	transform: translate(-50%, -50%); 
-	/* width: 40%;
-	height: 10%; */
-	width: 700px;
-	height: 230px;   
+	transform: translate(-50%, -50%);
+	width: 37%;
+	height: 25%;   
 }
 
 div.myMeldings {
@@ -97,10 +107,11 @@ div.myMeldings {
 
 div.myActions {
 	position: fixed;
-	top: 85%;
-	left: 25%;
-	width: 20%;
-	height: 5%;
+	top: 70%;
+	left: 82%;
+	width: 15%;
+	height: 25%;   
+	transform: translate(0%, -50%);
 }
 
 div.settings {
@@ -114,10 +125,12 @@ div.settings {
 
 div.errorLog {
 	position: fixed;
-	top: 87%;
-	left: 50%;
-	width: 40%;
+	top: 85%;
+	left: 20%;
+	width: 60%;
 	height: 5%;
+	text-align: center; 
+	margin-top: 2em;
 	color: red;
 }
 
@@ -152,8 +165,5 @@ div.matchLog {
 	color: white; 
 	text-align: center; 
 	top: 3px; 
-	/* width: 110px; 
-	left: 35%; 
-	position: absolute;  */
 	background: green;
 }
