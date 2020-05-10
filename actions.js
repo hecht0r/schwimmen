@@ -34,7 +34,7 @@ module.exports.playCard = function(socket, data) {
 		r.end();
 	}else{
 		nextPlayer = m.getNextPlayer(player);
-		if (r instanceof round.LastRound){
+		if (r instanceof round.FinalRound){
 			nextPlayer.emit('yourTurnLast')
 		}else{
 			nextPlayer.emit('yourTurn');
@@ -73,7 +73,7 @@ module.exports.melding = function(socket, data) {
 		}
 
 	}else{
-		if(g.getCurrentRound() instanceof round.LastRound){
+		if(g.getCurrentRound() instanceof round.FinalRound){
 			player.emit('invalidEnd','Melden nicht möglich');
 		}else{
 			player.emit('invalidAction','Melden nicht möglich');
@@ -158,7 +158,7 @@ module.exports.playCardLast = function(socket, data){
 	let playedCard = d.getCardById(data.card);
 
 	if (r.cardsPlayed.length > 0 && r.cardsPlayed[0].card.suit !== playedCard.suit &&
-		player.hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(playedCard.suit) != -1).length > 0) {
+		player.hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(card.suit) != -1).length > 0) {
 		player.emit('invalidEnd','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
 	}else{
 		module.exports.playCard(socket, data);

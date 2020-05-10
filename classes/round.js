@@ -104,7 +104,8 @@ class FirstRound extends Round {
 				player = m.getNextPlayer(player);
 			}	
 			// start new round		
-			let r = new RegularRound(winner);
+			// let r = new RegularRound(winner);
+			let r = new FinalRound(winner);
 			m.getCurrentGame().rounds.push(r);
 			r.start();	
 		}, 5000);
@@ -182,7 +183,7 @@ class RegularRound extends Round {
 				if (m.getCurrentGame().deck.cards.length > 0){
 					r = new RegularRound(winner);
 				}else{
-					r = new LastRound(winner);
+					r = new FinalRound(winner);
 				}
 				m.getCurrentGame().rounds.push(r);
 				r.start();		
@@ -192,7 +193,7 @@ class RegularRound extends Round {
 }	
 
 
-class LastRound extends Round {
+class FinalRound extends Round {
 	constructor(starter) {
 		super(starter);
 		
@@ -256,7 +257,7 @@ class LastRound extends Round {
 			}else{
 				setTimeout(function() {
 					// start new round		
-					let r = new LastRound(winner);
+					let r = new FinalRound(winner);
 					m.getCurrentGame().rounds.push(r);					
 					r.start();		
 				}, 3000);
@@ -265,4 +266,4 @@ class LastRound extends Round {
 	}		
 } 
 
-module.exports = {FirstRound: FirstRound, LastRound: LastRound};
+module.exports = {FirstRound: FirstRound, FinalRound: FinalRound};
