@@ -296,7 +296,7 @@ socket.on('showCards', function(data) {
 		card.setAttribute('class','card');
 		card.setAttribute('src',`/images/${data[i].card.id}.png`);
 		card.setAttribute('title',data[i].player);
-		let playedCards = document.getElementById("playedCards");s
+		let playedCards = document.getElementById("playedCards");
 		playedCards.appendChild(card);
 	}
 });

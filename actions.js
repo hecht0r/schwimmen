@@ -153,7 +153,7 @@ module.exports.secondAce = function(socket, data){
 
 module.exports.playCardLast = function(socket, data){
 	let m = helper.findMatchById(data.matchId);
-	let g = m.getCurrentGame();
+	let r = m.getCurrentGame().getCurrentRound();
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
 
