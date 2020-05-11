@@ -27,6 +27,11 @@ function clear(divID){
 	div.innerHTML = '';
 }
 
+function setVisible(divID){
+	let div = document.getElementById(divID);
+	div.style="visibility: visible";
+}
+
 function setSettings(){
 	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById("maxPlayers").valueAsNumber});
 	clear("settings");
@@ -94,6 +99,12 @@ function addActions(type) {
 
 socket.on('userSet', function(data) {
 	clear("login");
+	clear("rules")
+	setVisible("roundLog");
+	setVisible("gameLog");
+	setVisible("matchLog");
+	setVisible("board");
+	setVisible("myScore");
 	document.body.innerHTML	+= 'Hello ' + data.username + '</br>';
 	username = data.username;
 	matchId = data.matchId;
@@ -131,7 +142,7 @@ socket.on('newGame', function(data) {
 	clear("playedCards");
 	clear("trumpcard");
 	clear("talon");
-	// clear("myMeldings");
+	clear("myMeldings");
 	clear("myScore");
 	writeLog("myScore", '0');
 	clear("gameLog");
@@ -226,12 +237,12 @@ socket.on('nextPlayer', function(data) {
 });
 
 socket.on('melded', function(data) {
-	// if(data.player == username){
-	// 	let suit = document.createElement('img');
-	// 	suit.setAttribute('src',`/images/${data.suit}.png`);
-	// 	let myMeldings = document.getElementById("myMeldings");
-	// 	myMeldings.appendChild(suit);
-	// }
+	if(data.player == username){
+		let suit = document.createElement('img');
+		suit.setAttribute('src',`/images/${data.suit}.png`);
+		let myMeldings = document.getElementById("myMeldings");
+		myMeldings.appendChild(suit);
+	}
 	writeLog("roundLog", data.player + ' meldet ' + data.suit);
 	writeLog("gameLog", data.player + ' meldet ' + data.suit);
 })
@@ -313,7 +324,7 @@ socket.on('playerDisconnected', function(data) {
 	clear("playedCards");
 	clear("trumpcard");
 	clear("talon");
-	// clear("myMeldings");
+	clear("myMeldings");
 	clear("myScore");
 	writeLog("myScore", '0');
 	clear("myCards");
