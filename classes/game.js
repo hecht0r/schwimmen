@@ -17,7 +17,11 @@ module.exports = class Game{
 		this.deck.createDeck();
 		this.deck.shuffleDeck();
 		this.trumpcard = this.deck.cards.slice(-1)[0];
-				
+		
+		for (let i = 0; i < m.teams.length; i++) {
+			m.teams[i].init();
+		}
+
 		for (let i = 0; i < m.players.length; i++) {
 			m.players[i].init();
 			m.players[i].hand = this.deck.cards.splice(0,5);
@@ -34,30 +38,34 @@ module.exports = class Game{
 	}
 
 	checkGigackel(){
-		if (m.players.filter(player => player.wonCards.length > 0).length === 1){
+		let m = helper.findMatchByTeam(this.winner);
+
+		if (m.teams.filter(team => team.wonCards.length > 0).length === 1){
 			return true;
 		}
 		return false;
 	}
 
-	end(winner){
-		let m = helper.findMatchBySocketId(winner.socket.id);
-		this.winner = winner;
+	end(winnerTeam){
+		let m = helper.findMatchByTeam(winnerTeam);
+		this.winner = winnerTeam;
 		
 		if(this.checkGigackel()){
-			this.winner.wins += 2;
-			console.log(`${winner.socket.username} gewinnt!`);
-			m.emitPlayers('gameOver', {winner: winner.socket.username, gigackel: true});
+			winnerTeam.wins += 2;
+			console.log(`${winnerTeam.name} gewinnt!`);
+			m.emitPlayers('gameOver', {winner: winnerTeam.name, gigackel: true});
 		}else{
-			this.winner.wins += 1;
-			console.log(`${winner.socket.username} gewinnt!`);
-			m.emitPlayers('gameOver', {winner: winner.socket.username, gigackel: false});		
+			winnerTeam.wins += 1;
+			console.log(`${winnerTeam.name} gewinnt!`);
+			m.emitPlayers('gameOver', {winner: winnerTeam.name, gigackel: false});		
 		};		
 		
 		let scoreBoard =[];
-		for (let i = 0; i < m.players.length; i++) {
-			scoreBoard.push({player: m.players[i].socket.username, score: m.players[i].wins});
+
+		for (let i = 0; i < m.teams.length; i++) {
+			scoreBoard.push({team: m.teams[i].name, score: m.teams[i].wins});
 		}
+
 		m.emitPlayers('updateScoreboard',scoreBoard);
 		let starter = this.starter;
 		setTimeout(function() {

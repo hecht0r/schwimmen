@@ -139,6 +139,8 @@ socket.on('userJoined', function(data) {
 });
 
 socket.on('newGame', function(data) {
+	removeActions();
+	clear("settings");
 	clear("playedCards");
 	clear("trumpcard");
 	clear("talon");
@@ -178,7 +180,7 @@ socket.on('updateScoreboard', function(data) {
 	clear("matchLog");
 	writeHeader("matchLog","Spielstand")
 	for(let i = 0; i < data.length; i++){
-		writeLog("matchLog", data[i].player + ': ' + data[i].score);
+		writeLog("matchLog", data[i].team + ': ' + data[i].score);
 	} 
 });
 

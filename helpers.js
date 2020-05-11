@@ -18,6 +18,26 @@ module.exports.findMatchById = function(matchId) {
 	return false;
 }
 
+module.exports.findMatchByTeam = function(team) {
+	for (let i = 0; i < rooms.length; i++) {
+		if (rooms[i].teams.indexOf(team) > -1) {
+			return rooms[i];
+		}
+	}
+	return false;
+}
+
+module.exports.findPlayerBySocketId = function(socketId) {
+	for (let i = 0; i < rooms.length; i++) {
+		for (let j = 0; j < rooms[i].players.length; j++) {
+            if (rooms[i].players[j].socket.id === socketId) {
+                return rooms[i].players[j];
+			}
+		}
+	}
+	return false;
+}
+
 module.exports.removeCardFromHand = function(cards, card) {
 	// find given card and remove it from given cards
 	cards.splice(cards.findIndex(c => c.id == card.id), 1 );

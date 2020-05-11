@@ -31,7 +31,6 @@ module.exports.listen = function(app) {
 				m.players.splice(m.players.indexOf(m.findPlayerById(socket.id)),1);
 				m.emitPlayers('playerDisconnected', socket.username);
 				m.status = 0;
-
 				// delete match if he was its last player
 				if (m.players.length == 0){
 					rooms.splice(rooms.indexOf(m),1);

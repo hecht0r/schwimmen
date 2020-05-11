@@ -83,11 +83,13 @@ class FirstRound extends Round {
 		}
 		let total = super.getCardsValue(this.cardsPlayed);
 		console.log(winner.socket.username + ' gets ' + total + ' points!');
-		winner.score += total;
-		winner.emit('updateScore', winner.score);
+		let winnerTeam = m.findTeamById(winner.socket.id);
+
+		winnerTeam.score += total;
+		winnerTeam.emitPlayers('updateScore', winnerTeam.score);
 
 		for (let i = 0; i < this.cardsPlayed.length; i++) {
-			winner.wonCards.push(this.cardsPlayed[i].card);	
+			winnerTeam.wonCards.push(this.cardsPlayed[i].card);	
 		}
 
 		m.emitPlayers('roundOver',winner.socket.username);
@@ -154,16 +156,19 @@ class RegularRound extends Round {
 		let winner = c[0].player;
 		let total = super.getCardsValue(this.cardsPlayed);
 		console.log(winner.socket.username + ' gets ' + total + ' points!');
-		winner.score += total;
-		winner.emit('updateScore', winner.score);
+		
+		let winnerTeam = m.findTeamById(winner.socket.id);
+		
+		winnerTeam.score += total;
+		winnerTeam.emitPlayers('updateScore', winnerTeam.score);
 		
 		for (let i = 0; i < this.cardsPlayed.length; i++) {
-			winner.wonCards.push(this.cardsPlayed[i].card);	
+			winnerTeam.wonCards.push(this.cardsPlayed[i].card);	
 		}
 		
 		m.emitPlayers('roundOver',winner.socket.username);
-		if (winner.score >= score_to_win) {
-			m.getCurrentGame().end(winner);
+		if (winnerTeam.score >= score_to_win) {
+			m.getCurrentGame().end(winnerTeam);
 		}else{
 			setTimeout(function() {
 				// draw Card, first winner
@@ -236,23 +241,25 @@ class FinalRound extends Round {
 		let winner = c[0].player;
 		let total = super.getCardsValue(this.cardsPlayed);
 		console.log(winner.socket.username + ' gets ' + total + ' points!');
-		winner.score += total;
-		winner.emit('updateScore', winner.score);
+
+		let winnerTeam = m.findTeamById(winner.socket.id);
+		winnerTeam.score += total;
+		winnerTeam.emitPlayers('updateScore', winnerTeam.score);
 		
 		for (let i = 0; i < this.cardsPlayed.length; i++) {
-			winner.wonCards.push(this.cardsPlayed[i].card);	
+			winnerTeam.wonCards.push(this.cardsPlayed[i].card);	
 		}
 
 		m.emitPlayers('roundOver',winner.socket.username);
 
-		if (winner.score >= score_to_win) {
-			m.getCurrentGame().end(winner);
+		if (winnerTeam.score >= score_to_win) {
+			m.getCurrentGame().end(winnerTeam);
 		}else{
 			if(winner.hand.length == 0){
-				// no more cards, player with most points wins
-				let players = m.players;
-				players.sort((a, b) => (a.score < b.score) ? 1 : -1)
-				m.getCurrentGame().end(players[0]);
+				// no more cards, team/player with most points wins
+				let teams = m.teams;
+				teams.sort((a, b) => (a.score < b.score) ? 1 : -1)
+				m.getCurrentGame().end(teams[0]);
 			}else{
 				setTimeout(function() {
 					// start new round		

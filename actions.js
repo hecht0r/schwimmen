@@ -7,13 +7,11 @@ let	d = new deck();
 d.createDeck();
 
 module.exports.playCard = function(socket, data) {
-	// let m = rooms[data.roomIndex];
 	let m = helper.findMatchById(data.matchId);
 	let g = m.getCurrentGame();
 	let r = g.getCurrentRound();
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
-
 	// append card to round.playedCards and give info to all players clients
 	r.cardsPlayed.push({player: player, card: playedCard});
 	
@@ -48,12 +46,13 @@ module.exports.melding = function(socket, data) {
 	let g = m.getCurrentGame();
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
-		
+	let team = m.findTeamById(player.socket.id);
+
 	// possible if player helds both koenig and ober of the chosen suit
-	// and he has not yet melded this suit and he has already won a round
+	// and he has not yet melded this suit and he/his team has already won a round
 	if (player.hand.filter(x => x.id === new card(playedCard.suit, 'Koenig', 4).id).length > 0	&&
 		player.hand.filter(x => x.id === new card(playedCard.suit, 'Ober', 3).id).length	> 0		&&
-		player.meldedSuits.indexOf(playedCard.suit) == -1 &&  player.wonCards.length > 0 ) {
+		player.meldedSuits.indexOf(playedCard.suit) == -1 &&  team.wonCards.length > 0 ) {
 	
 		let bonus;
 		if (playedCard.suit == g.trumpcard.suit) {
@@ -61,15 +60,15 @@ module.exports.melding = function(socket, data) {
 		}else{
 			bonus = 20;
 		}
-		player.score += bonus;
+		team.score += bonus;
 		player.meldedSuits.push(playedCard.suit);
 		console.log(`${player.socket.username} melds ${bonus}`);
-		player.emit('updateScore', player.score);
+		team.emitPlayers('updateScore', team.score);
 		m.emitPlayers('melded', {player: socket.username, suit: playedCard.suit});
 		player.emit('yourTurn');		
 
-		if (player.score >= score_to_win) { 
-			g.end(player);
+		if (team.score >= score_to_win) { 
+			g.end(team);
 		}
 
 	}else{
@@ -89,8 +88,8 @@ module.exports.getTrumpcard = function(socket, data) {
 	
 	// check if 7 trump was chosen and player already has won cards 
 	if ((playedCard.suit == g.trumpcard.suit) && (playedCard.value == 0) && 
-		(g.trumpcard.value > 0) 		&& (player.wonCards.length > 0)){
-		
+		(g.trumpcard.value > 0) 		&& (m.findTeamById(player.socket.id).wonCards.length > 0)){
+
 		// we change trumpcard and playedCard and inform all clients about the new trumpcard
 		player.hand.push(g.trumpcard);
 		helper.removeCardFromHand(player.hand, playedCard);
