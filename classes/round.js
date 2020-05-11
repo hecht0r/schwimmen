@@ -70,6 +70,7 @@ class FirstRound extends Round {
 				c.sort(function(a, b){return b.value-a.value});
 				winner = c[0].player;
 				break;
+
 			case "secondAce":
 				// check if someone played the same card as first player
 				cardsFiltered = this.cardsPlayed.slice(1).filter(c => ( c.card.id == this.cardsPlayed[0].card.id));
@@ -81,6 +82,8 @@ class FirstRound extends Round {
 				
 				break;
 		}
+		
+		// update winners score 
 		let total = super.getCardsValue(this.cardsPlayed);
 		console.log(winner.socket.username + ' gets ' + total + ' points!');
 		let winnerTeam = m.findTeamById(winner.socket.id);

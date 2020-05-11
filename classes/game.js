@@ -9,6 +9,7 @@ module.exports = class Game{
     }
     
 	start(starter) {
+		// start game, create deck and draw trumpcard
 		let m = helper.findMatchBySocketId(starter.socket.id);
 		console.log(starter.socket.username + ' beginnt.')
 		m.emitPlayers('newGame',starter.socket.username);
@@ -22,12 +23,15 @@ module.exports = class Game{
 			m.teams[i].init();
 		}
 
+		// hand out cards and tell the players' client	
 		for (let i = 0; i < m.players.length; i++) {
 			m.players[i].init();
 			m.players[i].hand = this.deck.cards.splice(0,5);
 			m.players[i].emit('updateHand', m.players[i].hand);
 			m.players[i].emit('updateTrumpcard', {trumpcard: this.trumpcard});
- 		}
+		}
+		
+		// start first round
 		let r = new round.FirstRound(this.starter);
 		this.rounds.push(r);
 		r.start();		
@@ -39,7 +43,6 @@ module.exports = class Game{
 
 	checkGigackel(){
 		let m = helper.findMatchByTeam(this.winner);
-
 		if (m.teams.filter(team => team.wonCards.length > 0).length === 1){
 			return true;
 		}
@@ -47,6 +50,8 @@ module.exports = class Game{
 	}
 
 	end(winnerTeam){
+		// increase winners wincount, tell everyone and start new game
+		
 		let m = helper.findMatchByTeam(winnerTeam);
 		this.winner = winnerTeam;
 		

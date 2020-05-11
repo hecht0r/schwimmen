@@ -64,9 +64,9 @@ div.board {
 
 div.myScore {
 	position: fixed;
-	top: 1%;
+	top: 40%;
 	left: 95%;
-	font-size: 30px;
+	font-size: 2em;
 	visibility: hidden;
 }
 

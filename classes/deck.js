@@ -11,6 +11,7 @@ module.exports = class Deck {
 		let values = [11, 10, 4, 3, 2, 0];
 		for (let i = 0; i < suits.length; i++) {
 			for (let j = 0; j < ranks.length; j++) {
+				// each card exists twice
 				this.cards.push(new card(suits[i], ranks[j], values[j]));
 				this.cards.push(new card(suits[i], ranks[j], values[j]));
 			}

@@ -58,6 +58,8 @@ module.exports = class Match{
 			scoreBoard.push({team: this.teams[i].name, score: this.teams[i].wins});
 		}
 		m.emitPlayers('updateScoreboard',scoreBoard);
+
+		// for first game randomly pick starting player
 		this.startGame(this.players[Math.floor(Math.random() * this.players.length)]);
 	}
 

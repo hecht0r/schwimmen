@@ -139,6 +139,7 @@ module.exports.secondAce = function(socket, data){
 	let g = m.getCurrentGame();
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
+	
 	// no trump, only aces but not if the player has it twice on his hand
 	if (playedCard.suit == g.trumpcard.suit || playedCard.rank !== "Ass" ||
 		player.hand.filter(c => [playedCard.id].indexOf(c.id) != -1).length > 1) {
@@ -155,7 +156,8 @@ module.exports.playCardLast = function(socket, data){
 	let r = m.getCurrentGame().getCurrentRound();
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
-
+	
+	// check if the correct suit was played
 	if (r.cardsPlayed.length > 0 && r.cardsPlayed[0].card.suit !== playedCard.suit &&
 		player.hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(card.suit) != -1).length > 0) {
 		player.emit('invalidEnd','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
