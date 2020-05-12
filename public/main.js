@@ -70,18 +70,13 @@ function addActions(type) {
 	let actions = [];
 	switch(type){
 		case "start":
-			actions = [/*{ action: "forfeit", title: "Karten zurückgeben" },  */
-         		       { action: "higher", title: "Höher" }, 
-               		   { action: "secondAce", title: "Zweites Ass" }]; 
+			actions = [	{ action: "higher", title: "Höher" },{ action: "secondAce", title: "Zweites Ass" },{ action: "startOpen", title: "Offen spielen" }]; 
 			break;
 		case "regular":
-			actions = [{ action: "playCard", title: "Karte spielen" }, 
-			           { action: "melding", title: "Melden" }, 
-					   { action: "getTrumpcard", title: "Trumpfkarte holen" }];
+			actions = [{ action: "playCard", title: "Karte spielen" },{ action: "melding", title: "Melden" },{ action: "getTrumpcard", title: "Trumpfkarte holen" }];
 			break;
 		case "last":
-			actions = [{ action: "playCardLast", title: "Karte spielen" }, 
-			           { action: "melding", title: "Melden" }];
+			actions = [{ action: "playCardLast", title: "Karte spielen" },{ action: "melding", title: "Melden" }];
 			break;
 		}
 

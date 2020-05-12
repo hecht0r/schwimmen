@@ -48,6 +48,7 @@ class FirstRound extends Round {
 		
 		let cardsFiltered;
 		let winner;
+		let c = [];
 		switch(this.action){
 			case "higher":
 				// remove all cards other playedSuit
@@ -63,7 +64,6 @@ class FirstRound extends Round {
 				}, []);
 				
 				// highest value wins	
-				let c = [];
 				for (let i = 0; i < cardsFiltered.length; i++){
 					c.push({player: cardsFiltered[i].player, value: cardsFiltered[i].card.value});
 				}
@@ -79,8 +79,36 @@ class FirstRound extends Round {
 				}else{
 					winner = this.cardsPlayed[0].player;
 				}
-				
 				break;
+
+			case "startOpen":
+				// remove all cards other than trump or playedSuit
+				cardsFiltered = this.cardsPlayed.filter(c => ( c.card.suit == this.cardsPlayed[0].card.suit || 
+															   c.card.suit == m.getCurrentGame().trumpcard.suit ));
+		
+				// remove all duplicates
+				cardsFiltered = cardsFiltered.reduce((arr, item) => {
+					let exists = !!arr.find(c => c.card.id === item.card.id);
+					if(!exists){
+						arr.push(item);
+					}
+					return arr;
+				}, []);
+						
+				// trump value is higher
+				for (let i = 0; i < cardsFiltered.length; i++) {
+					let value = cardsFiltered[i].card.value;
+					if (cardsFiltered[i].card.suit == m.getCurrentGame().trumpcard.suit) {
+						value = value + 12;
+					};
+					c.push({player: cardsFiltered[i].player, value: value});
+				}	
+				
+				// highest value wins	
+				c.sort(function(a, b){return b.value-a.value});
+				winner = c[0].player;
+				break;
+				
 		}
 		
 		// update winners score 

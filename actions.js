@@ -16,7 +16,7 @@ module.exports.playCard = function(socket, data) {
 	r.cardsPlayed.push({player: player, card: playedCard});
 	
 	// dont show card in first round to others
-	if (g.rounds.length > 1){
+	if (g.rounds.length > 1 || r.action === 'startOpen'){
 		m.emitPlayers('cardPlayed', {player: socket.username, card: playedCard});
 	}else{
 		m.emitPlayers('cardPlayed', {player: socket.username});
@@ -51,7 +51,7 @@ module.exports.melding = function(socket, data) {
 	// possible if player helds both koenig and ober of the chosen suit
 	// and he has not yet melded this suit and he/his team has already won a round
 	if (player.hand.filter(x => x.id === new card(playedCard.suit, 'Koenig', 4).id).length > 0	&&
-		player.hand.filter(x => x.id === new card(playedCard.suit, 'Ober', 3).id).length	> 0		&&
+		player.hand.filter(x => x.id === new card(playedCard.suit, 'Ober', 3).id).length > 0	&&
 		player.meldedSuits.indexOf(playedCard.suit) == -1 &&  team.wonCards.length > 0 ) {
 	
 		let bonus;
@@ -140,7 +140,7 @@ module.exports.secondAce = function(socket, data){
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
 	
-	// no trump, only aces but not if the player has it twice on his hand
+	// no trump, only aces but not if the player has duplicates
 	if (playedCard.suit == g.trumpcard.suit || playedCard.rank !== "Ass" ||
 		player.hand.filter(c => [playedCard.id].indexOf(c.id) != -1).length > 1) {
 			player.emit('invalidStart', 'Es dürfen nur Asse gepielt werden. Trumpf oder doppelte Asse dürfen nicht gespielt werden.');
@@ -148,6 +148,34 @@ module.exports.secondAce = function(socket, data){
 		g.getCurrentRound().action = data.action;
 		m.emitPlayers('firstRoundAction', 'Zweites Ass');
 		module.exports.playCard(socket, data);
+	}
+}
+
+module.exports.startOpen = function(socket, data){
+	let m = helper.findMatchById(data.matchId);
+	let g = m.getCurrentGame();
+	let player = m.findPlayerById(socket.id);
+	
+	// only allowed if player holds only trump and duplicate aces
+	// so remove non-trumps and non-aces
+	let cardsFiltered = (player.hand.filter(c => [g.trumpcard.suit].indexOf(c.suit) === -1 && ["Ass"].indexOf(c.rank)));
+
+	// now check if all remaining aces are duplicates
+	let actionValid = true;
+	for(let i = 0; i < cardsFiltered.length; i++){
+		if (cardsFiltered.filter(c => [cardsFiltered[i].id].indexOf(c.id) != -1).length === 1){
+			actionValid = false;
+			break;
+		}
+	}
+	
+	// if so, playing an open card is a valid option to start
+	if (actionValid){
+		g.getCurrentRound().action = data.action;
+		m.emitPlayers('firstRoundAction', 'Offen raus');
+		module.exports.playCard(socket, data);			
+	}else{
+		player.emit('invalidStart', 'Bitte mit Höher oder zweitem Ass beginnen.');
 	}
 }
 

@@ -97,6 +97,9 @@ function action(socket, data) {
 		case "secondAce":
 			actions.secondAce(socket, data);
 			break;
+		case "startOpen":
+			actions.startOpen(socket, data);
+			break;
 		case "playCardLast":
 			actions.playCardLast(socket, data);
 			break;

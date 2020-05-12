@@ -18,7 +18,7 @@ module.exports = class Game{
 		this.deck.createDeck();
 		this.deck.shuffleDeck();
 		this.trumpcard = this.deck.cards.slice(-1)[0];
-		
+				
 		for (let i = 0; i < m.teams.length; i++) {
 			m.teams[i].init();
 		}
@@ -30,7 +30,7 @@ module.exports = class Game{
 			m.players[i].emit('updateHand', m.players[i].hand);
 			m.players[i].emit('updateTrumpcard', {trumpcard: this.trumpcard});
 		}
-		
+	
 		// start first round
 		let r = new round.FirstRound(this.starter);
 		this.rounds.push(r);
