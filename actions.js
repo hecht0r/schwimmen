@@ -37,7 +37,7 @@ module.exports.playCard = function(socket, data) {
 		}else{
 			nextPlayer.emit('yourTurn');
 		}
-		m.emitPlayers('nextPlayer', nextPlayer.socket.username)
+		m.emitPlayers('nextPlayer', nextPlayer.socket.username);
 	};
 }	
 
@@ -73,11 +73,21 @@ module.exports.melding = function(socket, data) {
 
 	}else{
 		if(g.getCurrentRound() instanceof round.FinalRound){
-			player.emit('invalidEnd','Melden nicht möglich');
+			player.emit('invalidEnd', playedCard.suit + ' melden nicht möglich');
 		}else{
-			player.emit('invalidAction','Melden nicht möglich');
-		}
+			player.emit('invalidAction', playedCard.suit + ' melden nicht möglich');
+		 }
 	};	
+}
+
+module.exports.checkMelding = function(cards){
+	for( let i = 0; i < deck.suits.length; i++ ){
+		if (cards.filter(x => x.id === new card(deck.suits[i], 'Koenig', 4).id).length > 0	&&
+			cards.filter(x => x.id === new card(deck.suits[i], 'Ober', 3).id).length > 0 ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 module.exports.getTrumpcard = function(socket, data) {
@@ -110,13 +120,22 @@ module.exports.forfeit = function(socket, data) {
 
 	// if a player Starts with three sevens, he can give back his hand 
 	// the game will be restarted
-	if (player.hand.filter(card => [0].indexOf(card.value) != -1).length > 2){
+	if (module.exports.checkForfeit(player.hand)){
 		let r = m.getCurrentGame().getCurrentRound();
 		r.replayGame();
 	}else{
-		player.emit('invalidStart', 'Dafür musst Du drei 7er haben.');
+		player.emit('invalidStart', 'Dafür musst Du drei 7er oder weniger als 8 Punkte auf der Hand haben.');
 	}
 }	
+
+module.exports.checkForfeit = function(cards){
+	if (cards.filter(card => [0].indexOf(card.value) != -1).length > 2 || helper.getCardsValue(cards) < 8){
+		return true;
+	}
+	else{
+		return false;
+	}
+}
 
 module.exports.higher = function(socket, data){
 	let m = helper.findMatchById(data.matchId);

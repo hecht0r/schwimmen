@@ -1,6 +1,7 @@
 const helper = require('./../helpers.js'); 
 const deck = require('./deck.js');
 const round = require('./round.js');
+const action = require('./../actions.js');
 
 module.exports = class Game{
     constructor() {
@@ -28,9 +29,15 @@ module.exports = class Game{
 			m.players[i].init();
 			m.players[i].hand = this.deck.cards.splice(0,5);
 			m.players[i].emit('updateHand', m.players[i].hand);
-			m.players[i].emit('updateTrumpcard', {trumpcard: this.trumpcard});
+
+			// check if the player can forfeit the game
+			if (action.checkForfeit(m.players[i].hand)){
+				m.players[i].emit('forfeit');
+			}			
 		}
-	
+
+		m.emitPlayers('updateTrumpcard', {trumpcard: this.trumpcard});
+		
 		// start first round
 		let r = new round.FirstRound(this.starter);
 		this.rounds.push(r);

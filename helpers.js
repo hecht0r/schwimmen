@@ -65,3 +65,16 @@ module.exports.getMatchWaitingForPlayers = function(){
 	}
 	return false;
 }
+
+// calculate total value of given cards
+module.exports.getCardsValue = function(cards){
+	let total = 0
+	for (let i = 0; i < cards.length; i++) {
+		if(cards[i].card){
+			total += cards[i].card.value;
+		}else{
+			total += cards[i].value;
+		}
+	}
+	return total;
+}

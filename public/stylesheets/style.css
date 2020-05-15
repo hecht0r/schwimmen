@@ -117,7 +117,7 @@ div.myMeldings {
 div.myActions {
 	position: fixed;
 	top: 70%;
-	left: 82%;
+	left: 81%;
 	width: 15%;
 	height: 25%;   
 	transform: translate(0%, -50%);
@@ -127,7 +127,7 @@ div.settings {
 	position: fixed;
 	top: 1%;
 	left: 20%;
-	width: 20%;
+	width: 30%;
 	height: 5%;
 }
 
@@ -151,6 +151,8 @@ div.roundLog{
 	height: 35%;
 	border: 1px solid green;
 	visibility: hidden;
+	overflow-y: auto;
+    overflow-x: hidden;
 }
 
 div.gameLog {
@@ -158,9 +160,12 @@ div.gameLog {
 	top: 41%;
 	left: 1%;
 	width: 15%;
-	height: 44%;
+	height: 44%; 
+	font-size: 0,5vw;
 	border: 1px solid green;
 	visibility: hidden;
+	overflow-y: auto;
+    overflow-x: hidden;
 }
 
 div.matchLog {
@@ -173,9 +178,18 @@ div.matchLog {
 	visibility: hidden;
 }
 
-.logHeader { 
+div.logHeader { 
 	color: white; 
 	text-align: center; 
 	top: 3px; 
 	background: green;
+}
+
+div.help {
+	position: fixed;
+	top: 1%;
+	left: 85%;
+	width: 10%;
+	height: 3%;
+	border: 1px solid black;
 }

@@ -1,110 +1,18 @@
-let socket = io();
-var selectedCard;
-var actionCanBeSent = true;
-var username;
-var matchId;
-
-function setUsername() {
-	socket.emit('setUsername', $('#name').val());
-};
-
-function writeLog(logID, data){
-	let log = document.getElementById(logID);
-	log.appendChild(document.createTextNode(data));
-	log.appendChild(document.createElement("br"));
-}
-
-function writeHeader(logID, data){
-	let log = document.getElementById(logID);
-	let header = document.createElement("div");
-	header.setAttribute('class','logHeader');
-	header.innerHTML = data;
-	log.appendChild(header);
-}
-
-function clear(divID){
-	let div = document.getElementById(divID);
-	div.innerHTML = '';
-}
-
-function setVisible(divID){
-	let div = document.getElementById(divID);
-	div.style="visibility: visible";
-}
-
-function setSettings(){
-	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById("maxPlayers").valueAsNumber});
-	clear("settings");
-}
-
-function action(action) {
-	if((actionCanBeSent) && (selectedCard)) {
-		actionCanBeSent = false;
-		removeActions();
-		socket.emit('action', { matchId: matchId, action: action, card: selectedCard });
-		selectedCard = false;
-		for (let i = 0; i < document.images.length; i++){
-			document.images[i].style.border = "2px solid transparent";
-		}
-	}else{
-		clear("errorLog");
-		writeLog("errorLog", "Bitte Karte auswählen");
-	}	
-};
- 
-function selectCard(img,card) {
-	for (let i = 0; i < document.images.length; i++){
-		document.images[i].style.border = "2px solid transparent";
-	}
-	img.style.border = "2px solid green";
-	selectedCard = card;
- };     
-
-function removeActions() {
-	clear("myActions");
-	clear("errorLog");
-}
-
-function addActions(type) {
-	clear("myActions");
-	let actions = [];
-	switch(type){
-		case "start":
-			actions = [	{ action: "higher", title: "Höher" },{ action: "secondAce", title: "Zweites Ass" },{ action: "startOpen", title: "Offen spielen" }]; 
-			break;
-		case "regular":
-			actions = [{ action: "playCard", title: "Karte spielen" },{ action: "melding", title: "Melden" },{ action: "getTrumpcard", title: "Trumpfkarte holen" }];
-			break;
-		case "last":
-			actions = [{ action: "playCardLast", title: "Karte spielen" },{ action: "melding", title: "Melden" }];
-			break;
-		}
-
-	for (let i = 0; i < actions.length; i++) {
-		let btn = document.createElement('button');
-		btn.innerHTML = actions[i].title;
-		btn.className = 'actionbutton';
-		btn.addEventListener('click', function () {
-			action(actions[i].action); 
-		});
-		let myActions = document.getElementById("myActions");
-		myActions.appendChild(btn);
-	}
-}	
-
+// when client joined a match, emitted to only one client
 socket.on('userSet', function(data) {
-	clear("login");
-	clear("rules")
-	setVisible("roundLog");
-	setVisible("gameLog");
-	setVisible("matchLog");
-	setVisible("board");
-	setVisible("myScore");
-	document.body.innerHTML	+= 'Hello ' + data.username + '</br>';
 	username = data.username;
 	matchId = data.matchId;
+	clear("login");
+	clear("rules");
+	show("roundLog");
+	show("gameLog");
+	show("matchLog");
+	show("board");
+	show("myScore");
+	writeLog("login",'Hello ' + data.username)
 });
 
+// when client can choose maxPlayers, emitted to only one client
 socket.on('setSettings', function(data) {
 	clear("settings");
 	let input = document.createElement('input');
@@ -129,10 +37,12 @@ socket.on('setSettings', function(data) {
 	settings.appendChild(btn);
 });
 
+// when someone joined the match, emitted to all clients of the match
 socket.on('userJoined', function(data) {
 	writeLog("gameLog", data.username + ' betritt das Spiel. ' + data.count );
 });
 
+// when a new game starts, emitted to all clients of the match
 socket.on('newGame', function(data) {
 	removeActions();
 	clear("settings");
@@ -149,6 +59,7 @@ socket.on('newGame', function(data) {
 	writeLog("roundLog", data + ' beginnt das Spiel');
 });
 
+// when a game has finished, emitted to all clients of the match
 socket.on('gameOver', function(data) {
 	let text = document.createElement("b");
 	if (data.gigackel){
@@ -162,15 +73,19 @@ socket.on('gameOver', function(data) {
 	gameLog.appendChild(document.createElement("br"));
 	});
 
+// when a game is restarted, emitted to all clients of the match   
 socket.on('restart', function() {
+	clear("myActions");
 	writeLog("gameLog", 'Spiel wird neu gestartet');
 });
 
+// update clients teamscore, emitted to all clients of a team
 socket.on('updateScore', function(data) {
 	clear("myScore");
 	writeLog("myScore", data)
 });
 
+// update standings, emitted to all clients of the match   
 socket.on('updateScoreboard', function(data) {
 	clear("matchLog");
 	writeHeader("matchLog","Spielstand")
@@ -179,6 +94,7 @@ socket.on('updateScoreboard', function(data) {
 	} 
 });
 
+// update clients cards, emitted to one client after another
 socket.on('updateHand', function(data) {
 	clear("myCards");
 	for (let i = 0; i < data.length; i++) {
@@ -186,32 +102,41 @@ socket.on('updateHand', function(data) {
 		card.setAttribute('class','card');
 		card.setAttribute('src',`/images/${data[i].id}.png`);
 		card.setAttribute('onclick','selectCard(this,"' + data[i].id + '")');
+		card.setAttribute('ondblclick','playCard(this,"' + data[i].id + '")');
 		let myCards = document.getElementById("myCards");
 		myCards.appendChild(card);
 	};
 });
 
+// when a round has finished, emitted to all clients of the match   
 socket.on('roundOver', function(data) {
 	writeLog("roundLog", data + ' holt den Stich');
 	writeLog("gameLog", data + ' holt den Stich');
 });		
 
+// when a round begins, emitted to all clients of the match   
 socket.on('newRound', function(data) {
 	clear("playedCards");
 	clear("roundLog");
 	writeHeader("roundLog","Aktuelle Runde");
 });	
 
+// when the client begins the game, emitted to one client
 socket.on('startGame', function(data) {
-	actionCanBeSent = true;
 	addActions('start');
 });
 
-socket.on('restartGame', function(data) {
-	actionCanBeSent = true;
-	addActions('start');
+// when the client can restart the game, emitted to one client
+socket.on('forfeit', function() {
+	addAction('forfeit');
 });
 
+// when the client can meld 20/40, emitted to one client
+socket.on('melding', function() {
+	addAction('melding');
+});
+
+// when talon is empty and final rounds begin, emitted to all clients of the match
 socket.on('lastRounds', function(data) {
 	clear("trumpcard");
 	clear("talon");
@@ -219,20 +144,24 @@ socket.on('lastRounds', function(data) {
 	writeLog("gameLog", 'Farbe bedienen! Trumpf: ' + data);
 })
 
+// when it's clients turn to play, emitted to one client after another
 socket.on('yourTurn', function() {
 	actionCanBeSent = true;
 	addActions('regular');
 })
 
+// when it's clients turn to play in final rounds, emitted to one client after another
 socket.on('yourTurnLast', function(data) {
 	actionCanBeSent = true;
 	addActions('last');
 })
 
+// when a card is played, whos turn is it, emitted to all clients of the game
 socket.on('nextPlayer', function(data) {
 	writeLog("roundLog", data + ' ist dran');
 });
 
+// when someone melds, emitted to all clients of the game
 socket.on('melded', function(data) {
 	if(data.player == username){
 		let suit = document.createElement('img');
@@ -244,24 +173,34 @@ socket.on('melded', function(data) {
 	writeLog("gameLog", data.player + ' meldet ' + data.suit);
 })
 
+// when client plays an invalid card, emitted to only one client
 socket.on('invalidAction', function(data) {
 	writeLog("errorLog", data);
 	actionCanBeSent = true;
 	addActions('regular');
 });
 
+// when client melds an invalid suit, emitted to only one client
+socket.on('invalidMelding', function(data) {
+	writeLog("errorLog", data);
+	addActions('melding');
+});
+
+// when client starts the round with an invalid card, emitted to only one client
 socket.on('invalidStart', function(data) {
 	writeLog("errorLog", data);
 	actionCanBeSent = true;
 	addActions('start');
 });
 
+// when client plays an invalid card in final rounds, emitted to only one client
 socket.on('invalidEnd', function(data) {
 	writeLog("errorLog", data);
 	actionCanBeSent = true;
 	addActions('last');
 });
 
+// when someone robs the trumpcard, emitted to all clients of the match
 socket.on('updateTrumpcard', function(data) {
 	if(data.player){
 		writeLog("roundLog", data.player + ' holt den Trumpf');
@@ -282,6 +221,7 @@ socket.on('updateTrumpcard', function(data) {
 	talon.appendChild(card);
 });
 
+// when someone plays a card, emitted to all clients of the match
 socket.on('cardPlayed', function(data) {
 	let card = document.createElement('img');
 	card.setAttribute('class','card');
@@ -300,6 +240,7 @@ socket.on('cardPlayed', function(data) {
 
 });
 
+// when every client played a card in first round, emitted to all clients of the match
 socket.on('showCards', function(data) {
 	clear("playedCards");
 	for (let i = 0; i < data.length; i++){
@@ -312,10 +253,12 @@ socket.on('showCards', function(data) {
 	}
 });
 
+// log the action of the first round, emitted to all clients of the match
 socket.on('firstRoundAction', function(data) {
 	writeLog("roundLog", data);
 });
 
+//when a client disconnected, emitted to all clients of the match
 socket.on('playerDisconnected', function(data) {
 	removeActions();
 	clear("playedCards");
@@ -329,7 +272,3 @@ socket.on('playerDisconnected', function(data) {
 	writeHeader("roundLog","Aktuelle Runde");
 	writeLog("gameLog", data + ' hat das Spiel verlassen');
 });
-
-	window.onbeforeunload = function() {
-  return "Data will be lost if you leave the page, are you sure?";
-};

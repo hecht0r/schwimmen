@@ -1,4 +1,5 @@
 const helper = require('./../helpers.js'); 
+const action = require('./../actions.js'); 
 
 class Round {
 	constructor(starter) {
@@ -10,19 +11,12 @@ class Round {
 		let m = helper.findMatchBySocketId(this.starter.socket.id);
 		m.emitPlayers('restart');
 		let starter = m.getCurrentGame().starter;
-		starter.emit('restartGame');
 		setTimeout(function() {
+			starter.emit('startGame');
 			m.startGame(starter);
 		}, 5000);
 	}
 
-	getCardsValue(cards){
-		let total = 0
-		for (let i = 0; i < cards.length; i++) {
-			total += cards[i].card.value;
-		}
-		return total;
-	}
 }
 
 class FirstRound extends Round {
@@ -112,7 +106,7 @@ class FirstRound extends Round {
 		}
 		
 		// update winners score 
-		let total = super.getCardsValue(this.cardsPlayed);
+		let total = helper.getCardsValue(this.cardsPlayed);
 		console.log(winner.socket.username + ' gets ' + total + ' points!');
 		let winnerTeam = m.findTeamById(winner.socket.id);
 
@@ -155,9 +149,16 @@ class RegularRound extends Round {
 		this.starter.emit('yourTurn');
 		m.emitPlayers('newRound', this.starter.socket.username);	
 		m.emitPlayers('nextPlayer', this.starter.socket.username)	
-	}	
 
-	end(){
+		// tell the clients if they can meld
+		for (let i = 0; i < m.players.length; i++) {
+			if (action.checkMelding(m.players[i].hand)){
+				m.players[i].emit('melding');
+			}
+		}
+	}		
+
+	end() {
 		let m = helper.findMatchBySocketId(this.starter.socket.id);
 		// remove all cards other than trump or playedSuit
 		let cardsFiltered = this.cardsPlayed.filter(c => ( c.card.suit == this.cardsPlayed[0].card.suit || 
@@ -185,7 +186,7 @@ class RegularRound extends Round {
 		// highest value wins	
 		c.sort(function(a, b){return b.value-a.value});
 		let winner = c[0].player;
-		let total = super.getCardsValue(this.cardsPlayed);
+ 		let total = helper.getCardsValue(this.cardsPlayed);
 		console.log(winner.socket.username + ' gets ' + total + ' points!');
 		
 		let winnerTeam = m.findTeamById(winner.socket.id);
@@ -270,7 +271,7 @@ class FinalRound extends Round {
 		// highest value wins	
 		c.sort(function(a, b){return b.value-a.value});
 		let winner = c[0].player;
-		let total = super.getCardsValue(this.cardsPlayed);
+		let total = helper.getCardsValue(this.cardsPlayed);
 		console.log(winner.socket.username + ' gets ' + total + ' points!');
 
 		let winnerTeam = m.findTeamById(winner.socket.id);
