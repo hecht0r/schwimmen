@@ -9,7 +9,7 @@ socket.on('userSet', function(data) {
 	show("matchLog");
 	show("board");
 	show("myScore");
-	writeLog("login",'Hello ' + data.username)
+	write("login",'Hello ' + data.username)
 });
 
 // when client can choose maxPlayers, emitted to only one client
@@ -39,7 +39,7 @@ socket.on('setSettings', function(data) {
 
 // when someone joined the match, emitted to all clients of the match
 socket.on('userJoined', function(data) {
-	writeLog("gameLog", data.username + ' betritt das Spiel. ' + data.count );
+	write("gameLog", data.username + ' betritt das Spiel. ' + data.count );
 });
 
 // when a new game starts, emitted to all clients of the match
@@ -49,14 +49,15 @@ socket.on('newGame', function(data) {
 	clear("playedCards");
 	clear("trumpcard");
 	clear("talon");
+	clear("talonSize");
 	clear("myMeldings");
 	clear("myScore");
-	writeLog("myScore", '0');
+	write("myScore", '0');
 	clear("gameLog");
 	writeHeader("gameLog","Aktuelles Spiel")
 	clear("roundLog");
 	writeHeader("roundLog","Aktuelle Runde");
-	writeLog("roundLog", data + ' beginnt das Spiel');
+	write("roundLog", data + ' beginnt das Spiel');
 });
 
 // when a game has finished, emitted to all clients of the match
@@ -76,13 +77,13 @@ socket.on('gameOver', function(data) {
 // when a game is restarted, emitted to all clients of the match   
 socket.on('restart', function() {
 	clear("myActions");
-	writeLog("gameLog", 'Spiel wird neu gestartet');
+	write("gameLog", 'Spiel wird neu gestartet');
 });
 
 // update clients teamscore, emitted to all clients of a team
 socket.on('updateScore', function(data) {
 	clear("myScore");
-	writeLog("myScore", data)
+	write("myScore", data)
 });
 
 // update standings, emitted to all clients of the match   
@@ -90,7 +91,7 @@ socket.on('updateScoreboard', function(data) {
 	clear("matchLog");
 	writeHeader("matchLog","Spielstand")
 	for(let i = 0; i < data.length; i++){
-		writeLog("matchLog", data[i].team + ': ' + data[i].score);
+		write("matchLog", data[i].team + ': ' + data[i].score);
 	} 
 });
 
@@ -110,8 +111,9 @@ socket.on('updateHand', function(data) {
 
 // when a round has finished, emitted to all clients of the match   
 socket.on('roundOver', function(data) {
-	writeLog("roundLog", data + ' holt den Stich');
-	writeLog("gameLog", data + ' holt den Stich');
+	clear("nextPlayer");
+	write("roundLog", data + ' holt den Stich');
+	write("gameLog", data + ' holt den Stich');
 });		
 
 // when a round begins, emitted to all clients of the match   
@@ -119,6 +121,8 @@ socket.on('newRound', function(data) {
 	clear("playedCards");
 	clear("roundLog");
 	writeHeader("roundLog","Aktuelle Runde");
+	clear("talonSize");
+	write("talonSize", 'Karten im Stapel: ' + data);
 });	
 
 // when the client begins the game, emitted to one client
@@ -140,8 +144,8 @@ socket.on('melding', function() {
 socket.on('lastRounds', function(data) {
 	clear("trumpcard");
 	clear("talon");
-	writeLog("roundLog", 'Farbe bedienen! Trumpf: ' + data);
-	writeLog("gameLog", 'Farbe bedienen! Trumpf: ' + data);
+	write("roundLog", 'Farbe bedienen! Trumpf: ' + data);
+	write("gameLog", 'Farbe bedienen! Trumpf: ' + data);
 })
 
 // when it's clients turn to play, emitted to one client after another
@@ -156,9 +160,14 @@ socket.on('yourTurnLast', function(data) {
 	addActions('last');
 })
 
-// when a card is played, whos turn is it, emitted to all clients of the game
+// tell all players whos turn it is, emitted to all clients of the game
 socket.on('nextPlayer', function(data) {
-	writeLog("roundLog", data + ' ist dran');
+	clear("nextPlayer");
+	if(data == username){
+		write("nextPlayer", 'Du bist dran');
+	}else{
+		write("nextPlayer", data + ' ist dran');
+	}
 });
 
 // when someone melds, emitted to all clients of the game
@@ -169,33 +178,33 @@ socket.on('melded', function(data) {
 		let myMeldings = document.getElementById("myMeldings");
 		myMeldings.appendChild(suit);
 	}
-	writeLog("roundLog", data.player + ' meldet ' + data.suit);
-	writeLog("gameLog", data.player + ' meldet ' + data.suit);
+	write("roundLog", data.player + ' meldet ' + data.suit);
+	write("gameLog", data.player + ' meldet ' + data.suit);
 })
 
 // when client plays an invalid card, emitted to only one client
 socket.on('invalidAction', function(data) {
-	writeLog("errorLog", data);
+	write("errorLog", data);
 	actionCanBeSent = true;
 	addActions('regular');
 });
 
 // when client melds an invalid suit, emitted to only one client
 socket.on('invalidMelding', function(data) {
-	writeLog("errorLog", data);
+	write("errorLog", data);
 	addActions('melding');
 });
 
 // when client starts the round with an invalid card, emitted to only one client
 socket.on('invalidStart', function(data) {
-	writeLog("errorLog", data);
+	write("errorLog", data);
 	actionCanBeSent = true;
 	addActions('start');
 });
 
 // when client plays an invalid card in final rounds, emitted to only one client
 socket.on('invalidEnd', function(data) {
-	writeLog("errorLog", data);
+	write("errorLog", data);
 	actionCanBeSent = true;
 	addActions('last');
 });
@@ -203,8 +212,8 @@ socket.on('invalidEnd', function(data) {
 // when someone robs the trumpcard, emitted to all clients of the match
 socket.on('updateTrumpcard', function(data) {
 	if(data.player){
-		writeLog("roundLog", data.player + ' holt den Trumpf');
-		writeLog("gameLog", data.player + ' holt den Trumpf');
+		write("roundLog", data.player + ' holt den Trumpf');
+		write("gameLog", data.player + ' holt den Trumpf');
 	}
 	clear("trumpcard");
 	let card = document.createElement('img');
@@ -229,7 +238,7 @@ socket.on('cardPlayed', function(data) {
 	let id;
 	if (data.card){
 		id = data.card.id;
-		writeLog("roundLog", data.player + ' spielt ' + data.card.suit + ' ' + data.card.rank);
+		write("roundLog", data.player + ' spielt ' + data.card.suit + ' ' + data.card.rank);
 	}else{
 		id = 'back';
 	}
@@ -255,7 +264,7 @@ socket.on('showCards', function(data) {
 
 // log the action of the first round, emitted to all clients of the match
 socket.on('firstRoundAction', function(data) {
-	writeLog("roundLog", data);
+	write("roundLog", data);
 });
 
 //when a client disconnected, emitted to all clients of the match
@@ -266,9 +275,9 @@ socket.on('playerDisconnected', function(data) {
 	clear("talon");
 	clear("myMeldings");
 	clear("myScore");
-	writeLog("myScore", '0');
+	write("myScore", '0');
 	clear("myCards");
 	clear("roundLog");
 	writeHeader("roundLog","Aktuelle Runde");
-	writeLog("gameLog", data + ' hat das Spiel verlassen');
+	write("gameLog", data + ' hat das Spiel verlassen');
 });

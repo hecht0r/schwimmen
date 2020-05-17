@@ -8,7 +8,7 @@ function setUsername() {
 	socket.emit('setUsername', $('#name').val());
 };
 
-function writeLog(logID, data){
+function write(logID, data){
 	let log = document.getElementById(logID);
 	log.appendChild(document.createTextNode(data));
 	log.appendChild(document.createElement("br"));
@@ -48,7 +48,7 @@ function action(action) {
 		}
 	}else{
 		clear("errorLog");
-		writeLog("errorLog", "Bitte Karte auswählen");
+		write("errorLog", "Bitte Karte auswählen");
 	}	
 };
  

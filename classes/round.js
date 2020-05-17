@@ -147,9 +147,8 @@ class RegularRound extends Round {
 	start() {
 		let m = helper.findMatchBySocketId(this.starter.socket.id);
 		this.starter.emit('yourTurn');
-		m.emitPlayers('newRound', this.starter.socket.username);	
+		m.emitPlayers('newRound', m.getCurrentGame().deck.cards.length);	
 		m.emitPlayers('nextPlayer', this.starter.socket.username)	
-
 		// tell the clients if they can meld
 		for (let i = 0; i < m.players.length; i++) {
 			if (action.checkMelding(m.players[i].hand)){
@@ -238,7 +237,7 @@ class FinalRound extends Round {
 	start() {
 		let m = helper.findMatchBySocketId(this.starter.socket.id);
 		this.starter.emit('yourTurnLast');
-		m.emitPlayers('newRound', this.starter.socket.username);	
+		m.emitPlayers('newRound');	
 		m.emitPlayers('nextPlayer', this.starter.socket.username)	
 		m.emitPlayers('lastRounds', m.getCurrentGame().trumpcard.suit);
 	}	

@@ -185,11 +185,21 @@ div.logHeader {
 	background: green;
 }
 
-div.help {
+div.nextPlayer {
 	position: fixed;
 	top: 1%;
-	left: 85%;
-	width: 10%;
-	height: 3%;
-	border: 1px solid black;
+	left: 26%;
+	width: 20%;
+	height: 4%;
+	font-size: 2em;
+}
+
+div.talonSize {
+	position: fixed;
+	top: 1%;
+	left: 54%;
+	width: 20%;
+	height: 4%;
+	font-size: 2em;
+	text-align: right;
 }
