@@ -51,7 +51,7 @@ div.rules {
 }
 
 div.board {
-	background-image: url("/images/background.png");
+	background-image: url('/images/background.png');
 	background-position: center;
 	border-radius: 10%;
 	position: fixed;
@@ -202,4 +202,35 @@ div.talonSize {
 	height: 4%;
 	font-size: 2em;
 	text-align: right;
+}
+
+div.links {
+	position: fixed;
+	top: 1%;
+	left: 87%;
+	width: 10%;
+	height: 4%;
+	font-size: 1em;
+	text-align: right;
+	visibility: hidden;
+}
+
+
+div.links span {
+	background-color: green;
+}
+
+div.links a {
+	color: white;
+	text-decoration: none;
+	padding: 10%;
+}
+
+div.login {
+	position: fixed;
+	top: 1%;
+	left: 1%;
+	width: 15%;
+	height: 4%;
+	font-size: 1em;
 }

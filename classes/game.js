@@ -65,11 +65,11 @@ module.exports = class Game{
 		if(this.checkGigackel()){
 			winnerTeam.wins += 2;
 			console.log(`${winnerTeam.name} gewinnt!`);
-			m.emitPlayers('gameOver', {winner: winnerTeam.name, gigackel: true});
+			m.emitPlayers('gameOver', {winner: winnerTeam.name, gigackel: true, teams: m.teams});
 		}else{
 			winnerTeam.wins += 1;
 			console.log(`${winnerTeam.name} gewinnt!`);
-			m.emitPlayers('gameOver', {winner: winnerTeam.name, gigackel: false});		
+			m.emitPlayers('gameOver', {winner: winnerTeam.name, gigackel: false, teams: m.teams});		
 		};		
 		
 		let scoreBoard =[];

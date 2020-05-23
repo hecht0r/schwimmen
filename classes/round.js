@@ -44,7 +44,7 @@ class FirstRound extends Round {
 		let winner;
 		let c = [];
 		switch(this.action){
-			case "higher":
+			case 'higher':
 				// remove all cards other playedSuit
 				cardsFiltered = this.cardsPlayed.filter(c => (c.card.suit == this.cardsPlayed[0].card.suit));
 
@@ -65,7 +65,7 @@ class FirstRound extends Round {
 				winner = c[0].player;
 				break;
 
-			case "secondAce":
+			case 'secondAce':
 				// check if someone played the same card as first player
 				cardsFiltered = this.cardsPlayed.slice(1).filter(c => ( c.card.id == this.cardsPlayed[0].card.id));
 				if(cardsFiltered.length > 0){
@@ -75,7 +75,7 @@ class FirstRound extends Round {
 				}
 				break;
 
-			case "startOpen":
+			case 'startOpen':
 				// remove all cards other than trump or playedSuit
 				cardsFiltered = this.cardsPlayed.filter(c => ( c.card.suit == this.cardsPlayed[0].card.suit || 
 															   c.card.suit == m.getCurrentGame().trumpcard.suit ));

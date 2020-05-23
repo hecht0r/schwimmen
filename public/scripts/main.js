@@ -11,12 +11,12 @@ function setUsername() {
 function write(logID, data){
 	let log = document.getElementById(logID);
 	log.appendChild(document.createTextNode(data));
-	log.appendChild(document.createElement("br"));
+	log.appendChild(document.createElement('br'));
 }
 
 function writeHeader(logID, data){
 	let log = document.getElementById(logID);
-	let header = document.createElement("div");
+	let header = document.createElement('div');
 	header.setAttribute('class','logHeader');
 	header.innerHTML = data;
 	log.appendChild(header);
@@ -29,12 +29,12 @@ function clear(divID){
 
 function show(divID){
 	let div = document.getElementById(divID);
-	div.style="visibility: visible";
+	div.style='visibility: visible';
 }
 
 function setSettings(){
-	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById("maxPlayers").valueAsNumber});
-	clear("settings");
+	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById('maxPlayers').valueAsNumber});
+	clear('settings');
 }
 
 function action(action) {
@@ -44,19 +44,19 @@ function action(action) {
 		socket.emit('action', { matchId: matchId, action: action, card: selectedCard });
 		selectedCard = false;
 		for (let i = 0; i < document.images.length; i++){
-			document.images[i].style.border = "2px solid transparent";
+			document.images[i].style.border = '2px solid transparent';
 		}
 	}else{
-		clear("errorLog");
-		write("errorLog", "Bitte Karte auswählen");
+		clear('errorLog');
+		write('errorLog', 'Bitte Karte auswählen');
 	}	
 };
  
 function selectCard(img,card) {
 	for (let i = 0; i < document.images.length; i++){
-		document.images[i].style.border = "2px solid transparent";
+		document.images[i].style.border = '2px solid transparent';
 	}
-	img.style.border = "2px solid green";
+	img.style.border = '2px solid green';
 	selectedCard = card;
  };   
  
@@ -64,33 +64,33 @@ function selectCard(img,card) {
 	 if(actionCanBeSent){
 		 actionCanBeSent = false;
 		for (let i = 0; i < document.images.length; i++){
-			document.images[i].style.border = "2px solid transparent";
+			document.images[i].style.border = '2px solid transparent';
 		}
 		removeActions();
-		socket.emit('action', { matchId: matchId, action: "playCard", card: card });
+		socket.emit('action', { matchId: matchId, action: 'playCard', card: card });
 	}
 };
 
 function removeActions() {
-	clear("myActions");
-	clear("errorLog");
+	clear('myActions');
+	clear('errorLog');
 }
 
 function addActions(type) {
-	// clear("myActions");
+	// clear('myActions');
 	let actions = [];
 	switch(type){
-		case "forfeit":
-			actions = [{ action: "forfeit", title: "Karten zurückgeben" }]; 
+		case 'forfeit':
+			actions = [{ action: 'forfeit', title: 'Karten zurückgeben' }]; 
 			break;
-		case "start":
-			actions = [	{ action: "higher", title: "Höher" },{ action: "secondAce", title: "Zweites Ass" },{ action: "startOpen", title: "Offen spielen" }]; 
+		case 'start':
+			actions = [	{ action: 'higher', title: 'Höher' },{ action: 'secondAce', title: 'Zweites Ass' },{ action: 'startOpen', title: 'Offen spielen' }]; 
 			break;
-		case "regular":
-			actions = [{ action: "playCard", title: "Karte spielen" },{ action: "getTrumpcard", title: "Trumpfkarte holen" },{ action: "melding", title: "Melden" }];
+		case 'regular':
+			actions = [{ action: 'playCard', title: 'Karte spielen' },{ action: 'getTrumpcard', title: 'Trumpfkarte holen' },{ action: 'melding', title: 'Melden' }];
 			break;
-		case "last":
-			actions = [{ action: "playCardLast", title: "Karte spielen" }];
+		case 'last':
+			actions = [{ action: 'playCardLast', title: 'Karte spielen' }];
 			break;
 		}
 
@@ -101,17 +101,17 @@ function addActions(type) {
 		btn.addEventListener('click', function () {
 			action(actions[i].action); 
 		});
-		let myActions = document.getElementById("myActions");
+		let myActions = document.getElementById('myActions');
 		myActions.appendChild(btn);
 	}
 }	
 
 window.onbeforeunload = function() {
-	return "Data will be lost if you leave the page, are you sure?";
+	return 'Data will be lost if you leave the page, are you sure?';
 };
 
 flexFont = function () {
-	var divs = document.querySelectorAll(".roundLog, .gameLog, .matchLog");
+	var divs = document.querySelectorAll('.roundLog, .gameLog, .matchLog');
     for(var i = 0; i < divs.length; i++) {
         var relFontsize = divs[i].offsetWidth*0.05;
         divs[i].style.fontSize = relFontsize+'px';

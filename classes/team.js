@@ -10,6 +10,7 @@ module.exports = class Team {
     init(){
         this.score = 0;
         this.wonCards = [];
+        this.captainIndex = Math.floor(Math.random() * this.players.length); // for updating score in kreuzgaigel
       }
 
     addPlayer(player){
@@ -25,8 +26,12 @@ module.exports = class Team {
     }  
 
     emitPlayers(event, data) {
-		for (let i = 0; i < this.players.length; i++) {
-            helper.findPlayerBySocketId(this.players[i].id).emit(event, data);
-		}
-    };
-}
+        if(event==='updateScore'){
+            helper.findPlayerBySocketId(this.players[this.captainIndex].id).emit(event, data);
+        }else{
+            for (let i = 0; i < this.players.length; i++) {
+                helper.findPlayerBySocketId(this.players[i].id).emit(event, data);
+		    }
+        }
+    }
+};   

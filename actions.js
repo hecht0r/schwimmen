@@ -12,6 +12,13 @@ module.exports.playCard = function(socket, data) {
 	let r = g.getCurrentRound();
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
+
+	// if round is a final round, validate playedCard
+	if (r instanceof round.FinalRound){
+		if (!checkLast(socket,data)){
+			return;
+		}		
+	}
 	// append card to round.playedCards and give info to all players clients
 	r.cardsPlayed.push({player: player, card: playedCard});
 	
@@ -32,13 +39,14 @@ module.exports.playCard = function(socket, data) {
 		r.end();
 	}else{
 		nextPlayer = m.getNextPlayer(player);
-		if (r instanceof round.FinalRound){
-			nextPlayer.emit('yourTurnLast')
-		}else{
-			nextPlayer.emit('yourTurn');
-		}
+		nextPlayer.emit('yourTurn');
+		// if (r instanceof round.FinalRound){
+		// 	nextPlayer.emit('yourTurnLast')
+		// }else{
+		// 	nextPlayer.emit('yourTurn');
+		// }
 		m.emitPlayers('nextPlayer', nextPlayer.socket.username);
-	};
+	}
 }	
 
 module.exports.melding = function(socket, data) {
@@ -144,7 +152,7 @@ module.exports.higher = function(socket, data){
 	let playedCard = d.getCardById(data.card);
 	
 	// no trump & no aces 
-	if (playedCard.suit == g.trumpcard.suit || playedCard.rank == "Ass") {
+	if (playedCard.suit == g.trumpcard.suit || playedCard.rank == 'Ass') {
 		player.emit('invalidStart', 'Trumpf oder Ass darf nicht gespielt werden.');
 	}else{
 		g.getCurrentRound().action = data.action;
@@ -160,7 +168,7 @@ module.exports.secondAce = function(socket, data){
 	let playedCard = d.getCardById(data.card);
 	
 	// no trump, only aces but not if the player has duplicates
-	if (playedCard.suit == g.trumpcard.suit || playedCard.rank !== "Ass" ||
+	if (playedCard.suit == g.trumpcard.suit || playedCard.rank !== 'Ass' ||
 		player.hand.filter(c => [playedCard.id].indexOf(c.id) != -1).length > 1) {
 			player.emit('invalidStart', 'Es dürfen nur Asse gepielt werden. Trumpf oder doppelte Asse dürfen nicht gespielt werden.');
 	}else{
@@ -177,7 +185,7 @@ module.exports.startOpen = function(socket, data){
 	
 	// only allowed if player holds only trump and duplicate aces
 	// so remove non-trumps and non-aces
-	let cardsFiltered = (player.hand.filter(c => [g.trumpcard.suit].indexOf(c.suit) === -1 && ["Ass"].indexOf(c.rank)));
+	let cardsFiltered = (player.hand.filter(c => [g.trumpcard.suit].indexOf(c.suit) === -1 && ['Ass'].indexOf(c.rank)));
 
 	// now check if all remaining aces are duplicates
 	let actionValid = true;
@@ -198,7 +206,8 @@ module.exports.startOpen = function(socket, data){
 	}
 }
 
-module.exports.playCardLast = function(socket, data){
+// module.exports.playCardLast = function(socket, data){
+function checkLast(socket, data){
 	let m = helper.findMatchById(data.matchId);
 	let r = m.getCurrentGame().getCurrentRound();
 	let player = m.findPlayerById(socket.id);
@@ -208,7 +217,9 @@ module.exports.playCardLast = function(socket, data){
 	if (r.cardsPlayed.length > 0 && r.cardsPlayed[0].card.suit !== playedCard.suit &&
 		player.hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(card.suit) != -1).length > 0) {
 		player.emit('invalidEnd','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
+		return false;
 	}else{
-		module.exports.playCard(socket, data);
+		return true;
+		// module.exports.playCard(socket, data);
 	}
 }

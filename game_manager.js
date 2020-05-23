@@ -1,4 +1,4 @@
-const socketio = require("socket.io");
+const socketio = require('socket.io');
 const player = require('./classes/player.js');
 const helper = require('./helpers.js');
 const actions = require('./actions.js');
@@ -79,28 +79,28 @@ function join(socket, username) {
 
 function action(socket, data) {
 	switch (data.action) {
-		case "playCard":
+		case 'playCard':
 			actions.playCard(socket, data);
 			break;
-		case "melding":
+		case 'melding':
 			actions.melding(socket, data);
 			break;			
-		case "getTrumpcard":
+		case 'getTrumpcard':
 			actions.getTrumpcard(socket, data);
 			break;
-		case "forfeit":
+		case 'forfeit':
 			actions.forfeit(socket, data);
 			break;
-		case "higher":
+		case 'higher':
 			actions.higher(socket, data);
 			break;
-		case "secondAce":
+		case 'secondAce':
 			actions.secondAce(socket, data);
 			break;
-		case "startOpen":
+		case 'startOpen':
 			actions.startOpen(socket, data);
 			break;
-		case "playCardLast":
+		case 'playCardLast':
 			actions.playCardLast(socket, data);
 			break;
 	}
