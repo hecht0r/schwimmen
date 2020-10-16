@@ -13,12 +13,6 @@ module.exports.playCard = function(socket, data) {
 	let player = m.findPlayerById(socket.id);
 	let playedCard = d.getCardById(data.card);
 
-	// if round is a final round, validate playedCard
-	if (r instanceof round.FinalRound){
-		if (!checkLast(socket,data)){
-			return;
-		}		
-	}
 	// append card to round.playedCards and give info to all players clients
 	r.cardsPlayed.push({player: player, card: playedCard});
 	
@@ -40,11 +34,11 @@ module.exports.playCard = function(socket, data) {
 	}else{
 		nextPlayer = m.getNextPlayer(player);
 		nextPlayer.emit('yourTurn');
-		// if (r instanceof round.FinalRound){
-		// 	nextPlayer.emit('yourTurnLast')
-		// }else{
-		// 	nextPlayer.emit('yourTurn');
-		// }
+		if (r instanceof round.FinalRound){
+		 	nextPlayer.emit('yourTurnLast')
+		}else{
+		 	nextPlayer.emit('yourTurn');
+		}
 		m.emitPlayers('nextPlayer', nextPlayer.socket.username);
 	}
 }	
@@ -80,11 +74,11 @@ module.exports.melding = function(socket, data) {
 		}
 
 	}else{
-		if(g.getCurrentRound() instanceof round.FinalRound){
-			player.emit('invalidEnd', playedCard.suit + ' melden nicht möglich');
-		}else{
+		// if(g.getCurrentRound() instanceof round.FinalRound){
+			// player.emit('invalidEnd', playedCard.suit + ' melden nicht möglich');
+		// }else{
 			player.emit('invalidAction', playedCard.suit + ' melden nicht möglich');
-		 }
+		//  }
 	};	
 }
 
@@ -206,8 +200,7 @@ module.exports.startOpen = function(socket, data){
 	}
 }
 
-// module.exports.playCardLast = function(socket, data){
-function checkLast(socket, data){
+module.exports.playCardLast = function(socket, data){
 	let m = helper.findMatchById(data.matchId);
 	let r = m.getCurrentGame().getCurrentRound();
 	let player = m.findPlayerById(socket.id);
@@ -217,9 +210,8 @@ function checkLast(socket, data){
 	if (r.cardsPlayed.length > 0 && r.cardsPlayed[0].card.suit !== playedCard.suit &&
 		player.hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(card.suit) != -1).length > 0) {
 		player.emit('invalidEnd','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
-		return false;
+		//player.emit('invalidAction','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
 	}else{
-		return true;
-		// module.exports.playCard(socket, data);
+		module.exports.playCard(socket, data);
 	}
 }
