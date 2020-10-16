@@ -101,6 +101,19 @@ socket.on('updateScoreboard', function(data) {
 	} 
 });
 
+// set clients cards, emitted to the starter(no doubleclick allowed)
+socket.on('setStarthand', function(data) {
+	clear('myCards');
+	for (let i = 0; i < data.length; i++) {
+		let card = document.createElement('img');
+		card.setAttribute('class','card');
+		card.setAttribute('src',`/images/${data[i].id}.png`);
+		card.setAttribute('onclick','selectCard(this,"' + data[i].id + '")');
+		let myCards = document.getElementById('myCards');
+		myCards.appendChild(card);
+	};
+});
+
 // update clients cards, emitted to one client after another
 socket.on('updateHand', function(data) {
 	clear('myCards');
@@ -110,6 +123,20 @@ socket.on('updateHand', function(data) {
 		card.setAttribute('src',`/images/${data[i].id}.png`);
 		card.setAttribute('onclick','selectCard(this,"' + data[i].id + '")');
 		card.setAttribute('ondblclick','playCard(this,"' + data[i].id + '")');
+		let myCards = document.getElementById('myCards');
+		myCards.appendChild(card);
+	};
+});
+
+// update clients cards, emitted to one client after another
+socket.on('updateHandFinal', function(data) {
+	clear('myCards');
+	for (let i = 0; i < data.length; i++) {
+		let card = document.createElement('img');
+		card.setAttribute('class','card');
+		card.setAttribute('src',`/images/${data[i].id}.png`);
+		card.setAttribute('onclick','selectCard(this,"' + data[i].id + '")');
+		card.setAttribute('ondblclick','playCardFinal(this,"' + data[i].id + '")');
 		let myCards = document.getElementById('myCards');
 		myCards.appendChild(card);
 	};

@@ -74,11 +74,7 @@ module.exports.melding = function(socket, data) {
 		}
 
 	}else{
-		// if(g.getCurrentRound() instanceof round.FinalRound){
-			// player.emit('invalidEnd', playedCard.suit + ' melden nicht möglich');
-		// }else{
-			player.emit('invalidAction', playedCard.suit + ' melden nicht möglich');
-		//  }
+		player.emit('invalidAction', playedCard.suit + ' melden nicht möglich');
 	};	
 }
 
@@ -200,7 +196,7 @@ module.exports.startOpen = function(socket, data){
 	}
 }
 
-module.exports.playCardLast = function(socket, data){
+module.exports.playCardFinal = function(socket, data){
 	let m = helper.findMatchById(data.matchId);
 	let r = m.getCurrentGame().getCurrentRound();
 	let player = m.findPlayerById(socket.id);

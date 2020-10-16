@@ -100,8 +100,8 @@ function action(socket, data) {
 		case 'startOpen':
 			actions.startOpen(socket, data);
 			break;
-		case 'playCardLast':
-			actions.playCardLast(socket, data);
+		case 'playCardFinal':
+			actions.playCardFinal(socket, data);
 			break;
 	}
 }

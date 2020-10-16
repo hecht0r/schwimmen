@@ -131,7 +131,8 @@ class FirstRound extends Round {
 				player = m.getNextPlayer(player);
 			}	
 			// start new round		
-			let r = new RegularRound(winner);
+			//let r = new RegularRound(winner);
+			let r = new FinalRound(winner);
 			m.getCurrentGame().rounds.push(r);
 			r.start();	
 		}, 5000);
@@ -205,6 +206,7 @@ class RegularRound extends Round {
 				// draw Card, first winner
 				winner.hand.push(m.getCurrentGame().deck.drawCard());	
 				winner.emit('updateHand', winner.hand);	
+				
 				// now everybody else in correct order
 				let player = m.getNextPlayer(winner);
 				for (let i = 1; i < m.players.length; i++) {
@@ -237,7 +239,7 @@ class FinalRound extends Round {
 	start() {
 		let m = helper.findMatchBySocketId(this.starter.socket.id);
 		this.starter.emit('yourTurnLast');
-		m.emitPlayers('newRound');	
+		m.emitPlayers('newRound', '0');	
 		m.emitPlayers('nextPlayer', this.starter.socket.username)	
 		m.emitPlayers('lastRounds', m.getCurrentGame().trumpcard.suit);
 	}	

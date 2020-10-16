@@ -90,7 +90,7 @@ function addActions(type) {
 			actions = [{ action: 'playCard', title: 'Karte spielen' },{ action: 'getTrumpcard', title: 'Trumpfkarte holen' },{ action: 'melding', title: 'Melden' }];
 			break;
 		case 'last':
-			actions = [{ action: 'playCardLast', title: 'Karte spielen' }];
+			actions = [{ action: 'playCardFinal', title: 'Karte spielen' }];
 			break;
 		}
 

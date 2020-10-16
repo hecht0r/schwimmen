@@ -28,7 +28,11 @@ module.exports = class Game{
 		for (let i = 0; i < m.players.length; i++) {
 			m.players[i].init();
 			m.players[i].hand = this.deck.cards.splice(0,5);
-			m.players[i].emit('updateHand', m.players[i].hand);
+			if (m.players[i] == starter){
+				m.players[i].emit('setStarthand', m.players[i].hand);
+			}else{
+				m.players[i].emit('updateHand', m.players[i].hand);
+			}	
 
 			// check if the player can forfeit the game
 			if (action.checkForfeit(m.players[i].hand)){
