@@ -209,8 +209,8 @@ module.exports.playCardLast = function(socket, data){
 	// check if the correct suit was played
 	if (r.cardsPlayed.length > 0 && r.cardsPlayed[0].card.suit !== playedCard.suit &&
 		player.hand.filter(card => [r.cardsPlayed[0].card.suit].indexOf(card.suit) != -1).length > 0) {
-		player.emit('invalidEnd','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
-		//player.emit('invalidAction','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
+		//player.emit('invalidEnd','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
+		player.emit('invalidAction','Es muss ' + r.cardsPlayed[0].card.suit + ' gespielt werden.');
 	}else{
 		module.exports.playCard(socket, data);
 	}
