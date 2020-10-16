@@ -77,7 +77,7 @@ function removeActions() {
 }
 
 function addActions(type) {
-	// clear('myActions');
+	clear('myActions');
 	let actions = [];
 	switch(type){
 		case 'forfeit':
