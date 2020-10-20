@@ -27,6 +27,7 @@ module.exports.change = function(socket, data) {
 	player.hand.splice(playerIndex, 0, middleCard);
 	g.middleCards = helper.removeCard(g.middleCards, middleCard);	
 
+	m.emitPlayers('move', player.name + ' tauscht')
 	endMove(socket, data);
 }
 
@@ -44,6 +45,7 @@ module.exports.changeAll = function(socket, data) {
 	g.middleCards = player.hand;
 	player.hand = cards;
 
+	m.emitPlayers('move', player.name + ' tauscht alle')
 	endMove(socket, data);
 }
 
@@ -58,11 +60,12 @@ module.exports.shove = function(socket, data) {
 	// if everyone shoved, get new middleCards
 	if (g.shoveCount === m.players.length){
 		g.shoveCount = 0;
-		
 		Array.prototype.push.apply(g.deck.cards, g.middleCards);
 		g.middleCards = [];
 		g.middleCards = g.deck.cards.splice(0,3);
 	}
+
+	m.emitPlayers('move', player.name + ' schiebt')
 	endMove(socket, data);
 }
 
@@ -77,12 +80,14 @@ module.exports.knock = function(socket, data) {
 	// (players.length - 1) moves till round ends
 	g.knockCount = g.moveCount + g.players.length - 1;	
 
+	m.emitPlayers('move', player.name + ' klopft')
 	endMove(socket, data);
 }
 
 module.exports.keep = function(socket, data) {
 	let m = helper.findMatchById(data.matchId);
 	let g = m.getCurrentGame();
+	let player = m.findPlayerById(socket.id);
 	
 	g.moveCount++;
 
@@ -90,6 +95,7 @@ module.exports.keep = function(socket, data) {
 	g.middleCards = g.deck.cards.splice(0,3);
 	g.emitPlayers('updateMiddlecards', g.middleCards);
 
+	m.emitPlayers('move', player.name + ' behält seine Karten')
 	endMove(socket, data);
 }
 
@@ -106,6 +112,7 @@ module.exports.new = function(socket, data) {
 	g.middleCards = player.hand;
 	player.hand = cards;
 
+	m.emitPlayers('move', player.name + ' tauscht seine Karten')
 	endMove(socket, data);
 }
 
@@ -116,20 +123,20 @@ endMove = function(socket, data){
 
 	player.handValue = helper.handValue(player.hand);
 	
-	if(player.handValue >= 31 || ((g.knockCount === g.moveCount) && g.knockCount > 0)){
-		g.end(player);
-	};
-
 	player.emit('updateHand', player.hand);
 	g.emitPlayers('updateMiddlecards', g.middleCards);
 
-	let nextPlayer = g.getNextPlayer(player);
 
-	if((g.moveCount < g.players.length) || (g.knockCount > 0)){
-		nextPlayer.emit('yourTurnNoKnock');
+	if(player.handValue >= 31 || ((g.knockCount === g.moveCount) && g.knockCount > 0)){
+		g.end(player);
 	}else{
-		nextPlayer.emit('yourTurn');
-	}
+		let nextPlayer = g.getNextPlayer(player);
 
-	m.emitPlayers('nextPlayer', nextPlayer.socket.username);
+		if((g.moveCount < g.players.length) || (g.knockCount > 0)){
+			nextPlayer.emit('yourTurnNoKnock');
+		}else{
+			nextPlayer.emit('yourTurn');
+		}
+			m.emitPlayers('nextPlayer', nextPlayer.socket.username);
+	}
 }

@@ -4,7 +4,8 @@ socket.on('userSet', function(data) {
 	matchId = data.matchId;
 	clear('login');
 	show('gameLog');
-	show('matchLog');
+	show('gameScore');
+	show('totalScore');
 	show('board');
 	show('links');
 	write('login','Hello ' + data.username)
@@ -17,7 +18,7 @@ socket.on('setSettings', function() {
 	input.setAttribute('type', 'number');
 	input.setAttribute('id', 'maxPlayers');
 	input.setAttribute('min', 2);
-	input.setAttribute('max', 4);
+	input.setAttribute('max', 9);
 
 	let label = document.createElement('Label');
     label.setAttribute('for',input);
@@ -69,10 +70,13 @@ socket.on('gameOver', function(data) {
 
 // update standings, emitted to all clients of the match   
 socket.on('updateScoreboard', function(data) {
-	clear('matchLog');
-	writeHeader('matchLog','Spielstand')
+	clear('gameScore');
+	clear('totalScore');
+	writeHeader('gameScore','Spielstand')
+	writeHeader('totalScore','Gesamtspielstand')
 	for(let i = 0; i < data.length; i++){
-		write('matchLog', data[i].player + ': ' + data[i].score);
+		write('gameScore', data[i].player + ': ' + data[i].score);
+		write('totalScore', data[i].player + ': ' + data[i].wins);		
 	} 
 });
 
@@ -107,28 +111,40 @@ socket.on('updateMiddlecards', function(data) {
 	middleCards.appendChild(card);
 })
 
-// gameresults
-socket.on('results', function(data) {
-	write('gameLog', data.player + ': ' + data.score);
+// shoe move in log
+socket.on('move', function(data) {
+	write('gameLog', data);
 })
 
 // gameresults
+socket.on('results', function(data) {
+	removeActions();
+	write('gameLog', data.player + ': ' + data.score);
+})
+
+// show roundlosers in log
 socket.on('losers', function(data) {
 	write('gameLog', data + ' verliert');
 })
 
-// swimmers
+// show swimmers in log
 socket.on('swim', function(data) {
 	write('gameLog', data + ' schwimmt');
 })
 
-// losers
+// show gamewinner in log
+socket.on('winner', function(data) {
+	write('gameLog', data + ' gewinnt das Spiel');
+})
+
+// if a player is out, remove cards
 socket.on('out', function(data) {
 	write('gameLog', data + ' ist raus');
 	if(data == username){
 		removeActions();
 		clear('middleCards');
 		clear('myCards');
+		clear('nextPlayer');
 		let middleCards = document.getElementById('middleCards');
 		let outMsg = document.createTextNode('Du bist raus!');
 		middleCards.appendChild(outMsg);
@@ -162,7 +178,6 @@ socket.on('nextPlayer', function(data) {
 		write('nextPlayer', data + ' ist dran');
 	}
 });
-
 
 //when a client disconnected, emitted to all clients of the match
 socket.on('playerDisconnected', function(data) {

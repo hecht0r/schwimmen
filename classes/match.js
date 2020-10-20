@@ -6,7 +6,7 @@ module.exports = class Match{
 		this.games = [];
 		this.status = 0;
 		this.id = id;
-		this.maxPlayers = 4;
+		this.maxPlayers = 4; //default
 	}
 	
 	addPlayer(player){
@@ -16,8 +16,8 @@ module.exports = class Match{
 	setMaxPlayers(max){
 		if (max < 2){
 			this.maxPlayers = 2;	
-		}else if (max > 4){
-			this.maxPlayers = 4;
+		}else if (max > 9){
+			this.maxPlayers = 9;
 		}else{
 			this.maxPlayers = max;
 		}
@@ -28,7 +28,7 @@ module.exports = class Match{
  		this.status = 1;
 		let scoreBoard =[];
 		for (let i = 0; i < m.players.length; i++) {
-			scoreBoard.push({player: m.players[i].name, score: m.players[i].score});
+			scoreBoard.push({player: m.players[i].name, score: m.players[i].score, wins: m.players[i].wins});
 		}
 		m.emitPlayers('updateScoreboard',scoreBoard);
 

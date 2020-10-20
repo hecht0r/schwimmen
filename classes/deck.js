@@ -6,11 +6,12 @@ module.exports = class Deck {
 	}
 
 	createDeck() {
+		let suits = ['Herz', 'Karo', 'Kreuz', 'Pik'];
 		let ranks = ['Ass', 'Koenig', 'Dame', 'Bube', 'Zehn', 'Neun', 'Acht', 'Sieben'];
 		let values = [11, 10, 10, 10, 10, 9, 8, 7];
-		for (let i = 0; i < module.exports.suits.length; i++) {
+		for (let i = 0; i < suits.length; i++) {
 			for (let j = 0; j < ranks.length; j++) {
-				this.cards.push(new card(module.exports.suits[i], ranks[j], values[j]));
+				this.cards.push(new card(suits[i], ranks[j], values[j]));
 			}
 		}
 	}
@@ -34,5 +35,3 @@ module.exports = class Deck {
 		return this.cards.filter(card => card.id === id)[0];
 	}	
 }
-
-module.exports.suits = ['Herz', 'Karo', 'Kreuz', 'Pik'];

@@ -110,7 +110,7 @@ window.onbeforeunload = function() {
 };
 
 flexFont = function () {
-	var divs = document.querySelectorAll('.roundLog, .gameLog, .matchLog');
+	var divs = document.querySelectorAll('.gameLog, .gameScore, .totalScore');
     for(var i = 0; i < divs.length; i++) {
         var relFontsize = divs[i].offsetWidth*0.05;
         divs[i].style.fontSize = relFontsize+'px';

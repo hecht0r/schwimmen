@@ -92,10 +92,10 @@ div.errorLog {
 
 div.gameLog {
 	position: fixed;
-	top: 5%;
+	top: 35%;
 	left: 1%;
 	width: 15%;
-	height: 85%; 
+	height: 44%; 
 	font-size: 0,5vw;
 	border: 1px solid green;
 	visibility: hidden;
@@ -103,7 +103,17 @@ div.gameLog {
     overflow-x: hidden;
 }
 
-div.matchLog {
+div.gameScore {
+	position: fixed;
+	top: 5%;
+	left: 1%;
+	width: 15%;
+	height: 25%;
+	border: 1px solid green;
+	visibility: hidden;
+}
+
+div.totalScore {
 	position: fixed;
 	top: 5%;
 	left: 82%;

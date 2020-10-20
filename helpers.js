@@ -96,3 +96,10 @@ module.exports.getCardsValue = function(cards){
 	}
 	return total;
 }
+
+// log to console
+module.exports.log = function(data){
+	if (log){
+		console.log(data);
+	}
+}

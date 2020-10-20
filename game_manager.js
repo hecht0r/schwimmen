@@ -3,9 +3,9 @@ const player = require('./classes/player.js');
 const helper = require('./helpers.js');
 const actions = require('./actions.js');
 const match = require('./classes/match.js');
-
 const deck = require('./classes/deck.js');
 
+global.log = true;
 global.rooms = [];
 global.score_to_win = 101;
 
@@ -14,7 +14,7 @@ module.exports.listen = function(app) {
 	io.on('connection', function(socket) {
  
 		socket.on('setUsername', function(data) {
-			console.log(`${data} connected`);
+			helper.log(`${data} connected`);
 			join(socket, data);
 		});
 		
