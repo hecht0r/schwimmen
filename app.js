@@ -23,7 +23,7 @@ app.get('/matches', function(req, res) {
 		content += '<li>Spieler: ' + rooms[i].players.length + '/' + rooms[i].maxPlayers + '  Status: ' + match.matchStatus[rooms[i].status] + '</li>';
 		content += '<ul>';
 		for (let j = 0; j < rooms[i].teams.length; j++) {
-			content += '<li>' + rooms[i].teams[j].name + ': ' + rooms[i].teams[j].wins + '</li>';
+			content += '<li>' + rooms[i].teams[j].name + ': ' + rooms[i].teams[j].score + '</li>';
 		}
 		content += '</ul>';
 	}

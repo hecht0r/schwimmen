@@ -4,20 +4,41 @@ const helper = require('./helpers.js');
 const actions = require('./actions.js');
 const match = require('./classes/match.js');
 
+const deck = require('./classes/deck.js');
+
 global.rooms = [];
 global.score_to_win = 101;
 
 module.exports.listen = function(app) {
 	io = socketio.listen(app);
 	io.on('connection', function(socket) {
-
+ 
 		socket.on('setUsername', function(data) {
 			console.log(`${data} connected`);
 			join(socket, data);
 		});
 		
 		socket.on('action', function(data) {
-			action(socket, data);
+			switch (data.action) {
+				case 'keep':
+					actions.keep(socket, data);
+					break;
+				case 'new':
+					actions.new(socket, data);
+					break;
+				case 'change':
+					actions.change(socket, data);
+					break;
+				case 'changeAll':
+					actions.changeAll(socket, data);
+					break;			
+				case 'shove':
+					actions.shove(socket, data);
+					break;
+				case 'knock':
+					actions.knock(socket, data);
+					break;
+			}
 		});	
 
 		socket.on('settings', function(data) {
@@ -74,34 +95,5 @@ function join(socket, username) {
 		setTimeout(function() {
 			m.start();
 		}, 2000);
-	}
-}
-
-function action(socket, data) {
-	switch (data.action) {
-		case 'playCard':
-			actions.playCard(socket, data);
-			break;
-		case 'melding':
-			actions.melding(socket, data);
-			break;			
-		case 'getTrumpcard':
-			actions.getTrumpcard(socket, data);
-			break;
-		case 'forfeit':
-			actions.forfeit(socket, data);
-			break;
-		case 'higher':
-			actions.higher(socket, data);
-			break;
-		case 'secondAce':
-			actions.secondAce(socket, data);
-			break;
-		case 'startOpen':
-			actions.startOpen(socket, data);
-			break;
-		case 'playCardFinal':
-			actions.playCardFinal(socket, data);
-			break;
 	}
 }

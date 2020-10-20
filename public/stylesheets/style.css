@@ -4,31 +4,11 @@ html *{
 
 /* images */
 img.card {
-	margin: 0 0,9%;
+	margin: 0 2%;
 	border:2px solid transparent;
 	border-radius: 7%;
 	max-height: 90%;  
 	max-width: 18%;  
-}
-
-img.trumpcard{
-	margin: 0 0,9%;
-	border:2px solid transparent;
-	border-radius: 7%;
-	max-height: 90%;  
-	max-width: 18%;   
-	-webkit-transform: rotate(90deg);
-	-moz-transform: rotate(90deg);
-	-o-transform: rotate(90deg);
-	-ms-transform: rotate(90deg);
-	transform: rotate(90deg);
-}
-
-img.talon {
-	border-radius: 7%;
-	border:2px solid transparent;
-	max-height: 90%;  
-	max-width: 18%;
 }
 
 .actionbutton {
@@ -61,57 +41,23 @@ div.board {
 	height: 80%;
 	visibility: hidden;
 }
-
-div.myScore {
+ 
+div.middleCards {
 	position: fixed;
 	top: 40%;
-	left: 95%;
-	font-size: 2em;
-	visibility: hidden;
-}
-
-div.talon{
-	position: fixed;
-	top: 45%;
-	left: 49%;
-	transform: translate(-50%, -50%);
-	width: 37%;
-	height: 25%; 
-}
-
-div.trumpcard {
-	position: fixed;
-	top: 45%;
-	left: 49%;
-	transform: translate(-40%, -50%);
-	width: 37%;
-	height: 25%; 
-}
-
-div.playedCards {
-	position: fixed;
-	top: 20%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-30%, -50%);
 	width: 37%;
 	height: 25%; 
 }
-
+ 
 div.myCards {
 	position: fixed;
 	top: 70%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-30%, -50%);
 	width: 37%;
 	height: 25%;   
-}
-
-div.myMeldings {
-	position: fixed;
-	top: 60%;
-	left: 21%;
-	width: 10%;
-	height: 10%; 
 }
 
 div.myActions {
@@ -143,24 +89,13 @@ div.errorLog {
 	color: red;
 }
 
-div.roundLog{
+
+div.gameLog {
 	position: fixed;
 	top: 5%;
 	left: 1%;
 	width: 15%;
-	height: 35%;
-	border: 1px solid green;
-	visibility: hidden;
-	overflow-y: auto;
-    overflow-x: hidden;
-}
-
-div.gameLog {
-	position: fixed;
-	top: 41%;
-	left: 1%;
-	width: 15%;
-	height: 44%; 
+	height: 85%; 
 	font-size: 0,5vw;
 	border: 1px solid green;
 	visibility: hidden;
@@ -192,16 +127,6 @@ div.nextPlayer {
 	width: 20%;
 	height: 4%;
 	font-size: 2em;
-}
-
-div.talonSize {
-	position: fixed;
-	top: 1%;
-	left: 54%;
-	width: 20%;
-	height: 4%;
-	font-size: 2em;
-	text-align: right;
 }
 
 div.links {

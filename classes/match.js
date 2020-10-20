@@ -1,10 +1,8 @@
 const game = require('./game.js');
-const team = require('./team.js');
 
 module.exports = class Match{
 	constructor(id) {
 		this.players = [];
-		this.teams = [];
 		this.games = [];
 		this.status = 0;
 		this.id = id;
@@ -26,45 +24,20 @@ module.exports = class Match{
 	}
 
 	start(){
-		// create teams and assign players
-		this.teams = [];
-		let t;
-		if(this.players.length == 4){
-			t = new team();
-			t.addPlayer({name: this.players[0].socket.username, id: this.players[0].socket.id});
-			t.addPlayer({name: this.players[2].socket.username, id: this.players[2].socket.id});
-			t.setName();
-			this.teams.push(t);	
-
-			t = new team();
-			t.addPlayer({name: this.players[1].socket.username, id: this.players[1].socket.id});
-			t.addPlayer({name: this.players[3].socket.username, id: this.players[3].socket.id});
-			t.setName();
-			this.teams.push(t);	
-		}else{
-			for (let i = 0; i < this.players.length; i++) {
-				t = new team();
-				t.addPlayer({name: this.players[i].socket.username, id: this.players[i].socket.id});
-				t.setName();
-				this.teams.push(t);
-			}
-		}
-
 		// start game
-		this.status = 1;
+ 		this.status = 1;
 		let scoreBoard =[];
-		for (let i = 0; i < this.teams.length; i++) {
-			this.teams[i].wins = 0;
-			scoreBoard.push({team: this.teams[i].name, score: this.teams[i].wins});
+		for (let i = 0; i < m.players.length; i++) {
+			scoreBoard.push({player: m.players[i].name, score: m.players[i].score});
 		}
 		m.emitPlayers('updateScoreboard',scoreBoard);
 
 		// for first game randomly pick starting player
-		this.startGame(this.players[Math.floor(Math.random() * this.players.length)]);
+		this.startGame(this.players, this.players[Math.floor(Math.random() * this.players.length)]);
 	}
 
-	startGame(starter) {
-		let g = new game();
+	startGame(players, starter) {
+		let g = new game(players);
 		this.games.push(g);
 		g.start(starter);	
 	}
@@ -90,25 +63,6 @@ module.exports = class Match{
 			}
 		}
 		return false;
-	}
-
-	findTeamById(socketId){
-		for (let i = 0; i < this.teams.length; i++) {
-			for (let j = 0; j < this.teams[i].players.length; j++) {
-				if (this.teams[i].players[j].id === socketId) {
-					return this.teams[i];
-				}
-			}	
-		}
-		return false;
-	}
-
-	getNextPlayer(player) {
-		let index = this.players.indexOf(player);
-		if (index == this.players.length-1){
-			index = -1;
-		}
-		return this.players[index + 1];
 	}
  }
 

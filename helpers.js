@@ -20,15 +20,6 @@ module.exports.findMatchById = function(matchId) {
 	return false;
 }
 
-// find the match with the given [team]
-module.exports.findMatchByTeam = function(team) {
-	for (let i = 0; i < rooms.length; i++) {
-		if (rooms[i].teams.indexOf(team) > -1) {
-			return rooms[i];
-		}
-	}
-	return false;
-}
 
 // find the [player] with the given player's socketID
 module.exports.findPlayerBySocketId = function(socketId) {
@@ -43,9 +34,36 @@ module.exports.findPlayerBySocketId = function(socketId) {
 }
 
 // find given card and remove it from given cards
-module.exports.removeCardFromHand = function(cards, card) {
+module.exports.removeCard = function(cards, card) {
 	cards.splice(cards.findIndex(c => c.id == card.id), 1 );
 	return cards;
+}
+
+// gives value of given cards
+module.exports.handValue = function(cards) {
+	
+	let dups = [];
+	for (let i = 0; i < cards.length; i++) {
+	  if (cards.filter(c => [cards[i].suit].indexOf(c.suit) != -1).length > 1) {
+		dups.push(cards[i]);
+	  }
+	}
+	if (dups.length > 0){
+		// if a suit exists more than once, sum their values
+		return(module.exports.getCardsValue(dups));
+	}else{
+		// if not...check if a rank exists three times
+		if ((cards.filter(c => [cards[0].rank].indexOf(c.rank) > -1)).length === 3){
+			if (cards[0].value === 11){
+				return 33;
+			}else{
+				return 30.5;
+			}
+		}else{
+			cards.sort((a,b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0)); 
+			return cards[0].value;
+		}
+	}
 }
 
 // create UUID for Matches

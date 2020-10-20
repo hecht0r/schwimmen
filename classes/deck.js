@@ -6,12 +6,10 @@ module.exports = class Deck {
 	}
 
 	createDeck() {
-		let ranks = ['Ass', 'Zehn', 'Koenig', 'Ober', 'Unter', 'Sieben'];
-		let values = [11, 10, 4, 3, 2, 0];
+		let ranks = ['Ass', 'Koenig', 'Dame', 'Bube', 'Zehn', 'Neun', 'Acht', 'Sieben'];
+		let values = [11, 10, 10, 10, 10, 9, 8, 7];
 		for (let i = 0; i < module.exports.suits.length; i++) {
 			for (let j = 0; j < ranks.length; j++) {
-				// each card exists twice
-				this.cards.push(new card(module.exports.suits[i], ranks[j], values[j]));
 				this.cards.push(new card(module.exports.suits[i], ranks[j], values[j]));
 			}
 		}
@@ -37,4 +35,4 @@ module.exports = class Deck {
 	}	
 }
 
-module.exports.suits = ['Eichel', 'Schippen', 'Bollen', 'Herz'];
+module.exports.suits = ['Herz', 'Karo', 'Kreuz', 'Pik'];

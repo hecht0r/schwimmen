@@ -1,5 +1,6 @@
 var socket = io();
 var selectedCard;
+var selectedMiddleCard;
 var actionCanBeSent = false;
 var username;
 var matchId;
@@ -38,39 +39,40 @@ function setSettings(){
 }
 
 function action(action) {
-	if(((selectedCard) || action === 'forfeit')) {
+	if (action === 'change' && ((!selectedCard) || (!selectedMiddleCard))){
+		clear('errorLog');
+		write('errorLog', 'Bitte Karte auswählen');
+	}else{
 		actionCanBeSent = false;
 		removeActions();
-		socket.emit('action', { matchId: matchId, action: action, card: selectedCard });
+		socket.emit('action', { matchId: matchId, action: action, card: selectedCard, middleCard: selectedMiddleCard });
 		selectedCard = false;
+		selectedMiddleCard = false;
 		for (let i = 0; i < document.images.length; i++){
 			document.images[i].style.border = '2px solid transparent';
 		}
-	}else{
-		clear('errorLog');
-		write('errorLog', 'Bitte Karte auswählen');
-	}	
+	}
 };
  
 function selectCard(img,card) {
-	for (let i = 0; i < document.images.length; i++){
-		document.images[i].style.border = '2px solid transparent';
+	let cards = document.getElementById('myCards').getElementsByTagName('img');;
+	for (let i = 0; i < cards.length; i++){
+		cards[i].style.border = '2px solid transparent';
 	}
 	img.style.border = '2px solid green';
 	selectedCard = card;
  };   
- 
- function playCard(img,card) {
-	 if(actionCanBeSent){
-		 actionCanBeSent = false;
-		for (let i = 0; i < document.images.length; i++){
-			document.images[i].style.border = '2px solid transparent';
-		}
-		removeActions();
-		socket.emit('action', { matchId: matchId, action: 'playCard', card: card });
-	}
-};
 
+ function selectMiddleCard(img,card) {
+	let cards = document.getElementById('middleCards').getElementsByTagName('img');;
+	for (let i = 0; i < cards.length; i++){
+		cards[i].style.border = '2px solid transparent';
+	}
+	img.style.border = '2px solid green';
+	selectedMiddleCard = card;
+ };   
+
+   
 function removeActions() {
 	clear('myActions');
 	clear('errorLog');
@@ -78,20 +80,17 @@ function removeActions() {
 
 function addActions(type) {
 	clear('myActions');
-	let actions = [];
+	let actions;
 	switch(type){
-		case 'forfeit':
-			actions = [{ action: 'forfeit', title: 'Karten zurückgeben' }]; 
-			break;
-		case 'start':
-			actions = [	{ action: 'higher', title: 'Höher' },{ action: 'secondAce', title: 'Zweites Ass' },{ action: 'startOpen', title: 'Offen spielen' }]; 
-			break;
 		case 'regular':
-			actions = [{ action: 'playCard', title: 'Karte spielen' },{ action: 'getTrumpcard', title: 'Trumpfkarte holen' },{ action: 'melding', title: 'Melden' }];
+			actions = [{ action: 'change', title: 'Tauschen' },{ action: 'changeAll', title: 'Alle Tauschen' },{ action: 'shove', title: 'Schieben' },{ action: 'knock', title: 'Klopfen' }]; 
 			break;
-		case 'last':
-			actions = [{ action: 'playCardFinal', title: 'Karte spielen' }];
+		case 'firstMove':
+			actions = [{ action: 'keep', title: 'Behalten' },{ action: 'new', title: 'Tauschen' }]; 
 			break;
+		case 'noKnock':
+			actions = [{ action: 'change', title: 'Tauschen' },{ action: 'changeAll', title: 'Alle Tauschen' },{ action: 'shove', title: 'Schieben' }]; 
+			break;			
 		}
 
 	for (let i = 0; i < actions.length; i++) {
