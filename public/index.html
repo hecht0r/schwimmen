@@ -5,24 +5,30 @@
 		<link rel='stylesheet' href='stylesheets/style.css'>
 	</head>
 	<body>
+		<ul class="pages">
+			<li class="game page">
+				<div id='board' class='board'></div>
+				<div id='middleCards' class='middleCards'></div>
+				<div id='myCards' class='myCards'></div>
+				<div id='myActions' class='myActions'></div>
+				<div id='nextPlayer' class='nextPlayer'></div>
+				<div id='totalScore' class='totalScore'><div class='logHeader'>Gesamtspielstand</div></div>
+				<div id='gameScore' class='gameScore'><div class='logHeader'>Spielstand</div></div>
+				<div id='gameLog' class='gameLog'><div class='logHeader'>Aktuelles Spiel</div></div>
+				<div id='errorLog' class='errorLog'></div>
+				<div id='settings' class='settings'></div>
+				<div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>
+			</li>
+			<li class="login page">
+				<div class='login'>
+					<h3 class="title">What's your nickname?</h3>
+					<input id='name' class='name' type='text' required maxlength="15">
+				</div>			
+			</li>
+		</ul>
 		<script src='https://code.jquery.com/jquery-1.10.2.min.js'></script>
 		<script src='/socket.io/socket.io.js'></script>
 		<script src='/scripts/main.js'></script>
 		<script src='/scripts/sockets.js'></script>
-		<div id='login' class='login'>
-			<input id = 'name' type = 'text' placeholder = 'Dein Name'>
-			<button type = 'button' name = 'button' onclick = 'setUsername()'>Spielen</button>
-		</div>			
-		<div id='board' class='board'></div>
-		<div id='middleCards' class='middleCards'></div>
-		<div id='myCards' class='myCards'></div>
-		<div id='myActions' class='myActions'></div>
-		<div id='nextPlayer' class='nextPlayer'></div>
-		<div id='totalScore' class='totalScore'><div class='logHeader'>Gesamtspielstand</div></div>
-		<div id='gameScore' class='gameScore'><div class='logHeader'>Spielstand</div></div>
-		<div id='gameLog' class='gameLog'><div class='logHeader'>Aktuelles Spiel</div></div>
-		<div id='errorLog' class='errorLog'></div>
-		<div id='settings' class='settings'></div>
-		<div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>
 	</body>
 </html>

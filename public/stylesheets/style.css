@@ -161,11 +161,75 @@ div.links a {
 	padding: 10%;
 }
 
-div.login {
+/*div.login {
 	position: fixed;
 	top: 1%;
 	left: 1%;
 	width: 15%;
 	height: 4%;
 	font-size: 1em;
+}*/
+
+/* Pages */
+
+.pages {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+  }
+  
+  .page {
+	height: 100%;
+	position: absolute;
+	width: 100%;
+  }
+
+.login.page{
+	background-color: #000;
+  }
+  
+.login.page .login{
+	height: 100px;
+	margin-top: -100px;
+	position: absolute;
+
+	text-align: center;
+	top: 50%;
+	width: 100%;
+}
+
+.login.page .login .name{
+	background-color: transparent;
+	border: none;
+	border-bottom: 2px solid #fff;
+	outline: none;
+	padding-bottom: 15px;
+	text-align: center;
+	width: 400px;
+}
+
+.login.page .title{
+	font-size: 200%;
+}
+
+.login.page .name {
+	font-size: 200%;
+	letter-spacing: 3px;
+}
+
+.login.page .title, .login.page .name {
+	color: #fff;
+	font-weight: 100;
+}
+
+.game.page {
+	display: none;
+}
+
+.username {
+	font-weight: 700;
+	overflow: hidden;
+	padding-right: 15px;
+	text-align: right;
 }

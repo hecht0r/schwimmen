@@ -2,13 +2,15 @@
 socket.on('userSet', function(data) {
 	username = data.username;
 	matchId = data.matchId;
-	clear('login');
+	$('.login.page').fadeOut();
+	$('.game.page').show();
+	$('.login.page').off('click');
 	show('gameLog');
 	show('gameScore');
 	show('totalScore');
 	show('board');
 	show('links');
-	write('login','Hello ' + data.username)
+	document.body.appendChild(document.createTextNode('Hello ' + data.username));
 });
 
 // when client can choose maxPlayers, emitted to only one client

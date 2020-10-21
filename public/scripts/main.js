@@ -5,6 +5,8 @@ var actionCanBeSent = false;
 var username;
 var matchId;
 
+var $window = $(window);
+
 function setUsername() {
 	socket.emit('setUsername', $('#name').val());
 };
@@ -123,3 +125,12 @@ window.onload = function(event) {
 window.onresize = function(event) {
     flexFont();
 };
+
+$window.keydown(event => {
+    // When the client hits ENTER on their keyboard
+    if (event.which === 13) {
+      if (!username && $('#name').val() != ''){ 
+		setUsername();
+	  }
+	}
+});

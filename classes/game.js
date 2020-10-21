@@ -69,7 +69,7 @@ module.exports = class Game{
 		}else{
 			let players = this.players.slice();
 			players.sort((a,b) => (a.handValue > b.handValue) ? 1 : ((b.handValue > a.handValue) ? -1 : 0)); 
-			losers = m.players.filter(p => (p.handValue === players[0].handValue));
+			losers = this.players.filter(p => (p.handValue === players[0].handValue));
 		}
 
 		for (let i = 0; i < losers.length; i++) {
