@@ -15,6 +15,7 @@ function write(logID, data){
 	let log = document.getElementById(logID);
 	log.appendChild(document.createTextNode(data));
 	log.appendChild(document.createElement('br'));
+	log.scrollTop = log.scrollHeight + 10;
 }
 
 function writeHeader(logID, data){

@@ -28,6 +28,7 @@ module.exports = class Match{
  		this.status = 1;
 		let scoreBoard =[];
 		for (let i = 0; i < m.players.length; i++) {
+			m.players[i].init();
 			scoreBoard.push({player: m.players[i].name, score: m.players[i].score, wins: m.players[i].wins});
 		}
 		m.emitPlayers('updateScoreboard',scoreBoard);
