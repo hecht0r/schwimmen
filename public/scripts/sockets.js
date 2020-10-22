@@ -48,8 +48,6 @@ socket.on('userJoined', function(data) {
 // when a new game starts, emitted to all clients of the match
 socket.on('newGame', function(data) {
 	removeActions();
-	clearInterval(gameOverInterval);
-	document.getElementById('gameOver').innerHTML = "";
 	clear('settings');
 	clear('middleCards');
 	clear('gameLog');
@@ -130,6 +128,8 @@ socket.on('swim', function(data) {
 
 // show gamewinner in log
 socket.on('winner', function(data) {
+	clearInterval(gameOverInterval);
+	document.getElementById('gameOver').innerHTML = "";
 	write('gameLog', data + ' gewinnt das Spiel');
 })
 

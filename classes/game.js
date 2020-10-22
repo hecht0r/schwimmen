@@ -85,13 +85,17 @@ module.exports = class Game{
 				m.emitPlayers('swim', loser.name);
 			}
 			
-			// check if players have to leave the game
+			// check if players have to leave the game, not if losers are the only active players
 			if (loser.score < 0){
-				loser.score = '†';
-				m.emitPlayers('out', loser.name);
-				let index = this.players.indexOf(loser);
-				if (index > -1) {
-					this.players.splice(index, 1);
+				if (losers.length === this.players.length){
+					loser.score++;
+				}else{
+					loser.score = '†';
+					m.emitPlayers('out', loser.name);
+					let index = this.players.indexOf(loser);
+					if (index > -1) {
+						this.players.splice(index, 1);
+					}
 				}				
 			}
 		}
