@@ -135,3 +135,10 @@ $window.keydown(event => {
 	  }
 	}
 });
+
+function gameOver() {
+    document.getElementById('gameOver').innerHTML = "";
+    setTimeout(function () {
+      document.getElementById('gameOver').innerHTML = "Game Over";
+    }, 500);
+  }

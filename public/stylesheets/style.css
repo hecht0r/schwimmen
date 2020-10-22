@@ -40,6 +40,18 @@ div.board {
 	width: 60%;
 	height: 80%;
 	visibility: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	vertical-align: middle;
+}
+
+div.board h1{
+	font-family: 'VT323', monospace;
+	font-size: 700%;
+	position: absolute;
+	z-index: 10;
+	color: #E44141;
 }
  
 div.middleCards {
@@ -161,17 +173,7 @@ div.links a {
 	padding: 10%;
 }
 
-/*div.login {
-	position: fixed;
-	top: 1%;
-	left: 1%;
-	width: 15%;
-	height: 4%;
-	font-size: 1em;
-}*/
-
 /* Pages */
-
 .pages {
 	height: 100%;
 	margin: 0;

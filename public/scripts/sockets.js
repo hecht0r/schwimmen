@@ -1,3 +1,5 @@
+var gameOverInterval;
+
 // when client joined a match, emitted to only one client
 socket.on('userSet', function(data) {
 	username = data.username;
@@ -46,6 +48,8 @@ socket.on('userJoined', function(data) {
 // when a new game starts, emitted to all clients of the match
 socket.on('newGame', function(data) {
 	removeActions();
+	clearInterval(gameOverInterval);
+	document.getElementById('gameOver').innerHTML = "";
 	clear('settings');
 	clear('middleCards');
 	clear('gameLog');
@@ -53,22 +57,6 @@ socket.on('newGame', function(data) {
 	writeHeader('gameLog','Aktuelles Spiel')
 	write('gameLog', data + ' beginnt das Spiel');
 });
-
-// when a game has finished, emitted to all clients of the match
-socket.on('gameOver', function(data) {
-	let text = document.createElement('b');
-	text.innerHTML = data.winner + ' gewinnt das Spiel';
-	let gameLog = document.getElementById('gameLog');
-	gameLog.appendChild(text);
-	gameLog.appendChild(document.createElement('br'));
-
-	for(let i = 0; i < data.players.length; i++){
-		let playerScore = document.createTextNode(data.player[i].name + ': ' + data.player[i].score);
-		gameLog.appendChild(playerScore);
-		gameLog.appendChild(document.createElement('br'));
-	}
-});
-
 
 // update standings, emitted to all clients of the match   
 socket.on('updateScoreboard', function(data) {
@@ -152,9 +140,7 @@ socket.on('out', function(data) {
 		clear('middleCards');
 		clear('myCards');
 		clear('nextPlayer');
-		let middleCards = document.getElementById('middleCards');
-		let outMsg = document.createTextNode('Du bist raus!');
-		middleCards.appendChild(outMsg);
+		gameOverInterval = setInterval(gameOver,1000);
 	}
 })
 
