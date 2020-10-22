@@ -110,6 +110,7 @@ socket.on('move', function(data) {
 socket.on('roundOver', function(data) {
 	removeActions();
 	clear('gameLog');
+	clear('nextPlayer');
 	writeHeader('gameLog','Aktuelles Spiel')
 })
 // gameresults
