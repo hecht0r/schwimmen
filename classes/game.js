@@ -53,7 +53,7 @@ module.exports = class Game{
 		this.starter.emit('yourStartTurn');
 	}
 
-	end(winner){
+	async end(winner){
 		let m = helper.findMatchBySocketId(winner.socket.id);
 
 		m.emitPlayers('roundOver');
@@ -74,6 +74,7 @@ module.exports = class Game{
 			losers = this.players.filter(p => (p.handValue === players[0].handValue));
 		}
 
+		let playerLength = this.players.length;
 		for (let i = 0; i < losers.length; i++) {
 			let loser = losers[i];
 			loser.score -= 1;
@@ -87,7 +88,7 @@ module.exports = class Game{
 			
 			// check if players have to leave the game, not if losers are the only active players
 			if (loser.score < 0){
-				if (losers.length === this.players.length){
+				if (losers.length === playerLength){
 					loser.score++;
 				}else{
 					loser.score = '†';
@@ -100,6 +101,12 @@ module.exports = class Game{
 			}
 		}
 	
+		let scoreBoard =[];
+		for (let i = 0; i < m.players.length; i++) {
+			scoreBoard.push({player: m.players[i].name, score: m.players[i].score, wins: m.players[i].wins});
+			helper.log(m.players[i].name + ': ' + m.players[i].score);
+		}
+
 		let players;
 		if (this.players.length === 1){
 			m.emitPlayers('winner',this.players[0].name)
@@ -109,11 +116,12 @@ module.exports = class Game{
 			for (let i = 0; i < players.length; i++) {
 				players[i].init();
 			}
+			await new Promise(r => setTimeout(r, 5000));
 		}else{
 			players = this.players;
 		}
 		
-		let scoreBoard =[];
+		scoreBoard =[];
 		for (let i = 0; i < m.players.length; i++) {
 			scoreBoard.push({player: m.players[i].name, score: m.players[i].score, wins: m.players[i].wins});
 			helper.log(m.players[i].name + ': ' + m.players[i].score);

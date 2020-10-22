@@ -36,6 +36,11 @@ function show(divID){
 	div.style='visibility: visible';
 }
 
+function hide(divID){
+	let div = document.getElementById(divID);
+	div.style='visibility: hidden';
+}
+
 function setSettings(){
 	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById('maxPlayers').valueAsNumber});
 	clear('settings');
@@ -135,10 +140,3 @@ $window.keydown(event => {
 	  }
 	}
 });
-
-function gameOver() {
-    document.getElementById('gameOver').innerHTML = "";
-    setTimeout(function () {
-      document.getElementById('gameOver').innerHTML = "Game Over";
-    }, 500);
-  }

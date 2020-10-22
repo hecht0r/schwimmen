@@ -1,5 +1,3 @@
-var gameOverInterval;
-
 // when client joined a match, emitted to only one client
 socket.on('userSet', function(data) {
 	username = data.username;
@@ -7,6 +5,7 @@ socket.on('userSet', function(data) {
 	$('.login.page').fadeOut();
 	$('.game.page').show();
 	$('.login.page').off('click');
+	hide('gameOver');
 	show('gameLog');
 	show('gameScore');
 	show('totalScore');
@@ -128,8 +127,7 @@ socket.on('swim', function(data) {
 
 // show gamewinner in log
 socket.on('winner', function(data) {
-	clearInterval(gameOverInterval);
-	document.getElementById('gameOver').innerHTML = "";
+	hide('gameOver');
 	write('gameLog', data + ' gewinnt das Spiel');
 })
 
@@ -141,7 +139,7 @@ socket.on('out', function(data) {
 		clear('middleCards');
 		clear('myCards');
 		clear('nextPlayer');
-		gameOverInterval = setInterval(gameOver,1000);
+		show('gameOver');
 	}
 })
 
