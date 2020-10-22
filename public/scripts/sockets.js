@@ -118,9 +118,14 @@ socket.on('move', function(data) {
 	write('gameLog', data);
 })
 
+// round is over
+socket.on('roundOver', function(data) {
+	removeActions();
+	clear('gameLog');
+	writeHeader('gameLog','Aktuelles Spiel')
+})
 // gameresults
 socket.on('results', function(data) {
-	removeActions();
 	write('gameLog', data.player + ': ' + data.score);
 })
 

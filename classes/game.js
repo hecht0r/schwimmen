@@ -55,6 +55,8 @@ module.exports = class Game{
 
 	end(winner){
 		let m = helper.findMatchBySocketId(winner.socket.id);
+
+		m.emitPlayers('roundOver');
 		
 		// tell scores to everyone
 		for (let i = 0; i < this.players.length; i++) {
