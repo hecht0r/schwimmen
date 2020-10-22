@@ -27,7 +27,9 @@ module.exports.change = function(socket, data) {
 	player.hand.splice(playerIndex, 0, middleCard);
 	g.middleCards = helper.removeCard(g.middleCards, middleCard);	
 
-	m.emitPlayers('move', player.name + ' tauscht')
+	let logText = player.name + ' tauscht';
+	m.emitPlayers('move', logText);
+	helper.log(logText)
 	endMove(socket, data);
 }
 
@@ -45,7 +47,9 @@ module.exports.changeAll = function(socket, data) {
 	g.middleCards = player.hand;
 	player.hand = cards;
 
-	m.emitPlayers('move', player.name + ' tauscht alle')
+	let logText = player.name + ' tauscht alle';
+	m.emitPlayers('move', logText);
+	helper.log(logText)
 	endMove(socket, data);
 }
 
@@ -65,7 +69,9 @@ module.exports.shove = function(socket, data) {
 		g.middleCards = g.deck.cards.splice(0,3);
 	}
 
-	m.emitPlayers('move', player.name + ' schiebt')
+	let logText = player.name + ' schiebt';
+	m.emitPlayers('move', logText);
+	helper.log(logText)
 	endMove(socket, data);
 }
 
@@ -80,7 +86,9 @@ module.exports.knock = function(socket, data) {
 	// (players.length - 1) moves till round ends
 	g.knockCount = g.moveCount + g.players.length - 1;	
 
-	m.emitPlayers('move', player.name + ' klopft')
+	let logText = player.name + ' klopft';
+	m.emitPlayers('move', logText);
+	helper.log(logText)
 	endMove(socket, data);
 }
 
@@ -95,7 +103,9 @@ module.exports.keep = function(socket, data) {
 	g.middleCards = g.deck.cards.splice(0,3);
 	g.emitPlayers('updateMiddlecards', g.middleCards);
 
-	m.emitPlayers('move', player.name + ' behält seine Karten')
+	let logText = player.name + ' behält seine Karten';
+	m.emitPlayers('move', logText);
+	helper.log(logText)
 	endMove(socket, data);
 }
 
@@ -111,8 +121,10 @@ module.exports.new = function(socket, data) {
 	let cards = g.middleCards;
 	g.middleCards = player.hand;
 	player.hand = cards;
-
-	m.emitPlayers('move', player.name + ' tauscht seine Karten')
+	
+	let logText = player.name + ' tauscht seine Karten';
+	m.emitPlayers('move', logText);
+	helper.log(logText)
 	endMove(socket, data);
 }
 
