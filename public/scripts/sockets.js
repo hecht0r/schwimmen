@@ -63,6 +63,16 @@ socket.on('newGame', function(data) {
 	clear('nextPlayer');
 	writeHeader('gameLog','Aktuelles Spiel')
 	write('gameLog', data + ' beginnt das Spiel');
+	
+	// init middleCards
+	let card;
+	let middleCards = document.getElementById('middleCards');
+	for (let i = 0; i < 3; i++) {
+		card = document.createElement('img');
+		card.setAttribute('class','card');
+		card.setAttribute('src',`/images/back.png`);
+		middleCards.appendChild(card);
+	};
 });
 
 // update standings, emitted to all clients of the match   
