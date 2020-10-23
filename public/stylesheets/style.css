@@ -187,11 +187,13 @@ div.links a {
 	width: 100%;
   }
 
-.login.page{
+.login.page,
+.settings.page{
 	background-color: #000;
   }
   
-.login.page .login{
+.login.page .login,
+.settings.page .setting{
 	height: 100px;
 	margin-top: -100px;
 	position: absolute;
@@ -201,7 +203,8 @@ div.links a {
 	width: 100%;
 }
 
-.login.page .login .name{
+.login.page .login .name,
+.settings.page .setting .maxPlayers{
 	background-color: transparent;
 	border: none;
 	border-bottom: 2px solid #fff;
@@ -211,16 +214,19 @@ div.links a {
 	width: 400px;
 }
 
-.login.page .title{
+.login.page .title,
+.settings.page .title{
 	font-size: 200%;
 }
 
-.login.page .name {
+.login.page .name,
+.settings.page .maxPlayers{
 	font-size: 200%;
 	letter-spacing: 3px;
 }
 
-.login.page .title, .login.page .name {
+.login.page .title, .login.page .name,
+.settings.page .title, .maxPlayers {
 	color: #fff;
 	font-weight: 100;
 }
@@ -228,6 +234,11 @@ div.links a {
 .game.page {
 	display: none;
 }
+
+.settings.page {
+	display: none;
+}
+
 
 .username {
 	font-weight: 700;

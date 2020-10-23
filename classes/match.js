@@ -6,7 +6,7 @@ module.exports = class Match{
 		this.games = [];
 		this.status = 0;
 		this.id = id;
-		this.maxPlayers = 4; //default
+		this.maxPlayers;
 	}
 	
 	addPlayer(player){

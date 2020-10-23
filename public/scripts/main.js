@@ -3,6 +3,7 @@ var selectedCard;
 var selectedMiddleCard;
 var actionCanBeSent = false;
 var username;
+var maxPlayersSet = true;
 var matchId;
 
 var $window = $(window);
@@ -43,7 +44,10 @@ function hide(divID){
 
 function setSettings(){
 	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById('maxPlayers').valueAsNumber});
-	clear('settings');
+	//clear('settings');
+	$('.settings.page').fadeOut();
+	$('.game.page').show();
+	$('.settings.page').off('click');
 }
 
 function action(action) {
@@ -137,6 +141,10 @@ $window.keydown(event => {
     if (event.which === 13) {
       if (!username && $('#name').val() != ''){ 
 		setUsername();
+	  }
+	  if (!maxPlayersSet && $('#maxPlayers').val() != ''){
+		maxPlayersSet = true;
+		setSettings();
 	  }
 	}
 });

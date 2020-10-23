@@ -16,7 +16,7 @@ socket.on('userSet', function(data) {
 
 // when client can choose maxPlayers, emitted to only one client
 socket.on('setSettings', function() {
-	clear('settings');
+	/*clear('settings');
 	let input = document.createElement('input');
 	input.setAttribute('type', 'number');
 	input.setAttribute('id', 'maxPlayers');
@@ -36,7 +36,17 @@ socket.on('setSettings', function() {
 	let settings = document.getElementById('settings');
 	settings.appendChild(label);
 	settings.appendChild(input);
-	settings.appendChild(btn);
+	settings.appendChild(btn); */
+
+	/*hide('gameLog');
+	hide('gameScore');
+	hide('totalScore');
+	hide('board');
+	hide('links');*/
+	maxPlayersSet = false;
+	$('.game.page').fadeOut();
+	$('.settings.page').show();
+	$('.game.page').off('click');
 });
 
 // when someone joined the match, emitted to all clients of the match
