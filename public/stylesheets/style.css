@@ -50,7 +50,7 @@ div.board h1{
 	font-family: 'VT323', monospace;
 	font-size: 700%;
 	position: absolute;
-	z-index: 10;
+	margin-top: 30%;
 	color: #E44141;
 }
  
