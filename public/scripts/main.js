@@ -19,6 +19,15 @@ function write(logID, data){
 	log.scrollTop = log.scrollHeight;
 }
 
+function writeBold(logID, data){
+	let log = document.getElementById(logID);
+	let text = document.createElement('b');
+	text.innerHTML = data;
+	log.appendChild(text);
+	log.appendChild(document.createElement('br'));
+	log.scrollTop = log.scrollHeight;
+}
+
 function writeHeader(logID, data){
 	let log = document.getElementById(logID);
 	let header = document.createElement('div');
@@ -116,6 +125,21 @@ function addActions(type) {
 		myActions.appendChild(btn);
 	}
 }	
+
+function setCountdown(counter){
+	setInterval(function() {
+		span = document.getElementById("countdown");
+	  	counter--;
+	  	if (counter >= 0) {
+		span.innerHTML = 'Neue Runde in ' + counter;
+	  	}
+	  	if (counter === 0) {
+			  span.innerHTML = '';
+			clearInterval(counter);
+	  	}
+	}, 1000);
+  }
+	
 
 window.onbeforeunload = function() {
 	return 'Data will be lost if you leave the page, are you sure?';

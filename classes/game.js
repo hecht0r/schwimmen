@@ -108,6 +108,7 @@ module.exports = class Game{
 		}
 
 		let players;
+		let timeout = 5000;
 		if (this.players.length === 1){
 			m.emitPlayers('winner',this.players[0].name)
 			players = m.players;
@@ -116,7 +117,9 @@ module.exports = class Game{
 			for (let i = 0; i < players.length; i++) {
 				players[i].init();
 			}
-			await new Promise(r => setTimeout(r, 5000));
+			await new Promise(r => setTimeout(r, timeout));
+			timeout = 0;
+			m.emitPlayers('gameOver');
 		}else{
 			players = this.players;
 		}
@@ -130,8 +133,9 @@ module.exports = class Game{
 		let nextStarter = this.getNextPlayer(this.starter);	
 
 		m.emitPlayers('updateScoreboard',scoreBoard);
+
 		setTimeout(function() {
 			m.startGame(players, nextStarter);
-		}, 5000);
+		}, timeout);
 	}
 }	

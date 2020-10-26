@@ -59,9 +59,8 @@ socket.on('newGame', function(data) {
 	removeActions();
 	clear('settings');
 	clear('middleCards');
-	clear('gameLog');
 	clear('nextPlayer');
-	writeHeader('gameLog','Aktuelles Spiel')
+	write('gameLog', '------------------');
 	write('gameLog', data + ' beginnt das Spiel');
 	
 	// init middleCards
@@ -118,21 +117,31 @@ socket.on('updateMiddlecards', function(data) {
 	middleCards.appendChild(card);
 })
 
-// shoe move in log
+// show move in log
 socket.on('move', function(data) {
-	write('gameLog', data);
+	if (data.includes('klopft')){
+		writeBold('gameLog', data);
+	}else{
+		write('gameLog', data);
+	}
 })
 
 // round is over
 socket.on('roundOver', function(data) {
 	removeActions();
-	clear('gameLog');
 	clear('nextPlayer');
+	setCountdown(5);
+})
+
+// game is over
+socket.on('gameOver', function(data) {
+	clear('gameLog');
 	writeHeader('gameLog','Aktuelles Spiel')
 })
+
 // gameresults
 socket.on('results', function(data) {
-	write('gameLog', data.player + ': ' + data.score);
+	writeBold('gameLog', data.player + ': ' + data.score)
 })
 
 // show roundlosers in log
@@ -142,18 +151,19 @@ socket.on('losers', function(data) {
 
 // show swimmers in log
 socket.on('swim', function(data) {
-	write('gameLog', data + ' schwimmt');
+	writeBold('gameLog', data + ' schwimmt')
 })
 
 // show gamewinner in log
 socket.on('winner', function(data) {
 	hide('gameOver');
-	write('gameLog', data + ' gewinnt das Spiel');
+	writeBold('gameLog', data + ' gewinnt das Spiel')
 })
 
 // if a player is out, remove cards
 socket.on('out', function(data) {
-	write('gameLog', data + ' ist raus');
+
+	writeBold('gameLog', data + ' ist raus');
 	if(data == username){
 		removeActions();
 		clear('middleCards');

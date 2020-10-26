@@ -89,6 +89,15 @@ div.settings {
 	height: 5%;
 }
 
+div.countdown {
+	position: fixed;
+	top: 1%;
+	left: 54%;
+	width: 20%;
+	height: 4%;
+	font-size: 2em;
+	text-align: right;
+}
 
 div.errorLog {
 	position: fixed;
