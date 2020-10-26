@@ -9,41 +9,14 @@ socket.on('userSet', function(data) {
 	show('gameLog');
 	show('gameScore');
 	show('totalScore');
-	show('board');
+//	show('board');
 	show('links');
 	document.body.appendChild(document.createTextNode('Hello ' + data.username));
 });
 
 // when client can choose maxPlayers, emitted to only one client
 socket.on('setSettings', function() {
-	/*clear('settings');
-	let input = document.createElement('input');
-	input.setAttribute('type', 'number');
-	input.setAttribute('id', 'maxPlayers');
-	input.setAttribute('min', 2);
-	input.setAttribute('max', 9);
-
-	let label = document.createElement('Label');
-    label.setAttribute('for',input);
-    label.innerHTML = 'Anzahl Spieler';
-		
-	let btn = document.createElement('button');
-	btn.innerHTML = 'Speichern';
-	btn.addEventListener('click', function () {
-		setSettings(); 
-	});
-
-	let settings = document.getElementById('settings');
-	settings.appendChild(label);
-	settings.appendChild(input);
-	settings.appendChild(btn); */
-
-	/*hide('gameLog');
-	hide('gameScore');
-	hide('totalScore');
-	hide('board');
-	hide('links');*/
-	maxPlayersSet = false;
+ 	maxPlayersSet = false;
 	$('.game.page').fadeOut();
 	$('.settings.page').show();
 	$('.game.page').off('click');
@@ -80,8 +53,14 @@ socket.on('updateScoreboard', function(data) {
 	clear('totalScore');
 	writeHeader('gameScore','Spielstand')
 	writeHeader('totalScore','Gesamtspielstand')
+	let score;
 	for(let i = 0; i < data.length; i++){
-		write('gameScore', data[i].player + ': ' + data[i].score);
+		if (data[i].score >= 0){
+			score = "I".repeat(data[i].score);
+		}else{
+			score = data[i].score;
+		}
+		write('gameScore', data[i].player + ': ' +  score);
 		write('totalScore', data[i].player + ': ' + data[i].wins);		
 	} 
 });
