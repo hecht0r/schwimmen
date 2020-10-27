@@ -55,7 +55,7 @@ div.board h1{
 }
  
 div.middleCards {
-	position: fixed;
+	position: relative;
 	top: 40%;
 	left: 50%;
 	transform: translate(-30%, -50%);

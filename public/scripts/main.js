@@ -53,7 +53,6 @@ function hide(divID){
 
 function setSettings(){
 	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById('maxPlayers').valueAsNumber});
-	//clear('settings');
 	$('.settings.page').fadeOut();
 	$('.game.page').show();
 	$('.settings.page').off('click');
