@@ -30,6 +30,7 @@ socket.on('newGame', function(data) {
 	removeActions();
 	clear('middleCards');
 	clear('gameStatus');
+	write('gameLog', '------------------');
 	write('gameLog', data + ' beginnt das Spiel');
 	
 	// init middleCards
@@ -104,7 +105,6 @@ socket.on('move', function(data) {
 
 // round is over
 socket.on('roundOver', function(data) {
-	write('gameLog', '------------------');
 	removeActions();
 	clear('gameStatus');
 	setCountdown(10);
