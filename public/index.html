@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Schwimmen beta 0.1.0</title>
+		<title>Schwimmen beta 0.9</title>
 		<link rel='stylesheet' href='stylesheets/style.css'>
 		<link href='https://fonts.googleapis.com/css?family=VT323' rel='stylesheet'>
 	</head>
 	<body>
 		<ul class="pages">
 			<li class="game page">
-				<div id="countdown" class='countdown'></div>
-				<div id='board' class='board'><h1 id="gameOver">GAME OVER</h1></div>
-				<div id='middleCards' class='middleCards'></div>
-				<div id='myCards' class='myCards'></div>
-				<div id='myActions' class='myActions'></div>
-				<div id='nextPlayer' class='nextPlayer'></div>
-				<div id='totalScore' class='totalScore'><div class='logHeader'>Gesamtspielstand</div></div>
-				<div id='gameScore' class='gameScore'><div class='logHeader'>Spielstand</div></div>
-				<div id='gameLog' class='gameLog'><div class='logHeader'>Aktuelles Spiel</div></div>
-				<div id='errorLog' class='errorLog'></div>
-				<div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>
+				<div class="column left">
+					<div class="top">
+						<div id="welcome" class="welcome"></div>
+						<div id="standings" class="standings"></div>
+						<div id="standingsTotal" class="standingsTotal"></div>			
+					</div>
+					<div id='middleCards' class="middleCards"></div>
+					<div id='playerCards' class="playerCards"></div>
+					<div id='playerActions' class='playerActions'></div>
+				</div>
+				<div class="column right">
+					<div id='gameStatus' class="gameStatus"></div>
+					<div id='gameLog' class="gameLog"></div>
+				</div>
+
+				<!--
+				
+				<div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>-->
 			</li>
 			<li class="login page">
 				<div class='login'>

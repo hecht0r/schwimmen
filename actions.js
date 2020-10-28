@@ -60,18 +60,20 @@ module.exports.shove = function(socket, data) {
 	
 	g.shoveCount++;
 	g.moveCount++;
-	
-	// if everyone shoved, get new middleCards
-	if (g.shoveCount === m.players.length){
-		g.shoveCount = 0;
-		Array.prototype.push.apply(g.deck.cards, g.middleCards);
-		g.middleCards = [];
-		g.middleCards = g.deck.cards.splice(0,3);
-	}
 
 	let logText = player.name + ' schiebt';
 	m.emitPlayers('move', logText);
 	helper.log(logText)
+	
+	// if everyone shoved, get new middleCards
+	if (g.shoveCount === g.players.length){
+		g.shoveCount = 0;
+		Array.prototype.push.apply(g.deck.cards, g.middleCards);
+		g.middleCards = [];
+		g.middleCards = g.deck.cards.splice(0,3);
+		m.emitPlayers('newMiddlecards');
+	}
+
 	endMove(socket, data);
 }
 

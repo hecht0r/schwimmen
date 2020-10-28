@@ -12,28 +12,30 @@ function setUsername() {
 	socket.emit('setUsername', $('#name').val());
 };
 
-function write(logID, data){
-	let log = document.getElementById(logID);
-	log.appendChild(document.createTextNode(data));
-	log.appendChild(document.createElement('br'));
-	log.scrollTop = log.scrollHeight;
+function write(divID, data){
+	let div = document.getElementById(divID);
+	div.appendChild(document.createTextNode(data));
+	div.appendChild(document.createElement('br'));
+	div.scrollTop = div.scrollHeight;
 }
 
-function writeBold(logID, data){
-	let log = document.getElementById(logID);
+function writeBold(divID, data){
+	let div = document.getElementById(divID);
 	let text = document.createElement('b');
 	text.innerHTML = data;
-	log.appendChild(text);
-	log.appendChild(document.createElement('br'));
-	log.scrollTop = log.scrollHeight;
+	div.appendChild(text);
+	div.appendChild(document.createElement('br'));
+	div.scrollTop = div.scrollHeight;
 }
 
-function writeHeader(logID, data){
-	let log = document.getElementById(logID);
-	let header = document.createElement('div');
-	header.setAttribute('class','logHeader');
-	header.innerHTML = data;
-	log.appendChild(header);
+function writeError(divID, data){
+	let div = document.getElementById(divID);
+	let text = document.createElement('b');
+	text.innerHTML = data;
+	text.style.color = 'red';
+	div.appendChild(text);
+	div.appendChild(document.createElement('br'));
+	div.scrollTop = div.scrollHeight;
 }
 
 function clear(divID){
@@ -60,8 +62,7 @@ function setSettings(){
 
 function action(action) {
 	if (action === 'change' && ((!selectedCard) || (!selectedMiddleCard))){
-		clear('errorLog');
-		write('errorLog', 'Bitte Karte auswählen');
+		writeError('gameLog', 'Bitte Karte auswählen');
 	}else{
 		actionCanBeSent = false;
 		removeActions();
@@ -75,11 +76,11 @@ function action(action) {
 };
  
 function selectCard(img,card) {
-	let cards = document.getElementById('myCards').getElementsByTagName('img');;
+	let cards = document.getElementById('playerCards').getElementsByTagName('img');;
 	for (let i = 0; i < cards.length; i++){
 		cards[i].style.border = '2px solid transparent';
 	}
-	img.style.border = '2px solid green';
+	img.style.border = '2px solid red';
 	selectedCard = card;
  };   
 
@@ -88,46 +89,53 @@ function selectCard(img,card) {
 	for (let i = 0; i < cards.length; i++){
 		cards[i].style.border = '2px solid transparent';
 	}
-	img.style.border = '2px solid green';
+	img.style.border = '2px solid red';
 	selectedMiddleCard = card;
  };   
 
    
 function removeActions() {
-	clear('myActions');
-	clear('errorLog');
+	clear('playerActions');
 }
 
 function addActions(type) {
-	clear('myActions');
+	clear('playerActions');
 	let actions;
 	switch(type){
 		case 'regular':
-			actions = [{ action: 'change', title: 'Tauschen' },{ action: 'changeAll', title: 'Alle Tauschen' },{ action: 'shove', title: 'Schieben' },{ action: 'knock', title: 'Klopfen' }]; 
+			actions = [{ action: 'change', title: 'Tauschen', isClickable: true },{ action: 'shove', title: 'Schieben', isClickable: true },{ action: 'changeAll', title: 'Alle Tauschen', isClickable: true },{ action: 'knock', title: 'Klopfen', isClickable: true }]; 
 			break;
 		case 'firstMove':
-			actions = [{ action: 'keep', title: 'Behalten' },{ action: 'new', title: 'Tauschen' }]; 
+			actions = [{ action: 'keep', title: 'Behalten', isClickable: true },{ action: 'new', title: 'Tauschen', isClickable: true }]; 
 			break;
 		case 'noKnock':
-			actions = [{ action: 'change', title: 'Tauschen' },{ action: 'changeAll', title: 'Alle Tauschen' },{ action: 'shove', title: 'Schieben' }]; 
+			actions = [{ action: 'change', title: 'Tauschen', isClickable: true },{ action: 'shove', title: 'Schieben', isClickable: true },{ action: 'changeAll', title: 'Alle Tauschen', isClickable: true },{ action: 'knock', title: 'Klopfen', isClickable: false }]; 
 			break;			
 		}
 
 	for (let i = 0; i < actions.length; i++) {
 		let btn = document.createElement('button');
 		btn.innerHTML = actions[i].title;
-		btn.className = 'actionbutton';
-		btn.addEventListener('click', function () {
-			action(actions[i].action); 
-		});
-		let myActions = document.getElementById('myActions');
-		myActions.appendChild(btn);
+		if(actions[i].isClickable){
+			btn.className = 'button';
+			btn.addEventListener('click', function () {
+				action(actions[i].action); 
+			});
+		}else{
+			console.log(123)
+			btn.className = 'buttonDisabled';
+		}
+		let playerActions = document.getElementById('playerActions');
+		playerActions.appendChild(btn);
+		if (i === 1){
+			playerActions.appendChild(document.createElement('br'));
+		}
 	}
 }	
 
 function setCountdown(counter){
 	setInterval(function() {
-		span = document.getElementById("countdown");
+		span = document.getElementById("gameStatus");
 	  	counter--;
 	  	if (counter >= 0) {
 		span.innerHTML = 'Neue Runde in ' + counter;
@@ -138,7 +146,6 @@ function setCountdown(counter){
 	  	}
 	}, 1000);
   }
-	
 
 window.onbeforeunload = function() {
 	return 'Data will be lost if you leave the page, are you sure?';

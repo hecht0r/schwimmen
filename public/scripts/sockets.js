@@ -5,12 +5,10 @@ socket.on('userSet', function(data) {
 	$('.login.page').fadeOut();
 	$('.game.page').show();
 	$('.login.page').off('click');
-	hide('gameOver');
 	show('gameLog');
-	show('gameScore');
-	show('totalScore');
-//	show('board');
-	show('links');
+	show('standings'); 
+	show('standingsTotal'); 
+	//show('links');
 	document.body.appendChild(document.createTextNode('Hello ' + data.username));
 });
 
@@ -30,9 +28,8 @@ socket.on('userJoined', function(data) {
 // when a new game starts, emitted to all clients of the match
 socket.on('newGame', function(data) {
 	removeActions();
-	clear('settings');
 	clear('middleCards');
-	clear('nextPlayer');
+	clear('gameStatus');
 	write('gameLog', '------------------');
 	write('gameLog', data + ' beginnt das Spiel');
 	
@@ -42,17 +39,18 @@ socket.on('newGame', function(data) {
 	for (let i = 0; i < 3; i++) {
 		card = document.createElement('img');
 		card.setAttribute('class','card');
-		card.setAttribute('src',`/images/back.png`);
+		card.setAttribute('src',`/images/cards/back.png`);
 		middleCards.appendChild(card);
 	};
 });
 
 // update standings, emitted to all clients of the match   
 socket.on('updateScoreboard', function(data) {
-	clear('gameScore');
-	clear('totalScore');
-	writeHeader('gameScore','Spielstand')
-	writeHeader('totalScore','Gesamtspielstand')
+	clear('standings');
+	clear('standingsTotal');
+	show('standings'); //show('gameScore'); //writeHeader('gameScore','Spielstand')
+	show('standingsTotal'); //show('totalScore'); //writeHeader('totalScore','Gesamtspielstand')
+	
 	let score;
 	for(let i = 0; i < data.length; i++){
 		if (data[i].score >= 0){
@@ -60,20 +58,20 @@ socket.on('updateScoreboard', function(data) {
 		}else{
 			score = data[i].score;
 		}
-		write('gameScore', data[i].player + ': ' +  score);
-		write('totalScore', data[i].player + ': ' + data[i].wins);		
+		write('standings', data[i].player + ': ' +  score);
+		write('standingsTotal', data[i].player + ': ' + data[i].wins);		
 	} 
 });
 
 // update clients cards, emitted to one client after another
 socket.on('updateHand', function(data) {
-	clear('myCards');
+	clear('playerCards');
 	for (let i = 0; i < data.length; i++) {
 		let card = document.createElement('img');
 		card.setAttribute('class','card');
-		card.setAttribute('src',`/images/${data[i].id}.jpg`);
+		card.setAttribute('src',`/images/cards/${data[i].id}.jpg`);
 		card.setAttribute('onclick','selectCard(this,"' + data[i].id + '")');
-		let myCards = document.getElementById('myCards');
+		let myCards = document.getElementById('playerCards');
 		myCards.appendChild(card);
 	};
 });
@@ -86,13 +84,13 @@ socket.on('updateMiddlecards', function(data) {
 	for (let i = 0; i < data.length; i++) {
 		card = document.createElement('img');
 		card.setAttribute('class','card');
-		card.setAttribute('src',`/images/${data[i].id}.jpg`);
+		card.setAttribute('src',`/images/cards/${data[i].id}.jpg`);
 		card.setAttribute('onclick','selectMiddleCard(this,"' + data[i].id + '")');
 		middleCards.appendChild(card);
 	};
 	card = document.createElement('img');
 	card.setAttribute('class','card');
-	card.setAttribute('src',`/images/back.png`);
+	card.setAttribute('src',`/images/cards/back.png`);
 	middleCards.appendChild(card);
 })
 
@@ -108,14 +106,18 @@ socket.on('move', function(data) {
 // round is over
 socket.on('roundOver', function(data) {
 	removeActions();
-	clear('nextPlayer');
-	setCountdown(5);
+	clear('gameStatus');
+	setCountdown(10);
+})
+
+// everyone shoved -> new middleCards
+socket.on('newMiddlecards', function(data) {
+	write('gameLog', 'Neue Karten in der Mitte');
 })
 
 // game is over
 socket.on('gameOver', function(data) {
 	clear('gameLog');
-	writeHeader('gameLog','Aktuelles Spiel')
 })
 
 // gameresults
@@ -135,7 +137,6 @@ socket.on('swim', function(data) {
 
 // show gamewinner in log
 socket.on('winner', function(data) {
-	hide('gameOver');
 	writeBold('gameLog', data + ' gewinnt das Spiel')
 })
 
@@ -146,9 +147,14 @@ socket.on('out', function(data) {
 	if(data == username){
 		removeActions();
 		clear('middleCards');
-		clear('myCards');
-		clear('nextPlayer');
-		show('gameOver');
+		clear('playerCards');
+		clear('gameStatus');
+		
+		let div = document.getElementById('middleCards');
+		img = document.createElement('img');
+		img.setAttribute('class','gameover');
+		img.setAttribute('src','/images/gameover.png');
+		div.appendChild(img);
 	}
 })
 
@@ -172,18 +178,18 @@ socket.on('yourTurn', function() {
 
 // tell all players whos turn it is, emitted to all clients of the game
 socket.on('nextPlayer', function(data) {
-	clear('nextPlayer');
+	clear('gameStatus');
 	if(data == username){
-		write('nextPlayer', 'Du bist dran');
+		write('gameStatus', 'Du bist dran');
 	}else{
-		write('nextPlayer', data + ' ist dran');
+		write('gameStatus', data + ' ist dran');
 	}
 });
 
 //when a client disconnected, emitted to all clients of the match
 socket.on('playerDisconnected', function(data) {
-	removeActions();
+  	removeActions();
 	clear('middleCards');
-	clear('myCards');
+	clear('playerCards');
 	write('gameLog', data + ' hat das Spiel verlassen');
 });

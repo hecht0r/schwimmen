@@ -29,7 +29,7 @@ module.exports = class Game{
 		let m = helper.findMatchBySocketId(starter.socket.id);
 		helper.log('---');
 		helper.log(starter.socket.username + ' beginnt.')
-		m.emitPlayers('newGame',starter.socket.username);
+		this.emitPlayers('newGame',starter.socket.username);
 		this.starter = starter;
 		this.deck = new deck();
 		this.deck.createDeck();
@@ -108,7 +108,7 @@ module.exports = class Game{
 		}
 
 		let players;
-		let timeout = 5000;
+		let timeout = 10000;
 		if (this.players.length === 1){
 			m.emitPlayers('winner',this.players[0].name)
 			players = m.players;

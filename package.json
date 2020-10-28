@@ -1,6 +1,6 @@
 {
   "name": "schwimmen",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "description": "schwimmen-beta",
   "main": "app.js",
   "scripts": {
