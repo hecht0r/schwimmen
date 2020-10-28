@@ -9,7 +9,7 @@ module.exports = class Player {
 
   init(){
     this.handValue = 0;
-    this.score = 0;
+    this.score = 3;
   }
 
   emit(event, data){
