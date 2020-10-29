@@ -48,10 +48,15 @@ socket.on('newGame', function(data) {
 socket.on('updateScoreboard', function(data) {
 	clear('standings');
 	clear('standingsTotal');
+	let columns;
 	if (data.length > 4){
-		document.getElementById('standings').style.columnCount = "2";
-		document.getElementById('standingsTotal').style.columnCount = "2";
+		columns = "2";
+	}else{
+		columns = "1";
 	}
+	
+	document.getElementById('standings').style.columnCount = columns; 
+	document.getElementById('standingsTotal').style.columnCount = columns;
 	
 	let score;
 	for(let i = 0; i < data.length; i++){
