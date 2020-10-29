@@ -41,7 +41,6 @@ body {
 	width: 30%;
 	float: left;
 	min-height: 100%;
-	column-count: 2;
 	visibility: hidden;
 }
 
@@ -49,7 +48,6 @@ body {
 	width: 30%;
 	text-align: left;
 	min-height: 100%;
-	column-count: 2;
 	visibility: hidden;
 }
 

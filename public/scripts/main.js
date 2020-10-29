@@ -122,7 +122,6 @@ function addActions(type) {
 				action(actions[i].action); 
 			});
 		}else{
-			console.log(123)
 			btn.className = 'buttonDisabled';
 		}
 		let playerActions = document.getElementById('playerActions');
@@ -152,7 +151,7 @@ window.onbeforeunload = function() {
 };
 
 flexFont = function () {
-	var divs = document.querySelectorAll('.gameLog, .gameScore, .totalScore');
+	var divs = document.querySelectorAll('.gameLog, .standings, .standingsTotal');
     for(var i = 0; i < divs.length; i++) {
         var relFontsize = divs[i].offsetWidth*0.05;
         divs[i].style.fontSize = relFontsize+'px';
