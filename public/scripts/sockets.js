@@ -149,8 +149,7 @@ socket.on('winner', function(data) {
 
 // if a player is out, remove cards
 socket.on('out', function(data) {
-
-	writeBold('gameLog', data + ' ist raus');
+	writeError('gameLog', 'Du bist raus');
 	if(data == username){
 		removeActions();
 		clear('middleCards');
@@ -162,6 +161,8 @@ socket.on('out', function(data) {
 		img.setAttribute('class','gameover');
 		img.setAttribute('src','/images/gameover.png');
 		div.appendChild(img);
+	}else{
+		writeBold('gameLog', data + ' ist raus');
 	}
 })
 

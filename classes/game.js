@@ -33,7 +33,7 @@ module.exports = class Game{
 		this.starter = starter;
 		this.deck = new deck();
 		this.deck.createDeck();
-		this.deck.shuffleDeck();
+		//this.deck.shuffleDeck();
 
 		// hand out cards and tell the players' client
 		for (let i = 0; i < this.players.length; i++) {
@@ -44,13 +44,17 @@ module.exports = class Game{
 		}
 
 		// check if someone has already >= 31 handvalue
+		let startRound = true;
 		for (let i = 0; i < this.players.length; i++) {
 			let player = this.players[i];
 			if (player.handValue >= 31){
+				startRound = false;
 				this.end(player);
 			}
 		}
-		this.starter.emit('yourStartTurn');
+		if (startRound){
+			this.starter.emit('yourStartTurn');
+		}
 	}
 
 	async end(winner){
