@@ -33,7 +33,7 @@ module.exports = class Game{
 		this.starter = starter;
 		this.deck = new deck();
 		this.deck.createDeck();
-		//this.deck.shuffleDeck();
+		this.deck.shuffleDeck();
 
 		// hand out cards and tell the players' client
 		for (let i = 0; i < this.players.length; i++) {

@@ -149,8 +149,9 @@ socket.on('winner', function(data) {
 
 // if a player is out, remove cards
 socket.on('out', function(data) {
-	writeError('gameLog', 'Du bist raus');
+	
 	if(data == username){
+		writeError('gameLog', 'Du bist raus');
 		removeActions();
 		clear('middleCards');
 		clear('playerCards');
