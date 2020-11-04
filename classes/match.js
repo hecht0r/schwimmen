@@ -23,15 +23,28 @@ module.exports = class Match{
 		}
 	}
 
+	kickPlayer(player){
+		this.players.splice(player, 1);
+
+		let scoreBoard =[];
+		for (let i = 0; i < this.players.length; i++) {
+			scoreBoard.push({player: this.players[i].name, score: this.players[i].score, wins: this.players[i].wins});
+		}
+		this.emitPlayers('updateScoreboard',scoreBoard);
+
+		// for next game randomly pick starting player
+		this.startGame(this.players, this.players[Math.floor(Math.random() * this.players.length)]);
+	}
+
 	start(){
 		// start game
  		this.status = 1;
 		let scoreBoard =[];
-		for (let i = 0; i < m.players.length; i++) {
-			m.players[i].init();
-			scoreBoard.push({player: m.players[i].name, score: m.players[i].score, wins: m.players[i].wins});
+		for (let i = 0; i < this.players.length; i++) {
+			this.players[i].init();
+			scoreBoard.push({player: this.players[i].name, score: this.players[i].score, wins: this.players[i].wins});
 		}
-		m.emitPlayers('updateScoreboard',scoreBoard);
+		this.emitPlayers('updateScoreboard',scoreBoard);
 
 		// for first game randomly pick starting player
 		this.startGame(this.players, this.players[Math.floor(Math.random() * this.players.length)]);

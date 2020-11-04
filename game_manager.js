@@ -49,15 +49,17 @@ module.exports.listen = function(app) {
 			// if our player was part of a match, we kick him from players
 			let m = helper.findMatchBySocketId(socket.id);
 			if (m){
+				//m.kickPlayer(m.players.indexOf(m.findPlayerById(socket.id)),1);
 				m.players.splice(m.players.indexOf(m.findPlayerById(socket.id)),1);
 				m.emitPlayers('playerDisconnected', socket.username);
-				m.status = 0;
-				// delete match if he was its last player
+				// delete match if he was its last player, if not, start a new game
 				if (m.players.length == 0){
 					rooms.splice(rooms.indexOf(m),1);
+				}else{
+					m.startGame(m.players, m.players[Math.floor(Math.random() * m.players.length)]);
 				}
-				
 			};
+			helper.log(`${socket.username} disconnected`);
 		});
 	});
 	return io;
