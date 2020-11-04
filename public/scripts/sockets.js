@@ -171,18 +171,21 @@ socket.on('out', function(data) {
 socket.on('yourStartTurn', function() {
 	actionCanBeSent = true;
 	addActions('firstMove');
+	//startTimerAutoKeep(60);
 })
 
 // when it's clients turn to start, emitted to starter only
 socket.on('yourTurnNoKnock', function() {
 	actionCanBeSent = true;
 	addActions('noKnock');
+	startTimerAutoShove(60);
 })
 
 // when it's clients turn to play, emitted to one client after another
 socket.on('yourTurn', function() {
 	actionCanBeSent = true;
 	addActions('regular');
+	startTimerAutoShove(60);
 })
 
 // tell all players whos turn it is, emitted to all clients of the game

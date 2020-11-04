@@ -5,6 +5,8 @@ var actionCanBeSent = false;
 var username;
 var maxPlayersSet = true;
 var matchId;
+var autoShoveIntervalId;
+var autoKeepIntervalId;
 
 var $window = $(window);
 
@@ -65,6 +67,8 @@ function action(action) {
 		writeError('gameLog', 'Bitte Karte auswählen');
 	}else{
 		actionCanBeSent = false;
+		clearInterval(autoShoveIntervalId);
+		clearInterval(autoKeepIntervalId);
 		removeActions();
 		socket.emit('action', { matchId: matchId, action: action, card: selectedCard, middleCard: selectedMiddleCard });
 		selectedCard = false;
@@ -133,18 +137,37 @@ function addActions(type) {
 }	
 
 function setCountdown(counter){
-	setInterval(function() {
+	let intervalId = setInterval(function() {
 		span = document.getElementById("gameStatus");
 	  	counter--;
 	  	if (counter >= 0) {
 		span.innerHTML = 'Neue Runde in ' + counter;
 	  	}
 	  	if (counter === 0) {
-			  span.innerHTML = '';
-			clearInterval(counter);
+			span.innerHTML = '';
+			clearInterval(intervalId);
 	  	}
 	}, 1000);
   }
+
+
+function startTimerAutoShove(counter){
+	autoShoveIntervalId = setInterval(function() {
+		counter--;
+		if (counter === 0) {
+			action('shove');
+		}
+	}, 1000);
+  }  
+
+function startTimerAutoKeep(counter){
+	autoKeepIntervalId = setInterval(function() {
+		counter--;
+		if (counter === 0) {
+			action('keep');
+		}
+	}, 1000);
+  } 
 
 window.onbeforeunload = function() {
 	return 'Data will be lost if you leave the page, are you sure?';
