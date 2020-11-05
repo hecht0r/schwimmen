@@ -171,7 +171,7 @@ socket.on('out', function(data) {
 socket.on('yourStartTurn', function() {
 	actionCanBeSent = true;
 	addActions('firstMove');
-	//startTimerAutoKeep(60);
+	startTimerAutoKeep(60);
 })
 
 // when it's clients turn to start, emitted to starter only

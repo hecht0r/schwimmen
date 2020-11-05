@@ -55,7 +55,7 @@ module.exports.listen = function(app) {
 				if (m.players.length == 0){
 					rooms.splice(rooms.indexOf(m),1);
 				}else{
-					let players = m.players.filter(player => player.active === true);
+					let players = m.players.filter(player => player.alive === true);
 					m.startGame(players, players[Math.floor(Math.random() * players.length)]);
 				}
 			};
