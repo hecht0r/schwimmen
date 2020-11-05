@@ -60,6 +60,7 @@ module.exports.handValue = function(cards) {
 				return 30.5;
 			}
 		}else{
+			// if not, hand value == high card
 			cards.sort((a,b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0)); 
 			return cards[0].value;
 		}
@@ -97,7 +98,7 @@ module.exports.getCardsValue = function(cards){
 	return total;
 }
 
-// log to console
+// log to console, find global var in game_manager.js
 module.exports.log = function(data){
 	if (log){
 		console.log(data);

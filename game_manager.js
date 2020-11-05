@@ -12,7 +12,7 @@ global.score_to_win = 101;
 module.exports.listen = function(app) {
 	io = socketio.listen(app);
 	io.on('connection', function(socket) {
- 
+		
 		socket.on('setUsername', function(data) {
 			helper.log(`${data} connected`);
 			join(socket, data);
@@ -49,14 +49,14 @@ module.exports.listen = function(app) {
 			// if our player was part of a match, we kick him from players
 			let m = helper.findMatchBySocketId(socket.id);
 			if (m){
-				//m.kickPlayer(m.players.indexOf(m.findPlayerById(socket.id)),1);
-				m.players.splice(m.players.indexOf(m.findPlayerById(socket.id)),1);
+				m.players.splice(m.players.indexOf(m.findPlayerById(socket.id),1));
 				m.emitPlayers('playerDisconnected', socket.username);
 				// delete match if he was its last player, if not, start a new game
 				if (m.players.length == 0){
 					rooms.splice(rooms.indexOf(m),1);
 				}else{
-					m.startGame(m.players, m.players[Math.floor(Math.random() * m.players.length)]);
+					let players = m.players.filter(player => player.active === true);
+					m.startGame(players, players[Math.floor(Math.random() * players.length)]);
 				}
 			};
 			helper.log(`${socket.username} disconnected`);

@@ -95,6 +95,7 @@ module.exports = class Game{
 				if (losers.length === playerLength){
 					loser.score++;
 				}else{
+					loser.alive = false;
 					loser.score = '†';
 					m.emitPlayers('out', loser.name);
 					let index = this.players.indexOf(loser);

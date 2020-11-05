@@ -12,6 +12,8 @@ var $window = $(window);
 
 function setUsername() {
 	socket.emit('setUsername', $('#name').val());
+	clearInterval(autoShoveIntervalId);
+	clearInterval(autoKeepIntervalId);
 };
 
 function write(divID, data){

@@ -10,6 +10,7 @@ module.exports = class Player {
   init(){
     this.handValue = 0;
     this.score = 3;
+    this.alive = true;
   }
 
   emit(event, data){
