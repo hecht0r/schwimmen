@@ -68,8 +68,8 @@ module.exports = class Match{
 	getScoreboard(){
 		let scoreBoard =[];
 		for (let i = 0; i < this.players.length; i++) {
-			scoreBoard.push({player: this.players[i].name, score: this.players[i].score, wins: this.players[i].wins});
-			helper.log(this.players[i].name + ': ' + this.players[i].score);
+			scoreBoard.push({player: this.players[i].socket.username, score: this.players[i].score, wins: this.players[i].wins});
+			helper.log(this.players[i].socket.username + ': ' + this.players[i].score);
 		}
 		return scoreBoard;
 	}

@@ -66,8 +66,8 @@ module.exports = class Game{
 		
 		// tell scores to everyone
 		for (let i = 0; i < this.players.length; i++) {
-			m.emitPlayers('results',{player: this.players[i].name, score: this.players[i].handValue});
-			helper.log(this.players[i].name + ': ' + this.players[i].handValue);
+			m.emitPlayers('results',{player: this.players[i].socket.username, score: this.players[i].handValue});
+			helper.log(this.players[i].socket.username + ': ' + this.players[i].handValue);
 		}
 
 		// find and tell losers to everyone
@@ -84,12 +84,12 @@ module.exports = class Game{
 		for (let i = 0; i < losers.length; i++) {
 			let loser = losers[i];
 			loser.score -= 1;
-			helper.log(`${loser.name} verliert!`);
-			m.emitPlayers('losers', loser.name);
+			helper.log(`${loser.socket.username} verliert!`);
+			m.emitPlayers('losers', loser.socket.username);
 			
 			// check if players swim
 			if (loser.score === 0){
-				m.emitPlayers('swim', loser.name);
+				m.emitPlayers('swim', loser.socket.username);
 			}
 			
 			// check if players have to leave the game, not if losers are the only active players
@@ -99,7 +99,7 @@ module.exports = class Game{
 				}else{
 					loser.alive = false;
 					loser.score = '†';
-					m.emitPlayers('out', loser.name);
+					m.emitPlayers('out', loser.socket.username);
 					let index = this.players.indexOf(loser);
 					if (index > -1) {
 						this.players.splice(index, 1);
@@ -107,13 +107,11 @@ module.exports = class Game{
 				}				
 			}
 		}
-	
-		//m.emitPlayers('updateScoreboard',m.getScoreboard());
 
 		let players;
 		let timeout = 10000;
 		if (this.players.length === 1){
-			m.emitPlayers('winner',this.players[0].name)
+			m.emitPlayers('winner',this.players[0].socket.username)
 			players = m.players;
 			let winnerIndex = players.indexOf(this.players[0]);
 			players[winnerIndex].wins++;

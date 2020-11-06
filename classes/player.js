@@ -1,6 +1,5 @@
 module.exports = class Player {
   constructor(socket) {
-    this.name = socket.username;
     this.socket = socket;
     this.hand = [];
     this.wins = 0;
