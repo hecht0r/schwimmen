@@ -1,3 +1,4 @@
+const helper = require('../helpers.js');
 const game = require('./game.js');
 
 module.exports = class Match{
@@ -23,28 +24,13 @@ module.exports = class Match{
 		}
 	}
 
-	kickPlayer(player){
-		this.players.splice(player, 1);
-
-		let scoreBoard =[];
-		for (let i = 0; i < this.players.length; i++) {
-			scoreBoard.push({player: this.players[i].name, score: this.players[i].score, wins: this.players[i].wins});
-		}
-		this.emitPlayers('updateScoreboard',scoreBoard);
-
-		// for next game randomly pick starting player
-		this.startGame(this.players, this.players[Math.floor(Math.random() * this.players.length)]);
-	}
-
 	start(){
 		// start game
  		this.status = 1;
-		let scoreBoard =[];
+		
 		for (let i = 0; i < this.players.length; i++) {
 			this.players[i].init();
-			scoreBoard.push({player: this.players[i].name, score: this.players[i].score, wins: this.players[i].wins});
 		}
-		this.emitPlayers('updateScoreboard',scoreBoard);
 
 		// for first game randomly pick starting player
 		this.startGame(this.players, this.players[Math.floor(Math.random() * this.players.length)]);
@@ -78,6 +64,17 @@ module.exports = class Match{
 		}
 		return false;
 	}
- }
+
+	getScoreboard(){
+		let scoreBoard =[];
+		for (let i = 0; i < this.players.length; i++) {
+			scoreBoard.push({player: this.players[i].name, score: this.players[i].score, wins: this.players[i].wins});
+			helper.log(this.players[i].name + ': ' + this.players[i].score);
+		}
+		return scoreBoard;
+	}
+}
+	 
 
  module.exports.matchStatus = ['Warte auf Spieler', 'Spiel läuft'];
+ 

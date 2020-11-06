@@ -7,7 +7,7 @@ const deck = require('./classes/deck.js');
 
 global.log = true;
 global.rooms = [];
-global.score_to_win = 101;
+global.roundTimeout;
 
 module.exports.listen = function(app) {
 	io = socketio.listen(app);
@@ -49,14 +49,25 @@ module.exports.listen = function(app) {
 			// if our player was part of a match, we kick him from players
 			let m = helper.findMatchBySocketId(socket.id);
 			if (m){
-				m.players.splice(m.players.indexOf(m.findPlayerById(socket.id),1));
+
+				// kickPlayer implementieren
+				m.players.splice(m.players.indexOf(m.findPlayerById(socket.id),1),1);
 				m.emitPlayers('playerDisconnected', socket.username);
-				// delete match if he was its last player, if not, start a new game
-				if (m.players.length == 0){
-					rooms.splice(rooms.indexOf(m),1);
-				}else{
-					let players = m.players.filter(player => player.alive === true);
-					m.startGame(players, players[Math.floor(Math.random() * players.length)]);
+				 
+				if (m.status == 1){
+					if (m.players.length == 1){
+						// delete match if he was its last player,
+						rooms.splice(rooms.indexOf(m),1);
+					}else{
+						// start a new game with the remaining players
+						let players = m.players.filter(player => player.alive === true);
+						m.emitPlayers('roundOver');
+						clearTimeout(global.roundTimeout);
+						setTimeout(function() {
+							m.startGame(players, players[Math.floor(Math.random() * players.length)]);
+						}, 10000);
+						
+					}
 				}
 			};
 			helper.log(`${socket.username} disconnected`);

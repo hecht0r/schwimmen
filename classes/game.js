@@ -30,11 +30,13 @@ module.exports = class Game{
 		helper.log('---');
 		helper.log(starter.socket.username + ' beginnt.')
 		this.emitPlayers('newGame',starter.socket.username);
+		m.emitPlayers('updateScoreboard',m.getScoreboard());
 		this.starter = starter;
 		this.deck = new deck();
 		this.deck.createDeck();
 		this.deck.shuffleDeck();
 
+		
 		// hand out cards and tell the players' client
 		for (let i = 0; i < this.players.length; i++) {
 			let player = this.players[i];
@@ -42,7 +44,7 @@ module.exports = class Game{
 			player.handValue = helper.handValue(player.hand);
 			player.emit('updateHand', player.hand);
 		}
-
+		
 		// check if someone has already >= 31 handvalue
 		let startRound = true;
 		for (let i = 0; i < this.players.length; i++) {
@@ -106,11 +108,7 @@ module.exports = class Game{
 			}
 		}
 	
-		let scoreBoard =[];
-		for (let i = 0; i < m.players.length; i++) {
-			scoreBoard.push({player: m.players[i].name, score: m.players[i].score, wins: m.players[i].wins});
-			helper.log(m.players[i].name + ': ' + m.players[i].score);
-		}
+		//m.emitPlayers('updateScoreboard',m.getScoreboard());
 
 		let players;
 		let timeout = 10000;
@@ -122,24 +120,18 @@ module.exports = class Game{
 			for (let i = 0; i < players.length; i++) {
 				players[i].init();
 			}
-			await new Promise(r => setTimeout(r, timeout));
+			global.roundTimeout = await new Promise(r => setTimeout(r, timeout));
 			timeout = 0;
 			m.emitPlayers('gameOver');
 		}else{
 			players = this.players;
 		}
-		
-		scoreBoard =[];
-		for (let i = 0; i < m.players.length; i++) {
-			scoreBoard.push({player: m.players[i].name, score: m.players[i].score, wins: m.players[i].wins});
-			helper.log(m.players[i].name + ': ' + m.players[i].score);
-		}
 
 		let nextStarter = this.getNextPlayer(this.starter);	
 
-		m.emitPlayers('updateScoreboard',scoreBoard);
+		m.emitPlayers('updateScoreboard',m.getScoreboard());
 
-		setTimeout(function() {
+		global.roundTimeout = setTimeout(function() {
 			m.startGame(players, nextStarter);
 		}, timeout);
 	}

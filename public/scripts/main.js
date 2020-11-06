@@ -5,6 +5,7 @@ var actionCanBeSent = false;
 var username;
 var maxPlayersSet = true;
 var matchId;
+var intervalId;
 var autoShoveIntervalId;
 var autoKeepIntervalId;
 
@@ -139,7 +140,8 @@ function addActions(type) {
 }	
 
 function setCountdown(counter){
-	let intervalId = setInterval(function() {
+	clearInterval(intervalId);
+	intervalId = setInterval(function() {
 		span = document.getElementById("gameStatus");
 	  	counter--;
 	  	if (counter >= 0) {
