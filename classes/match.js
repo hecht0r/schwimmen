@@ -15,6 +15,7 @@ module.exports = class Match{
 		if(players.length > 0){
 			players.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0)); 
 			player.score = players[0].score;
+			player.alive = true;
 		}	
 		this.players.push(player);
 	}
