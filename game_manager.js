@@ -7,7 +7,6 @@ const player = require('./classes/player.js');
 global.log = true;
 global.rooms = [];
 global.roundTimeout;
-global.pauseTimeout;
 
 module.exports.listen = function(app) {
 	io = socketio.listen(app);
@@ -24,14 +23,6 @@ module.exports.listen = function(app) {
 			}
 		});
 
-		socket.on('pauseGame', function() {
-			helper.log('Game paused');
-			let m = helper.findMatchBySocketId(socket.id);
-			m.emitPlayers('gamePaused');
-			global.pauseTimeout = setTimeout(function() {
-			}, 999999999);
-		});
-		
 		socket.on('startGame', function(data) {
 			try { 
 				let m = helper.findMatchBySocketId(socket.id);
@@ -41,6 +32,8 @@ module.exports.listen = function(app) {
 					setTimeout(function() {
 						m.start();
 					}, 10000);
+				}else{
+					socket.emit('setStart');
 				}	
 			}
 			catch(e) {
