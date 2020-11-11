@@ -21,7 +21,7 @@ app.get('/matches', function(req, res) {
 	content += '<ul>';
 
 	for (let i = 0; i < rooms.length; i++) {
-		content += '<li>Spieler: ' + rooms[i].players.length + '/' + rooms[i].maxPlayers + '  Status: ' + match.matchStatus[rooms[i].status] + '</li>';
+		content += '<li>Spieler: ' + rooms[i].players.length + ' (' + rooms[i].getStatus() + ')</li>';
 		content += '<ul>';
 		for (let j = 0; j < rooms[i].players.length; j++) {
 			content += '<li>' + rooms[i].players[j].socket.username + ': ' + rooms[i].players[j].score + ' (' + rooms[i].players[j].wins + ')</li>';

@@ -1,76 +1,119 @@
 const socketio = require('socket.io');
-const player = require('./classes/player.js');
 const helper = require('./helpers.js');
 const actions = require('./actions.js');
 const match = require('./classes/match.js');
-const deck = require('./classes/deck.js');
+const player = require('./classes/player.js');
 
 global.log = true;
 global.rooms = [];
 global.roundTimeout;
+global.pauseTimeout;
 
 module.exports.listen = function(app) {
 	io = socketio.listen(app);
 	io.on('connection', function(socket) {
 		
 		socket.on('setUsername', function(data) {
-			helper.log(`${data} connected`);
-			join(socket, data);
+			try{
+				helper.log(`${data} connected`);
+				join(socket, data);
+			}
+			catch(e){
+				helper.log(e);
+				io.sockets.emit('error');
+			}
+		});
+
+		socket.on('pauseGame', function() {
+			helper.log('Game paused');
+			let m = helper.findMatchBySocketId(socket.id);
+			m.emitPlayers('gamePaused');
+			global.pauseTimeout = setTimeout(function() {
+			}, 999999999);
 		});
 		
+		socket.on('startGame', function(data) {
+			try { 
+				let m = helper.findMatchBySocketId(socket.id);
+				if (m.getNumPlayers() > 1){
+					m.emitPlayers('gameStarted');
+					m.setSettings(data);
+					setTimeout(function() {
+						m.start();
+					}, 10000);
+				}	
+			}
+			catch(e) {
+				helper.log(e);
+				io.sockets.emit('error');
+			}
+		});
+
 		socket.on('action', function(data) {
-			switch (data.action) {
-				case 'keep':
-					actions.keep(socket, data);
-					break;
-				case 'new':
-					actions.new(socket, data);
-					break;
-				case 'change':
-					actions.change(socket, data);
-					break;
-				case 'changeAll':
-					actions.changeAll(socket, data);
-					break;			
-				case 'shove':
-					actions.shove(socket, data);
-					break;
-				case 'knock':
-					actions.knock(socket, data);
-					break;
+			try {
+				switch (data.action) {
+					case 'keep':
+						actions.keep(socket, data);
+						break;
+					case 'new':
+						actions.new(socket, data);
+						break;
+					case 'change':
+						actions.change(socket, data);
+						break;
+					case 'changeAll':
+						actions.changeAll(socket, data);
+						break;			
+					case 'shove':
+						actions.shove(socket, data);
+						break;
+					case 'knock':
+						actions.knock(socket, data);
+						break;
+				}
+			}
+			catch(e) {
+				helper.log(e);
+				io.sockets.emit('error');
 			}
 		});	
 
-		socket.on('settings', function(data) {
-			helper.findMatchById(data.matchId).setMaxPlayers(data.maxPlayers);
-		});	
+		socket.on('disconnect', function (reason) {
+			try{ 
+				// if our player was part of a match, we kick him from players
+				let m = helper.findMatchBySocketId(socket.id);
+				if (m){
 
-		socket.on('disconnect', function () {
-			// if our player was part of a match, we kick him from players
-			let m = helper.findMatchBySocketId(socket.id);
-			if (m){
-
-				// kickPlayer implementieren
-				m.players.splice(m.players.indexOf(m.findPlayerById(socket.id),1),1);
-				m.emitPlayers('playerDisconnected', socket.username);
-				 
-				if (m.status == 1){
-					if (m.players.length == 1){
+					m.players.splice(m.players.indexOf(m.findPlayerById(socket.id),1),1);
+					m.emitPlayers('playerDisconnected', socket.username);
+					
+					if (m.getNumPlayers() === 1){
 						// delete match if he was its last player,
+						m.emitPlayers('error');
 						rooms.splice(rooms.indexOf(m),1);
 					}else{
 						// start a new game with the remaining players
 						let players = m.players.filter(player => player.alive === true);
 						m.emitPlayers('roundOver');
 						clearTimeout(global.roundTimeout);
-						setTimeout(function() {
-							m.startGame(players, players[Math.floor(Math.random() * players.length)]);
+						global.roundTimeout = setTimeout(function() {
+							try{
+								m.startGame(players, players[Math.floor(Math.random() * players.length)]);
+							}
+							catch(e){
+								helper.log(e);
+								io.sockets.emit('error');
+							}
 						}, 10000);
 						
 					}
-				}
-			};
-			helper.log(`${socket.username} disconnected`);
+				};
+				helper.log(`${socket.username} disconnected because of ` + reason);
+			}
+			catch(e){
+				helper.log(e);
+				io.sockets.emit('error');
+			}
 		});
 	});
 	return io;
@@ -91,22 +134,13 @@ function join(socket, username) {
 	m.addPlayer(p);
 	p.emit('userSet', {username: username, matchId: m.id});
 
-	// first player sets maxPlayers
-	if (m.players.length === 1){
-		p.emit('setSettings');
+	// first player gets startButton
+	if (m.getNumPlayers() === 1){
+		p.emit('setStart');
 	}
 	
 	setTimeout(function() {
-		if (m.maxPlayers){
-			m.emitPlayers('userJoined', {username: username, count: m.players.length + '/' + m.maxPlayers + ' Spieler'});
-		}else{
-			m.emitPlayers('userJoined', {username: username, count: m.players.length + ' Spieler'});
-		}	
+		m.emitPlayers('userJoined', username);
+		m.emitPlayers('updateScoreboard',m.getScoreboard());
 	}, 1000);
-
-	if (m.players.length == m.maxPlayers) {
-		setTimeout(function() {
-			m.start();
-		}, 2000);
-	}
 }

@@ -41,14 +41,12 @@ body {
 	width: 30%;
 	float: left;
 	min-height: 100%;
-	visibility: hidden;
 }
 
 .standingsTotal {
 	width: 30%;
 	text-align: left;
 	min-height: 100%;
-	visibility: hidden;
 }
 
 .middleCards, .playerCards, .playerActions {
@@ -63,6 +61,15 @@ body {
 	font-size: 200% !important;
 }
 
+.nextMove {
+	width: 50%;
+	float: left;
+}
+
+.admin {
+	width: 50%;
+	float: right;
+}
 
 .gameLog {
 	height: 80%;
@@ -84,6 +91,15 @@ img.card{
 img.gameover{
 	max-width: 90%;  
 }
+
+.adminbutton {
+	background-color:black;
+	color: #FFF;
+	border-radius:13px;
+	cursor:pointer;
+	padding: 2% 2%;
+	margin: 1% !important;
+} 
 
 .button {
 	background-color:black;
@@ -126,8 +142,7 @@ img.gameover{
 	width: 100%;
 }
 
-.login.page,
-.settings.page{
+.login.page{
 	background: url("/images/welcome.jpg") ;
 	background-position:center top;
 	background-size:cover;
@@ -135,8 +150,7 @@ img.gameover{
 	color: #000;
 }
   
-.login.page .login,
-.settings.page .setting{
+.login.page .login{
 	height: 100px;
 	margin-top: -100px;
 	position: absolute;
@@ -145,8 +159,7 @@ img.gameover{
 	width: 100%;
 }
 
-.login.page .login .name,
-.settings.page .setting .maxPlayers{
+.login.page .login .name{
 	background-color: transparent;
 	border: none;
 	border-bottom: 2px solid #000;
@@ -156,29 +169,22 @@ img.gameover{
 	width: 400px;
 }
 
-.login.page .title,
-.settings.page .title{
+.login.page .title{
 	font-size: 200% !important;
 }
 
-.login.page .name,
-.settings.page .maxPlayers{
+.login.page .name{
 	font-size: 200% !important;
 	letter-spacing: 3px;
 }
 
-.login.page .title, .login.page .name,
-.settings.page .title, .maxPlayers {
+.login.page .title, .login.page .name{
 	font-weight: 100 !important;
 }
 
 .game.page {
 	display: none;
 	color: #FFF;
-}
-
-.settings.page {
-	display: none;
 }
 
 .username {

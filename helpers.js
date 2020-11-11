@@ -78,7 +78,7 @@ module.exports.createUniqueID = function(){
 // find next [match] which is waiting for players to join
 module.exports.getMatchWaitingForPlayers = function(){
 	for (let i = 0; i < rooms.length; i++){
-		if (rooms[i].isWaiting()){
+		if (rooms[i].isNotFull()){
 			return rooms[i];
 		}
 	}

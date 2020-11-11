@@ -5,31 +5,39 @@ socket.on('userSet', function(data) {
 	$('.login.page').fadeOut();
 	$('.game.page').show();
 	$('.login.page').off('click');
-	show('gameLog');
-	show('standings'); 
-	show('standingsTotal'); 
-	//show('links');
 	document.body.appendChild(document.createTextNode('Hello ' + data.username));
 });
 
-// when client can choose maxPlayers, emitted to only one client
-socket.on('setSettings', function() {
- 	maxPlayersSet = false;
-	$('.game.page').fadeOut();
-	$('.settings.page').show();
-	$('.game.page').off('click');
+// first client can start game, emitted to only one client
+socket.on('setStart', function() {
+	let div = document.getElementById('admin');
+	let btn = document.createElement('button');
+	btn.id = 'adminbutton'
+	btn.innerHTML = 'Start game';
+	btn.className = 'adminbutton';
+	btn.addEventListener('click', function () {
+		startGame();
+		return false;
+	});
+	div.appendChild(btn);
 });
 
 // when someone joined the match, emitted to all clients of the match
 socket.on('userJoined', function(data) {
-	write('gameLog', data.username + ' betritt das Spiel. ' + data.count );
+	write('gameLog', data + ' betritt das Spiel.');
+});
+
+// when start button was pushed
+socket.on('gameStarted', function() {
+	clear('nextMove');
+	setCountdown(10);
 });
 
 // when a new game starts, emitted to all clients of the match
 socket.on('newGame', function(data) {
 	removeActions();
 	clear('middleCards');
-	clear('gameStatus');
+	clear('nextMove');
 	write('gameLog', '------------------');
 	write('gameLog', data + ' beginnt das Spiel');
 	
@@ -113,7 +121,7 @@ socket.on('move', function(data) {
 // round is over
 socket.on('roundOver', function(data) {
 	removeActions();
-	clear('gameStatus');
+	clear('nextMove');
 	setCountdown(10);
 })
 
@@ -155,7 +163,7 @@ socket.on('out', function(data) {
 		removeActions();
 		clear('middleCards');
 		clear('playerCards');
-		clear('gameStatus');
+		clear('nextMove');
 		
 		let div = document.getElementById('middleCards');
 		img = document.createElement('img');
@@ -190,18 +198,20 @@ socket.on('yourTurn', function() {
 
 // tell all players whos turn it is, emitted to all clients of the game
 socket.on('nextPlayer', function(data) {
-	clear('gameStatus');
+	clear('nextMove');
 	if(data == username){
-		write('gameStatus', 'Du bist dran');
+		write('nextMove', 'Du bist dran');
 	}else{
-		write('gameStatus', data + ' ist dran');
+		write('nextMove', data + ' ist dran');
 	}
 });
 
-//when a client disconnected, emitted to all clients of the match
+// when a client disconnected, emitted to all clients of the match
 socket.on('playerDisconnected', function(data) {
-  	removeActions();
-	clear('middleCards');
-	clear('playerCards');
 	write('gameLog', data + ' hat das Spiel verlassen');
+});
+
+// application error
+socket.on('error', function() {
+	writeError('gameLog', 'Anwendungsfehler - bitte Seite neu laden');
 });

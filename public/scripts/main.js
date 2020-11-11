@@ -3,19 +3,20 @@ var selectedCard;
 var selectedMiddleCard;
 var actionCanBeSent = false;
 var username;
-var maxPlayersSet = true;
 var matchId;
 var intervalId;
 var autoShoveIntervalId;
 var autoKeepIntervalId;
-
 var $window = $(window);
 
 function setUsername() {
 	socket.emit('setUsername', $('#name').val());
-	clearInterval(autoShoveIntervalId);
-	clearInterval(autoKeepIntervalId);
 };
+
+function startGame() {
+	socket.emit('startGame',{maxPlayers: 6});
+	clear('admin');
+}
 
 function write(divID, data){
 	let div = document.getElementById(divID);
@@ -48,30 +49,11 @@ function clear(divID){
 	div.innerHTML = '';
 }
 
-function show(divID){
-	let div = document.getElementById(divID);
-	div.style='visibility: visible';
-}
-
-function hide(divID){
-	let div = document.getElementById(divID);
-	div.style='visibility: hidden';
-}
-
-function setSettings(){
-	socket.emit('settings', { matchId: matchId, maxPlayers: document.getElementById('maxPlayers').valueAsNumber});
-	$('.settings.page').fadeOut();
-	$('.game.page').show();
-	$('.settings.page').off('click');
-}
-
 function action(action) {
 	if (action === 'change' && ((!selectedCard) || (!selectedMiddleCard))){
 		writeError('gameLog', 'Bitte Karte auswählen');
 	}else{
 		actionCanBeSent = false;
-		clearInterval(autoShoveIntervalId);
-		clearInterval(autoKeepIntervalId);
 		removeActions();
 		socket.emit('action', { matchId: matchId, action: action, card: selectedCard, middleCard: selectedMiddleCard });
 		selectedCard = false;
@@ -99,10 +81,11 @@ function selectCard(img,card) {
 	img.style.border = '2px solid red';
 	selectedMiddleCard = card;
  };   
-
    
 function removeActions() {
 	clear('playerActions');
+	clearInterval(autoShoveIntervalId);
+	clearInterval(autoKeepIntervalId);
 }
 
 function addActions(type) {
@@ -142,7 +125,7 @@ function addActions(type) {
 function setCountdown(counter){
 	clearInterval(intervalId);
 	intervalId = setInterval(function() {
-		span = document.getElementById("gameStatus");
+		span = document.getElementById("nextMove");
 	  	counter--;
 	  	if (counter >= 0) {
 		span.innerHTML = 'Neue Runde in ' + counter;
@@ -197,10 +180,6 @@ $window.keydown(event => {
     if (event.which === 13) {
       if (!username && $('#name').val() != ''){ 
 		setUsername();
-	  }
-	  if (!maxPlayersSet && $('#maxPlayers').val() != ''){
-		maxPlayersSet = true;
-		setSettings();
 	  }
 	}
 });

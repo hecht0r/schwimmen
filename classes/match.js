@@ -5,30 +5,22 @@ module.exports = class Match{
 	constructor(id) {
 		this.players = [];
 		this.games = [];
-		this.status = 0;
 		this.id = id;
-		this.maxPlayers;
+		this.settings = {autoShoveAfter: 60, maxPlayers: 8};
 	}
 	
 	addPlayer(player){
+		let players = this.players.slice();
+		// new players start with the lowest score 
+		if(players.length > 0){
+			players.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0)); 
+			player.score = players[0].score;
+		}	
 		this.players.push(player);
 	}
 
-	setMaxPlayers(max){
-		if (max < 2){
-			this.maxPlayers = 2;	
-		}else if (max > 9){
-			this.maxPlayers = 9;
-		}else{
-			this.maxPlayers = max;
-		}
-	}
-
 	start(){
-		// start game
- 		this.status = 1;
-		
-		for (let i = 0; i < this.players.length; i++) {
+		for (let i = 0; i < this.getNumPlayers(); i++) {
 			this.players[i].init();
 		}
 
@@ -42,22 +34,40 @@ module.exports = class Match{
 		g.start(starter);	
 	}
 	
+	setSettings(settings){
+		this.settings = settings;
+	}
+
 	getCurrentGame() {
 		return this.games[this.games.length - 1];
 	}
 
-	isWaiting() {
-		return this.status === 0;
-	};
+	getStatus() {
+		let status;
+		if (this.games.length > 0){
+			status = 'running';
+		}else{
+			status = 'waiting';
+		}
+		return status;
+	}
+
+	getNumPlayers() {
+		return this.players.length;
+	}
+
+	isNotFull() {
+		return (this.getNumPlayers() < this.settings.maxPlayers);
+	}
 
 	emitPlayers(event, data) {
-		for (let i = 0; i < this.players.length; i++) {
+		for (let i = 0; i < this.getNumPlayers(); i++) {
 			this.players[i].emit(event, data);
 		}
 	};
 
 	findPlayerById(socketId){
-		for (let i = 0; i < this.players.length; i++) {
+		for (let i = 0; i < this.getNumPlayers(); i++) {
 			if (this.players[i].socket.id === socketId) {
 				return this.players[i];
 			}
@@ -67,14 +77,9 @@ module.exports = class Match{
 
 	getScoreboard(){
 		let scoreBoard =[];
-		for (let i = 0; i < this.players.length; i++) {
+		for (let i = 0; i < this.getNumPlayers(); i++) {
 			scoreBoard.push({player: this.players[i].socket.username, score: this.players[i].score, wins: this.players[i].wins});
-			helper.log(this.players[i].socket.username + ': ' + this.players[i].score);
 		}
 		return scoreBoard;
 	}
 }
-	 
-
- module.exports.matchStatus = ['Warte auf Spieler', 'Spiel läuft'];
- 

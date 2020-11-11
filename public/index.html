@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Schwimmen beta 0.9</title>
+		<title>Schwimmen 0.9.1</title>
 		<link rel='stylesheet' href='stylesheets/style.css'>
 		<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png">
 
@@ -20,24 +20,18 @@
 					<div id='playerActions' class='playerActions'></div>
 				</div>
 				<div class="column right">
-					<div id='gameStatus' class="gameStatus"></div>
+					<div class="gameStatus">
+						<div id='nextMove' class="nextMove"></div>
+						<div id='admin' class="admin"></div>
+					</div>	
 					<div id='gameLog' class="gameLog"></div>
 				</div>
-
-				<!--
-				
-				<div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>-->
+				<!--div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>-->
 			</li>
 			<li class="login page">
 				<div class='login'>
 					<h3 class="title">Wie heißt du?</h3>
 					<input id='name' class='name' type='text' required maxlength="15">
-				</div>			
-			</li>
-			<li class="settings page">
-				<div class='setting'>
-					<h3 class="title">Wie viele Spieler?</h3>
-					<input id='maxPlayers' class='maxPlayers' type='number' min=2 max=9 required>
 				</div>			
 			</li>
 		</ul>

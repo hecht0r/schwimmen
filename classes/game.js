@@ -111,6 +111,7 @@ module.exports = class Game{
 		let players;
 		let timeout = 10000;
 		if (this.players.length === 1){
+			// game is over, so raise winners wincount, reset all playerscores and start new round
 			m.emitPlayers('winner',this.players[0].socket.username)
 			players = m.players;
 			let winnerIndex = players.indexOf(this.players[0]);
@@ -122,7 +123,8 @@ module.exports = class Game{
 			timeout = 0;
 			m.emitPlayers('gameOver');
 		}else{
-			players = this.players;
+			// game is not over, so start new round with all players alive
+			players = m.players.filter(player => player.alive === true);
 		}
 
 		let nextStarter = this.getNextPlayer(this.starter);	
