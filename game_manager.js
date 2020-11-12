@@ -76,30 +76,32 @@ module.exports.listen = function(app) {
 				// if our player was part of a match, we kick him from players
 				let m = helper.findMatchBySocketId(socket.id);
 				if (m){
-
-					m.players.splice(m.players.indexOf(m.findPlayerById(socket.id)),1);
+					let player = m.findPlayerById(socket.id);
+					m.players.splice(m.players.indexOf(player),1);
 					m.emitPlayers('playerDisconnected', socket.username);
-					
+					m.emitPlayers('updateScoreboard',m.getScoreboard());
+
 					if (m.getNumPlayers() === 1){
 						// delete match if he was its last player,
 						m.emitPlayers('error');
 						rooms.splice(rooms.indexOf(m),1);
 					}else{
-						// start a new game with the remaining players
-						let players = m.players.filter(player => player.alive === true);
-						console.log(players)
-						m.emitPlayers('roundOver');
-						clearTimeout(global.roundTimeout);
-						global.roundTimeout = setTimeout(function() {
-							try{
-								m.startGame(players, players[Math.floor(Math.random() * players.length)]);
-							}
-							catch(e){
-								helper.log(e);
-								io.sockets.emit('error');
-							}
-						}, 10000);
-						
+						if (m.isRunning() && player.alive){
+							// start a new game with the remaining players
+							let players = m.players.filter(player => player.alive === true);
+							console.log(players)
+							m.emitPlayers('roundOver');
+							clearTimeout(global.roundTimeout);
+							global.roundTimeout = setTimeout(function() {
+								try{
+									m.startGame(players, players[Math.floor(Math.random() * players.length)]);
+								}
+								catch(e){
+									helper.log(e);
+									io.sockets.emit('error');
+								}
+							}, 10000);
+						}
 					}
 				};
 				helper.log(`${socket.username} disconnected because of ` + reason);

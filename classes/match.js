@@ -20,10 +20,6 @@ module.exports = class Match{
 	}
 
 	start(){
-	//	for (let i = 0; i < this.getNumPlayers(); i++) {
-	//		this.players[i].init();
-	//	}
-
 		// for first game randomly pick starting player
 		this.startGame(this.players, this.players[Math.floor(Math.random() * this.players.length)]);
 	}
@@ -50,6 +46,10 @@ module.exports = class Match{
 			status = 'waiting';
 		}
 		return status;
+	}
+
+	isRunning() {
+		return (this.games.length > 0);
 	}
 
 	getNumPlayers() {

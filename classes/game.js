@@ -20,7 +20,9 @@ module.exports = class Game{
 
 	emitPlayers(event, data) {
 		for (let i = 0; i < this.players.length; i++) {
-			this.players[i].emit(event, data);
+			if (this.players[i].human){
+				this.players[i].emit(event, data);
+			}	
 		}
 	}
     
