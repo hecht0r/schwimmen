@@ -77,7 +77,7 @@ module.exports.listen = function(app) {
 				let m = helper.findMatchBySocketId(socket.id);
 				if (m){
 
-					m.players.splice(m.players.indexOf(m.findPlayerById(socket.id),1),1);
+					m.players.splice(m.players.indexOf(m.findPlayerById(socket.id)),1);
 					m.emitPlayers('playerDisconnected', socket.username);
 					
 					if (m.getNumPlayers() === 1){
@@ -87,6 +87,7 @@ module.exports.listen = function(app) {
 					}else{
 						// start a new game with the remaining players
 						let players = m.players.filter(player => player.alive === true);
+						console.log(players)
 						m.emitPlayers('roundOver');
 						clearTimeout(global.roundTimeout);
 						global.roundTimeout = setTimeout(function() {

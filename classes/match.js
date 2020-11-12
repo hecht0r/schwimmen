@@ -15,15 +15,14 @@ module.exports = class Match{
 		if(players.length > 0){
 			players.sort((a,b) => (a.score > b.score) ? 1 : ((b.score > a.score) ? -1 : 0)); 
 			player.score = players[0].score;
-			player.alive = true;
 		}	
 		this.players.push(player);
 	}
 
 	start(){
-		for (let i = 0; i < this.getNumPlayers(); i++) {
-			this.players[i].init();
-		}
+	//	for (let i = 0; i < this.getNumPlayers(); i++) {
+	//		this.players[i].init();
+	//	}
 
 		// for first game randomly pick starting player
 		this.startGame(this.players, this.players[Math.floor(Math.random() * this.players.length)]);

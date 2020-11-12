@@ -7,9 +7,11 @@ module.exports = class Player {
   }
 
   init(){
+    console.log(this.socket.username + ': init');
     this.handValue = 0;
     this.score = 3;
     this.alive = true;
+    this.human = true;
   }
 
   emit(event, data){
