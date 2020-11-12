@@ -89,7 +89,6 @@ module.exports.listen = function(app) {
 						if (m.isRunning() && player.alive){
 							// start a new game with the remaining players
 							let players = m.players.filter(player => player.alive === true);
-							console.log(players)
 							m.emitPlayers('roundOver');
 							clearTimeout(global.roundTimeout);
 							global.roundTimeout = setTimeout(function() {
