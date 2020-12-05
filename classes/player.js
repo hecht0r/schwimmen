@@ -6,17 +6,14 @@ module.exports = class Player {
         this.init();
     }
 
-    init(){
+    init() {
         console.log(this.socket.username + ': init');
         this.handValue = 0;
         this.score = 3;
         this.alive = true;
-        this.human = true;
     }
 
-    emit(event, data){
-        if (this.human){
-          this.socket.emit(event, data);
-        } 
+    emit(event, data) {
+        this.socket.emit(event, data);
     }
 }
