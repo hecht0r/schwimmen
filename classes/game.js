@@ -65,10 +65,12 @@ module.exports = class Game {
         m.emitPlayers('roundOver');
 
         // tell scores to everyone
+        let results = [];
         for (let i = 0; i < this.players.length; i++) {
-            m.emitPlayers('results', { player: this.players[i].socket.username, score: this.players[i].handValue });
+            results.push({ player: this.players[i].socket.username, handValue: this.players[i].handValue, hand: this.players[i].hand });
             helper.log(this.players[i].socket.username + ': ' + this.players[i].handValue);
         }
+        m.emitPlayers('results', results);
 
         // find and tell losers to everyone
         let losers;

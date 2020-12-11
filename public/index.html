@@ -1,43 +1,50 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Schwimmen 0.9.1</title>
-		<link rel='stylesheet' href='stylesheets/style.css'>
-		<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png">
 
-	</head>
-	<body>
-		<ul class="pages">
-			<li class="game page">
-				<div class="column left">
-					<div class="top">
-						<div id="welcome" class="welcome"></div>
-						<div id="standings" class="standings"></div>
-						<div id="standingsTotal" class="standingsTotal"></div>			
-					</div>
-					<div id='middleCards' class="middleCards"></div>
-					<div id='playerCards' class="playerCards"></div>
-					<div id='playerActions' class='playerActions'></div>
-				</div>
-				<div class="column right">
-					<div class="gameStatus">
-						<div id='nextMove' class="nextMove"></div>
-						<div id='admin' class="admin"></div>
-					</div>	
-					<div id='gameLog' class="gameLog"></div>
-				</div>
-				<!--div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>-->
-			</li>
-			<li class="login page">
-				<div class='login'>
-					<h3 class="title">Wie heißt du?</h3>
-					<input id='name' class='name' type='text' required maxlength="15">
-				</div>			
-			</li>
-		</ul>
-		<script src='https://code.jquery.com/jquery-1.10.2.min.js'></script>
-		<script src='/socket.io/socket.io.js'></script>
-		<script src='/scripts/main.js'></script>
-		<script src='/scripts/sockets.js'></script>
-	</body>
+<head>
+    <title>Schwimmen 0.9.2</title>
+    <link rel='stylesheet' href='stylesheets/style.css'>
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png">
+
+</head>
+
+<body>
+    <ul class="pages">
+        <li class="game page">
+            <div class="column left">
+                <div class="top">
+                    <div id="welcome" class="welcome"></div>
+                    <div id="standings" class="standings"></div>
+                    <div id="standingsTotal" class="standingsTotal"></div>
+                </div>
+                <div id='middleCards' class="middleCards"></div>
+                <div id='playerCards' class="playerCards"></div>
+                <div id='playerActions' class='playerActions'></div>
+            </div>
+            <div class="column right">
+                <div class="gameStatus">
+                    <div id='nextMove' class="nextMove"></div>
+                    <div id='admin' class="admin"></div>
+                </div>
+                <div id='gameLog' class="gameLog"></div>
+            </div>
+            <!--div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>-->
+        </li>
+        <li class="login page">
+            <div class='login'>
+                <h3 class="title">Wie heißt du?</h3>
+                <input id='name' class='name' type='text' required maxlength="12">
+            </div>
+        </li>
+        <li class="results page">
+            <div id='counter' class="counter"></div>
+            <div id='results' class="results"></div>
+        </li>
+    </ul>
+    <script src='https://code.jquery.com/jquery-1.10.2.min.js'></script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src='/scripts/main.js'></script>
+    <script src='/scripts/sockets.js'></script>
+</body>
+
 </html>

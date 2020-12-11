@@ -5,7 +5,6 @@ socket.on('userSet', function(data) {
     $('.login.page').fadeOut();
     $('.game.page').show();
     $('.login.page').off('click');
-    document.body.appendChild(document.createTextNode('Hello ' + data.username));
 });
 
 // first client can start game, emitted to only one client
@@ -30,12 +29,14 @@ socket.on('userJoined', function(data) {
 // when start button was pushed
 socket.on('gameStarted', function() {
     clear('nextMove');
-    setCountdown(10);
 });
 
 // when a new game starts, emitted to all clients of the match
 socket.on('newGame', function(data) {
+    $('.game.page').fadeIn();
+    $('.results.page').fadeOut(1000);
     removeActions();
+    clear('results');
     clear('middleCards');
     clear('nextMove');
     write('gameLog', '------------------');
@@ -137,7 +138,30 @@ socket.on('gameOver', function(data) {
 
 // gameresults
 socket.on('results', function(data) {
-    writeBold('gameLog', data.player + ': ' + data.score)
+    // show results in log
+    for (let i = 0; i < data.length; i++) {
+        writeBold('gameLog', data[i].player + ': ' + data[i].handValue)
+
+
+        // create content for results page
+        let result = document.getElementById('results');
+        let fldst = document.createElement("FIELDSET");
+        fldst.setAttribute('class', 'hand');
+
+        for (let j = 0; j < data[i].hand.length; j++) {
+            let card = document.createElement('img');
+            card.setAttribute('class', 'card');
+            card.setAttribute('src', `/images/cards/${data[i].hand[j].id}.jpg`);
+            fldst.appendChild(card);
+        };
+        let lgnd = document.createElement("LEGEND");
+        lgnd.innerHTML = data[i].player + ': ' + data[i].handValue;
+        fldst.appendChild(lgnd);
+
+        result.appendChild(fldst);
+    };
+    $('.game.page').fadeOut(1000);
+    $('.results.page').fadeIn(1000);
 })
 
 // show roundlosers in log
