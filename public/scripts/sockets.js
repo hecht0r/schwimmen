@@ -194,7 +194,7 @@ socket.on('out', function(data) {
         clear('playerCards');
         clear('nextMove');
 
-        let div = document.getElementById('middleCards');
+        let div = document.getElementById('playerCards');
         img = document.createElement('img');
         img.setAttribute('class', 'gameover');
         img.setAttribute('src', '/images/gameover.png');

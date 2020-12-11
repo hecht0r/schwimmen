@@ -29,7 +29,7 @@ module.exports = class Game {
         let m = helper.findMatchBySocketId(starter.socket.id);
         helper.log('---');
         helper.log(starter.socket.username + ' beginnt.')
-        this.emitPlayers('newGame', starter.socket.username);
+        m.emitPlayers('newGame', starter.socket.username);
         m.emitPlayers('updateScoreboard', m.getScoreboard());
         this.starter = starter;
         this.deck = new deck();
@@ -82,7 +82,8 @@ module.exports = class Game {
             losers = this.players.filter(p => (p.handValue === players[0].handValue));
         }
 
-        let swimmersCount = this.players.filter(p => (p.score === 0)).length;
+        let swimmersCount = losers.filter(p => (p.score === 0)).length;
+        let playersCount = this.players.length;
         for (let i = 0; i < losers.length; i++) {
             let loser = losers[i];
             loser.score -= 1;
@@ -96,10 +97,10 @@ module.exports = class Game {
 
             // check if players have to leave the game
             if (loser.score < 0) {
-                // replay round if all swimmers are losers
-                if (losers.length === swimmersCount) {
+                // replay round if all remaining players are swimmers and losers
+                if (playersCount === swimmersCount) {
                     loser.score++;
-                    m.emitPlayers('replay');
+                    loser.emit('replay');
                 } else {
                     loser.alive = false;
                     loser.score = '†';
