@@ -15,7 +15,7 @@ function setUsername() {
 };
 
 function startGame() {
-    socket.emit('startGame', { maxPlayers: 6 });
+    socket.emit('startGame', { maxPlayers: 7 });
     clear('admin');
 }
 
