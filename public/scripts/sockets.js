@@ -56,17 +56,7 @@ socket.on('newGame', function(data) {
 // update standings, emitted to all clients of the match   
 socket.on('updateScoreboard', function(data) {
     clear('standings');
-    clear('standingsTotal');
-    let columns;
-    if (data.length > 4) {
-        columns = "2";
-    } else {
-        columns = "1";
-    }
-
-    document.getElementById('standings').style.columnCount = columns;
-    document.getElementById('standingsTotal').style.columnCount = columns;
-
+    writeBold('standings', 'Spielstand');
     let score;
     for (let i = 0; i < data.length; i++) {
         if (data[i].score >= 0) {
@@ -74,8 +64,7 @@ socket.on('updateScoreboard', function(data) {
         } else {
             score = data[i].score;
         }
-        write('standings', data[i].player + ': ' + score);
-        write('standingsTotal', data[i].player + ': ' + data[i].wins);
+        write('standings', data[i].player + ': ' + score + '  /  ' + data[i].wins + ' Siege');
     }
 });
 
@@ -91,6 +80,20 @@ socket.on('updateHand', function(data) {
         myCards.appendChild(card);
     };
 });
+
+// update clients stats, emitted to one client after another
+socket.on('updateStats', function(data) {
+    clear('statistics');
+    writeBold('statistics', 'Statistik');
+    write('statistics', 'Karten getauscht: ' + data.changed);
+    write('statistics', 'Alle Karten getauscht: ' + data.changedAll);
+    write('statistics', 'Geschoben: ' + data.shoves);
+    write('statistics', 'Geklopft: ' + data.knocks);
+    write('statistics', 'Höchste Punktzahl: ' + data.max);
+    write('statistics', 'Niedrigste Punktzahl: ' + data.min);
+    write('statistics', 'Durchschnittspunktzahl: ' + data.average.toFixed(2));
+});
+
 
 // update game cards
 socket.on('updateMiddlecards', function(data) {
@@ -114,6 +117,9 @@ socket.on('updateMiddlecards', function(data) {
 socket.on('move', function(data) {
     if (data.includes('klopft')) {
         writeBold('gameLog', data);
+        if (!isMute) {
+            myAudio = new Audio('/audio/knock.mp3').play();
+        }
     } else {
         write('gameLog', data);
     }
@@ -228,11 +234,16 @@ socket.on('yourTurn', function() {
 // tell all players whos turn it is, emitted to all clients of the game
 socket.on('nextPlayer', function(data) {
     clear('nextMove');
+    let div = document.getElementById('nextMove');
+    let text = document.createElement('b');
+
     if (data == username) {
-        write('nextMove', 'Du bist dran');
+        text.innerHTML = 'Du bist dran';
+        text.style.color = 'red';
     } else {
-        write('nextMove', data + ' ist dran');
+        text.innerHTML = data + ' ist dran';
     }
+    div.appendChild(text);
 });
 
 // when a client disconnected, emitted to all clients of the match

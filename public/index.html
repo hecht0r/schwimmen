@@ -2,38 +2,45 @@
 <html>
 
 <head>
-    <title>Schwimmen 0.9.2</title>
+    <title>Schwimmen 1.0</title>
     <link rel='stylesheet' href='stylesheets/style.css'>
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.png">
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 
 <body>
     <ul class="pages">
         <li class="game page">
             <div class="column left">
-                <div class="top">
-                    <div id="welcome" class="welcome"></div>
-                    <div id="standings" class="standings"></div>
-                    <div id="standingsTotal" class="standingsTotal"></div>
+                <div id='btn-wrapper'>
+                    <button type="button" id="unmute-btn" onclick="return unmuteSounds();" class="btn btn-light"><i class="material-icons topButton">volume_off</i></button>
+                    <button type="button" id="mute-btn" onclick="return muteSounds();" class="btn btn-light"><i class="material-icons topButton">volume_up</i></button>
                 </div>
+                <div id='admin' class="admin"></div>
                 <div id='middleCards' class="middleCards"></div>
                 <div id='playerCards' class="playerCards"></div>
                 <div id='playerActions' class='playerActions'></div>
             </div>
             <div class="column right">
-                <div class="gameStatus">
-                    <div id='nextMove' class="nextMove"></div>
-                    <div id='admin' class="admin"></div>
+                <div id='nextMove' class="nextMove"></div>
+                <div id="header">
+                    <button class="btn" id="log-btn"><i class="fa fa-bars"></i></button>
+                    <button class="btn" id="standings-btn"><i class="fa fa-trophy"></i></button>
+                    <button class="btn" id="stats-btn"><i class="fa fa-bar-chart"></i></button>
+                    <button class="btn" id="info-btn"><i class="fa fa-info"></i></button>
                 </div>
                 <div id='gameLog' class="gameLog"></div>
+                <div id="standings" class="standings"></div>
+                <div id="statistics" class="statistics"></div>
+                <div id="info" class="info">
+                    <a href='rules.html' target='_blank'>Regeln</a>
+                </div>
             </div>
-            <!--div id='links' class='links'><span><a href='rules.html' target='_blank'>Regeln</a></span></div>-->
         </li>
         <li class="login page">
             <div class='login'>
                 <h3 class="title">Wie heißt du?</h3>
-                <input id='name' class='name' type='text' required maxlength="12">
+                <input id='name' class='name' type='text' required maxlength="20">
             </div>
         </li>
         <li class="results page">
@@ -45,6 +52,7 @@
     <script src='/socket.io/socket.io.js'></script>
     <script src='/scripts/main.js'></script>
     <script src='/scripts/sockets.js'></script>
+    <script src="https://use.fontawesome.com/9d52b74a75.js"></script>
 </body>
 
 </html>

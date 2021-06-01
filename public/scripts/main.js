@@ -7,6 +7,7 @@ var matchId;
 var intervalId;
 var autoShoveIntervalId;
 var autoKeepIntervalId;
+var isMute;
 var $window = $(window);
 
 function setUsername() {
@@ -93,13 +94,13 @@ function addActions(type) {
     let actions;
     switch (type) {
         case 'regular':
-            actions = [{ action: 'change', title: 'Tauschen', isClickable: true }, { action: 'shove', title: 'Schieben', isClickable: true }, { action: 'changeAll', title: 'Alle Tauschen', isClickable: true }, { action: 'knock', title: 'Klopfen', isClickable: true }];
+            actions = [{ action: 'change', title: 'Tauschen', isClickable: true }, { action: 'changeAll', title: 'Alle Tauschen', isClickable: true }, { action: 'shove', title: 'Schieben', isClickable: true }, { action: 'knock', title: 'Klopfen', isClickable: true }];
             break;
         case 'firstMove':
             actions = [{ action: 'keep', title: 'Behalten', isClickable: true }, { action: 'new', title: 'Tauschen', isClickable: true }];
             break;
         case 'noKnock':
-            actions = [{ action: 'change', title: 'Tauschen', isClickable: true }, { action: 'shove', title: 'Schieben', isClickable: true }, { action: 'changeAll', title: 'Alle Tauschen', isClickable: true }, { action: 'knock', title: 'Klopfen', isClickable: false }];
+            actions = [{ action: 'change', title: 'Tauschen', isClickable: true }, { action: 'changeAll', title: 'Alle Tauschen', isClickable: true }, { action: 'shove', title: 'Schieben', isClickable: true }, { action: 'knock', title: 'Klopfen', isClickable: false }];
             break;
     }
 
@@ -116,9 +117,9 @@ function addActions(type) {
         }
         let playerActions = document.getElementById('playerActions');
         playerActions.appendChild(btn);
-        if (i === 1) {
-            playerActions.appendChild(document.createElement('br'));
-        }
+        /*   if (i === 1) {
+               playerActions.appendChild(document.createElement('br'));
+           }*/
     }
 }
 
@@ -144,6 +145,9 @@ function setCountdown(counter) {
 function startTimerAutoShove(counter) {
     autoShoveIntervalId = setInterval(function() {
         counter--;
+        if (counter === 5) {
+            myAudio = new Audio('/audio/countdown.mp3').play();
+        }
         if (counter === 0) {
             action('shove');
         }
@@ -153,6 +157,11 @@ function startTimerAutoShove(counter) {
 function startTimerAutoKeep(counter) {
     autoKeepIntervalId = setInterval(function() {
         counter--;
+        if (counter === 5) {
+            if (!isMute) {
+                myAudio = new Audio('/audio/countdown.mp3').play();
+            }
+        }
         if (counter === 0) {
             action('keep');
         }
@@ -164,7 +173,7 @@ window.onbeforeunload = function() {
 };
 
 flexFont = function() {
-    var divs = document.querySelectorAll('.gameLog, .standings, .standingsTotal');
+    var divs = document.querySelectorAll('.gameLog, .standings');
     for (var i = 0; i < divs.length; i++) {
         var relFontsize = divs[i].offsetWidth * 0.05;
         divs[i].style.fontSize = relFontsize + 'px';
@@ -186,3 +195,44 @@ $window.keydown(event => {
         }
     }
 });
+
+$("#log-btn").click(function() {
+    $('#standings').hide();
+    $('#statistics').hide();
+    $("#info").hide();
+    $("#gameLog").show();
+    ("#gameLog").scrollTop = ("#gameLog").scrollHeight;
+});
+
+$("#standings-btn").click(function() {
+    $('#gameLog').hide();
+    $('#statistics').hide();
+    $("#info").hide();
+    $("#standings").show();
+});
+
+$("#stats-btn").click(function() {
+    $('#gameLog').hide();
+    $('#standings').hide();
+    $("#info").hide();
+    $("#statistics").show();
+});
+
+$("#info-btn").click(function() {
+    $('#gameLog').hide();
+    $('#standings').hide();
+    $("#statistics").hide();
+    $("#info").show();
+});
+
+function muteSounds() {
+    isMute = true;
+    $("#mute-btn").hide();
+    $("#unmute-btn").show();
+}
+
+function unmuteSounds() {
+    isMute = false;
+    $("#unmute-btn").hide();
+    $("#mute-btn").show();
+}

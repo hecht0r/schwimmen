@@ -1,3 +1,5 @@
+const stats = require('./stats.js');
+
 module.exports = class Player {
     constructor(socket) {
         this.socket = socket;
@@ -11,6 +13,7 @@ module.exports = class Player {
         this.handValue = 0;
         this.score = 3;
         this.alive = true;
+        this.stats = new stats();
     }
 
     emit(event, data) {

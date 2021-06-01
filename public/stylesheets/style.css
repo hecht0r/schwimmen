@@ -10,6 +10,10 @@ body {
     color: #FFF;
 }
 
+a {
+    color: white;
+}
+
 .column {
     float: left;
     padding: 10px;
@@ -17,68 +21,58 @@ body {
 }
 
 .column.left {
-    width: 60%;
-    min-width: 620px;
-    min-height: 600px;
+    width: 60vw;
+    border-right: solid 2px white;
 }
 
 .column.right {
-    width: 40%;
+    width: 40vw;
 }
 
-.top {
-    height: 10%;
+.admin {
+    position: relative;
 }
 
-.welcome {
-    float: left;
-    width: 20%;
-    min-height: 100%;
-    font-size: 200% !important;
-}
-
-.standings {
-    width: 30%;
-    float: left;
-    min-height: 100%;
-}
-
-.standingsTotal {
-    width: 30%;
-    text-align: left;
-    min-height: 100%;
+.standings,
+.statistics,
+.info {
+    margin-top: 20px;
+    text-align: center;
+    display: none;
 }
 
 .middleCards,
 .playerCards,
 .playerActions {
     margin: auto;
-    height: 30%;
+    height: 35%;
     white-space: nowrap;
     text-align: center;
 }
 
-.gameStatus {
-    height: 10%;
+.nextMove {
+    height: 5vh;
     font-size: 200% !important;
+    text-align: center;
+    vertical-align: auto;
 }
 
-.nextMove {
-    width: 50%;
-    float: left;
+.btn-wrapper {
+    position: absolute;
 }
 
 .admin {
-    width: 50%;
-    float: right;
+    position: absolute;
 }
 
 .gameLog {
     height: 80%;
+    margin-top: 20px;
+    text-align: center;
     overflow: scroll;
 }
 
-::-webkit-scrollbar {
+ ::-webkit-scrollbar {
     width: 0px;
     background: transparent;
 }
@@ -86,7 +80,7 @@ body {
 img.card {
     border: 2px solid transparent;
     border-radius: 7%;
-    max-height: 90%;
+    max-height: 70%;
     display: inline-block;
 }
 
@@ -110,7 +104,7 @@ img.gameover {
     cursor: pointer;
     padding: 2% 0.2%;
     margin: 1% !important;
-    min-width: 25% !important;
+    min-width: 20% !important;
 }
 
 .buttonDisabled {
@@ -210,6 +204,10 @@ img.gameover {
     border-radius: 8px;
 }
 
+.results.page .results .hand img.card {
+    max-height: 90%;
+}
+
 .results.page .counter {
     height: 10%;
     font-size: 200% !important;
@@ -220,4 +218,55 @@ img.gameover {
     overflow: hidden;
     padding-right: 15px;
     text-align: right;
+}
+
+#header {
+    padding: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: calc(55px);
+    border-top: 2px solid;
+    border-bottom: 2px solid;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.btn {
+    color: white;
+    background-color: transparent;
+    border: none;
+    padding: 12px 16px;
+    font-size: 20px !important;
+}
+
+#unmute-btn {
+    display: none;
+}
+
+@media screen and (max-width: 1024px) {
+    main {
+        height: auto !important;
+        flex-direction: column !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .right {
+        width: calc(100vw) !important;
+        position: relative !important;
+        height: 30vh !important;
+    }
+    .left {
+        height: 50vh !important;
+        min-height: calc(var(--vh, 1vh) * 60) !important;
+        width: calc(100vw) !important;
+        border-right: 0px !important;
+        border-bottom: 2px solid !important;
+        border-bottom-color: #F0F0F0 !important;
+    }
+    .nextMove {
+        height: 10vh i !important;
+    }
+    img.card {
+        max-height: 90% !important;
+    }
 }

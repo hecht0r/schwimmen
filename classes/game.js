@@ -69,6 +69,8 @@ module.exports = class Game {
         for (let i = 0; i < this.players.length; i++) {
             results.push({ player: this.players[i].socket.username, handValue: this.players[i].handValue, hand: this.players[i].hand });
             helper.log(this.players[i].socket.username + ': ' + this.players[i].handValue);
+            this.players[i].stats.setStats(this.players[i].handValue);
+            this.players[i].emit('updateStats', this.players[i].stats);
         }
         m.emitPlayers('results', results);
 
